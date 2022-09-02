@@ -18,3 +18,19 @@ db.once("open", () => console.log("Successfully connected to MongoDB"));
 export async function createUser(params) {
   return new UserModel(params);
 }
+
+export async function getUser(params) {
+  const user = await UserModel.findOne({ username: params.username });
+  if (user && user.comparePassword(params.password)) {
+    return user;
+  }
+}
+
+export async function addTokenToUser(params) {
+  const updated = await UserModel.updateOne(
+    { username: params.username },
+    { $set: { token: params.token } }
+  );
+  console.log("Updated: " + JSON.stringify(updated));
+  return updated;
+}
