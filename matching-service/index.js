@@ -2,16 +2,21 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 
+// Properties
+const port = 8001;
+
 const app = express();
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
-app.use(cors()) // config cors so that front-end can use
-app.options('*', cors())
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors()); // config cors so that front-end can use
+app.options('*', cors());
 
 app.get('/', (req, res) => {
-    res.send('Hello World from matching-service');
+  res.send('Hello World from matching-service');
 });
 
-const httpServer = createServer(app)
+const httpServer = createServer(app);
 
-httpServer.listen(8001);
+httpServer.listen(port, () => {
+  console.log('Server started on port: ', port);
+});
