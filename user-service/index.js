@@ -1,12 +1,12 @@
-import express from 'express';
-import cors from 'cors';
+import express from "express";
+import cors from "cors";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors()) // config cors so that front-end can use
 app.options('*', cors())
-import { createUser, logout, loginWithToken } from './controller/user-controller.js';
+import { createUser, logout, loginWithToken, signIn } from './controller/user-controller.js';
 import redis from "redis";
 
 // let redisClient = null;
@@ -23,18 +23,18 @@ import redis from "redis";
 
 //     await redisClient.connect();
 // })();
-
-const router = express.Router()
+const router = express.Router();
 
 // Controller will contain all the User-defined Routes
 router.get('/', (_, res) => res.send('Hello World from user-service'))
 router.post('/signup', createUser)
 router.get('/logout', logout)
 router.post('/loginWithToken', loginWithToken);
+router.post("/loginWithUsernamePassword", signIn);
 
-app.use('/api/user', router).all((_, res) => {
-    res.setHeader('content-type', 'application/json')
-    res.setHeader('Access-Control-Allow-Origin', '*')
-})
+app.use("/api/user", router).all((_, res) => {
+  res.setHeader("content-type", "application/json");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+});
 
-app.listen(8000, () => console.log('user-service listening on port 8000'));
+app.listen(8000, () => console.log("user-service listening on port 8000"));
