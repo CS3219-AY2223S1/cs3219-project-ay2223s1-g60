@@ -13,16 +13,19 @@ import {
   connectToRedis,
   logout,
   loginWithToken,
+  isTokenInBlacklist,
 } from "./controller/user-controller.js";
 
 const router = express.Router();
 
 // Controller will contain all the User-defined Routes
 router.get("/", (_, res) => res.send("Hello World from user-service"));
+router.get("/blacklist", isTokenInBlacklist);
+
 router.post("/signup", createUser);
-router.get("/logout", logout);
+router.post("/logout", logout);
 router.post("/loginWithToken", loginWithToken);
-router.post("/loginWithUsernamePassword", signIn);
+router.post("/login", signIn);
 
 app.use("/api/user", router).all((_, res) => {
   res.setHeader("content-type", "application/json");
