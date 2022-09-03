@@ -7,11 +7,11 @@ let MatchModelSchema = new Schema({
     required: true,
     unique: true,
   },
-  requestId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+  // requestId: {
+  //   type: String,
+  //   required: true,
+  //   unique: true,
+  // },
   difficulty: {
     type: String,
     required: true,
@@ -26,4 +26,4 @@ let MatchModelSchema = new Schema({
   },
 });
 
-export default mongoose.model('MatchModel', MatchModel);
+export default mongoose.model('MatchModel', MatchModelSchema);

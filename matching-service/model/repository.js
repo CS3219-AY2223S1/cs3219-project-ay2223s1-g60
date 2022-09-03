@@ -17,5 +17,20 @@ db.once('open', () => console.log('Successfully connected to MongoDB'));
 
 // TODO: Implement function findMatch, etc...
 export async function findMatch(params) {
+  return await MatchModel.findOne({
+    difficulty: params.difficulty,
+    sessionInfo: null,
+  });
+}
+
+export async function createMatch(params) {
+  console.log('createMatch: ', params);
   return new MatchModel(params);
+}
+
+export async function updateMatch(params) {
+  return await MatchModel.updateOne(
+    { username: params.matchedUser },
+    { matchedUser: params.username }
+  );
 }
