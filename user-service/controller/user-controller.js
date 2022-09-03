@@ -71,7 +71,7 @@ export async function signIn(req, res) {
 }
 
 export async function generateToken(user) {
-  let privateKey = process.env.PRIVATE_KEY;
+  let privateKey = process.env.JWT_PRIVATE_KEY;
 
   let token = await jwt.sign(
     {
