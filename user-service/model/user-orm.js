@@ -1,4 +1,5 @@
-import { addTokenToUser, createUser, getUser } from "./repository.js";
+import { createUser, deleteToken, getToken, addTokenToUser, getUser } from './repository.js';
+import 'dotenv/config';
 
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function ormCreateUser(username, hashedPassword) {
@@ -10,6 +11,23 @@ export async function ormCreateUser(username, hashedPassword) {
     console.log("ERROR: Could not create new user");
     return { err };
   }
+}
+
+export async function ormDeleteToken(username, token) {
+    try {
+        return await deleteToken(username, token);
+    } catch (err) {
+        return { err };
+    }
+}
+
+export async function ormGetToken(username, token) {
+    try {
+        const dbToken = await getToken(username);
+        return dbToken;
+    } catch (err) {
+        return { err };
+    }
 }
 
 export async function ormGetUser(username, password) {

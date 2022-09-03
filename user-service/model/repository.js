@@ -1,5 +1,5 @@
-import UserModel from "./user-model.js";
-import "dotenv/config";
+import UserModel from './user-model.js';
+import 'dotenv/config';
 
 //Set up mongoose connection
 import mongoose from "mongoose";
@@ -17,6 +17,19 @@ db.once("open", () => console.log("Successfully connected to MongoDB"));
 
 export async function createUser(params) {
   return new UserModel(params);
+}
+
+export async function deleteToken(username, token) {
+  console.log("Username : ", username);
+  console.log("Token : ", token);
+  const user = await UserModel.findOne({username:username});
+  return await user.updateOne({ $unset: { token:"" }});
+  // await UserModel.updateOne( {username:username, token: token}, { $unset: { token:"" }})
+}
+
+export async function getToken(username) {
+    const user = await UserModel.findOne({username:username}, "token");
+    return user.token;
 }
 
 export async function getUser(params) {
