@@ -5,6 +5,7 @@ import {
 } from "../model/user-orm.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { createClient } from "redis";
 
 export async function createUser(req, res) {
   try {
@@ -82,4 +83,17 @@ export async function generateToken(user) {
     privateKey
   );
   return token;
+}
+
+export async function connectToRedis() {
+  const redisClient = createClient();
+
+  redisClient.on("error", (error) => {
+    console.log("Redis client error " + error);
+  });
+  redisClient.on("connect", () => {
+    console.log("Redis connected!");
+  });
+
+  await redisClient.connect();
 }

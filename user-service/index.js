@@ -6,7 +6,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors()); // config cors so that front-end can use
 app.options("*", cors());
-import { createUser, signIn } from "./controller/user-controller.js";
+import {
+  createUser,
+  signIn,
+  connectToRedis,
+} from "./controller/user-controller.js";
 
 const router = express.Router();
 
@@ -19,5 +23,7 @@ app.use("/api/user", router).all((_, res) => {
   res.setHeader("content-type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
 });
+
+await connectToRedis();
 
 app.listen(8000, () => console.log("user-service listening on port 8000"));
