@@ -44,21 +44,12 @@ export async function signIn(req, res) {
 
     if (username && password) {
       const user = await _getUser(username, password);
-      let privateKey = process.env.PRIVATE_KEY;
       if (user.err) {
         return res.status(400).json({ message: "Could not sign in!" });
       } else {
         console.log(`Signed in user ${username} successfully!`);
 
-        let token = await jwt.sign(
-          {
-            username: user.username,
-            hashedPassword: user.hashedPassword,
-            _id: user._id,
-          },
-          privateKey
-        );
-
+        let token = await generateToken(user);
         console.log("Token : " + token);
 
         const updated = await _addToken(username, token);
@@ -77,4 +68,18 @@ export async function signIn(req, res) {
       .status(500)
       .json({ message: "Database failure when getting user!" });
   }
+}
+
+export async function generateToken(user) {
+  let privateKey = process.env.PRIVATE_KEY;
+
+  let token = await jwt.sign(
+    {
+      username: user.username,
+      hashedPassword: user.hashedPassword,
+      _id: user._id,
+    },
+    privateKey
+  );
+  return token;
 }
