@@ -9,11 +9,11 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {SetStateAction, useState} from "react";
+import { SetStateAction, useState } from "react";
 import axios from "axios";
-import {URL_USER_SVC} from "../configs";
-import {STATUS_CODE_CONFLICT, STATUS_CODE_CREATED} from "../constants";
-import {Link} from "react-router-dom";
+import { URL_USER_SIGNUP } from "../configs";
+import { STATUS_CODE_CONFLICT, STATUS_CODE_CREATED } from "../constants";
+import { Link } from "react-router-dom";
 import React from "react";
 
 function SignupPage() {
@@ -26,7 +26,7 @@ function SignupPage() {
 
     const handleSignup = async () => {
         setIsSignupSuccess(false)
-        const res = await axios.post(URL_USER_SVC, {username, password})
+        const res = await axios.post(URL_USER_SIGNUP, {username, password})
             .catch((err) => {
                 if (err.response.status === STATUS_CODE_CONFLICT) {
                     setErrorDialog('This username already exists')
