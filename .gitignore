@@ -1,3 +1,4 @@
 /user-service/.env
+/matching-service/.env
 .idea/
 node_modules
