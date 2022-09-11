@@ -58,6 +58,7 @@ export async function signIn(req, res) {
         const updated = await _addToken(username, token);
 
         return res.status(200).json({
+          username: username, 
           token: token,
         });
       }
@@ -111,7 +112,6 @@ export async function loginWithToken(req, res) {
 
     if (username && token) {
       const resp = await _getToken(username, token);
-
       if (resp.err) {
       } else {
         jwt.verify(
@@ -123,6 +123,10 @@ export async function loginWithToken(req, res) {
                 token,
                 process.env.JWT_PRIVATE_KEY,
                 function (err, decodedFromUser) {
+                  console.log(decodedFromDb)
+                  console.log("db password : ", decodedFromDb.hashedPassword)
+                  console.log("Username : ", decodedFromUser.username)
+                  console.log("password : ", decodedFromUser.hashedPassword)
                   if (
                     decodedFromDb.username === decodedFromUser.username &&
                     decodedFromDb.hashedPassword ===
