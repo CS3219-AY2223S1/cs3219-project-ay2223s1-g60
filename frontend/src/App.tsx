@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import SignupPage from './components/SignupPage';
 import MatchingPage from './components/MatchingPage';
+import RoomPage from './components/RoomPage';
 import { Box } from '@mui/material';
 import React from 'react';
 
@@ -18,6 +19,7 @@ function App() {
             <Route path='/' element={<Navigate replace to='/signup' />}></Route>
             <Route path='/signup' element={<SignupPage />} />
             <Route path='/match' element={<MatchingPage />} />
+            <Route path='/room' element={<RoomPage />} />
           </Routes>
         </Router>
       </Box>
