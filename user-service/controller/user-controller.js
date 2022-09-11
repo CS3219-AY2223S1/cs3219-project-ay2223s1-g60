@@ -18,9 +18,8 @@ export async function createUser(req, res) {
 
     if (username && password) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
-
       const resp = await _createUser(username, hashedPassword);
-      console.log(resp);
+      console.log("response: " + resp);
       if (resp.err) {
         return res
           .status(400)
@@ -103,6 +102,12 @@ export async function loginWithToken(req, res) {
   try {
     const { username } = req.body;
     const token = req.headers.authorization.split(" ")[1];
+
+    const resp = await isTokenInBlacklist(token);
+    if (resp.status == 500) {
+      // Invalid token
+      return res.status(400).json({ message: "Token is blacklisted" });
+    }
 
     if (username && token) {
       const resp = await _getToken(username, token);
@@ -192,6 +197,6 @@ export async function isTokenInBlacklist(req, res) {
   if (inDenyList) {
     return res.status(200).json({ message: `${token} in blacklist` });
   } else {
-    return res.status(200).json({ message: `${token} NOT in blacklist` });
+    return res.status(500).json({ message: `${token} NOT in blacklist` });
   }
 }
