@@ -16,16 +16,17 @@ async function loginWithUsername(username:string, password:string):Promise<any> 
         body: JSON.stringify(body) 
     }
 
-    return await fetch(URL_USER_LOGIN, config).then(async (resp) => {
+    const resp =  await fetch(URL_USER_LOGIN, config);
 
-        const data = await resp.json();
-        window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, data.token);
-        window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, data.username);
-        return data;
-        // window.localStorage.setItem(LOCAL_STORAGE_KEY, "test");
-    }).catch((err) => {
-        console.log("The error : ", err);
-    });
+    const data = await resp.json();
+
+    if (resp.status != 201) {
+        return resp;
+    }
+    
+    window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, data.token);
+    window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, data.username);
+    return resp;
 
 }
 

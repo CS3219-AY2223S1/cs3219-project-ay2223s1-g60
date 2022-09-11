@@ -39,13 +39,14 @@ function LoginPage() {
         }
 
         login();
-
+        setIsLoginSuccess(false)
     }, [])
     
 
     const handleLogin = async () => {
         const res = await loginWithUsername(username, password);
-        if (res.status == 200) {
+
+        if (res.status == STATUS_CODE_CREATED) {
             navigate("/home")
         }
     }
@@ -97,7 +98,7 @@ function LoginPage() {
                 </DialogContent>
                 <DialogActions>
                     {isLoginSuccess
-                        ? <Button component={Link} to="/login">Log in</Button>
+                        ? <Button component={Link} to="/home">Log in</Button>
                         : <Button onClick={closeDialog}>Done</Button>
                     }
                 </DialogActions>

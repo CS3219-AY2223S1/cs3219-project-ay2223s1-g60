@@ -58,7 +58,7 @@ export async function signIn(req, res) {
 
         const updated = await _addToken(username, token);
 
-        return res.status(200).json({
+        return res.status(201).json({
           username: username, 
           token: token,
         });
@@ -83,7 +83,7 @@ export async function generateToken(user) {
       _id: user._id,
     },
     privateKey,
-    { expiresIn: "60s" }
+    { expiresIn: "1h" }
   );
   console.log(token);
   return token;
