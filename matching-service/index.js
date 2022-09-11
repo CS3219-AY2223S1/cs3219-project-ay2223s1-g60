@@ -36,6 +36,8 @@ io.on("connection", (socket) => {
             io.to(req.socketId).emit("found-match");
 
             // TODO: create room in db
+            // return roomId
+            // emit to both clients
 
             rooms.splice(index, 1);
         }
