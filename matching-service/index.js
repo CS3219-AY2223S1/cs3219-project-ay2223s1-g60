@@ -20,12 +20,11 @@ const io = new Server(httpServer, {
     }
 });
 
-var rooms = [];
+const rooms = [];
 io.on("connection", (socket) => {
     console.log(`Connected to ${socket.id}`)
 
     socket.on("find-match", (req) => {
-        console.log(req)
         let index = rooms.findIndex((room) => {
             return room.socketId !== req.socketId && room.difficulty === req.difficulty;
         })
