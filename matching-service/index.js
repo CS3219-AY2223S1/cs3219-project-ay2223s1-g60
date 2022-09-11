@@ -20,11 +20,6 @@ const io = new Server(httpServer, {
     }
 });
 
-let room = {
-    userId: undefined,
-    difficulty: undefined,
-}
-
 var rooms = [];
 io.on("connection", (socket) => {
     console.log(`Connected to ${socket.id}`)
