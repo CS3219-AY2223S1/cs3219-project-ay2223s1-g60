@@ -15,15 +15,25 @@ export async function createUser(req, res) {
   try {
     const { username, password } = req.body;
     let saltRounds = parseInt(process.env.SALT_ROUNDS);
-    
+
     if (username && password) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       const resp = await _createUser(username, hashedPassword);
-      console.log("response: ", resp);
+      console.log("response controller: ");
+      console.log(resp);
       if (resp.err) {
+        if (resp.err.name && resp.err.name === "MongoServerError" && resp.err.code === 11000) {
+          return res.status(409).json({ message: "Duplicate user!" });
+        }
+        console.log("ERRORRR");
+        console.log(resp.err);
+        // if (resp.err === 402) {
+        //   return res.status(402).json({ message: "Existing user found" });
+        // } else {
         return res
           .status(400)
           .json({ message: "Could not create a new user!" });
+        // }
       } else {
         console.log(`Created new user ${username} successfully!`);
         return res
@@ -46,7 +56,6 @@ export async function createUser(req, res) {
 export async function signIn(req, res) {
   try {
     const { username, password } = req.body;
-
     if (username && password) {
       const user = await _getUser(username, password);
       if (user.err) {
@@ -59,7 +68,7 @@ export async function signIn(req, res) {
         const updated = await _addToken(username, token);
 
         return res.status(201).json({
-          username: username, 
+          username: username,
           token: token,
         });
       }
@@ -105,12 +114,14 @@ export async function loginWithToken(req, res) {
     const { username } = req.body;
     const token = req.headers.authorization.split(" ")[1];
 
+    
     const resp = await isTokenInBlacklist(token);
-    if (resp.status == 500) {
+    if (resp) {
       // Invalid token
       return res.status(400).json({ message: "Token is blacklisted" });
     }
-
+    
+    console.log("username login with token : " , token);
     if (username && token) {
       const resp = await _getToken(username, token);
       if (resp.err) {
@@ -124,10 +135,6 @@ export async function loginWithToken(req, res) {
                 token,
                 process.env.JWT_PRIVATE_KEY,
                 function (err, decodedFromUser) {
-                  console.log(decodedFromDb)
-                  console.log("db password : ", decodedFromDb.hashedPassword)
-                  console.log("Username : ", decodedFromUser.username)
-                  console.log("password : ", decodedFromUser.hashedPassword)
                   if (
                     decodedFromDb.username === decodedFromUser.username &&
                     decodedFromDb.hashedPassword ===
@@ -136,7 +143,7 @@ export async function loginWithToken(req, res) {
                   ) {
                     return res.status(201).json({
                       message: `Successfully log ${username} in with token!`,
-                    });
+                    }).json({username : username});
                   } else {
                     return res
                       .status(400)
@@ -196,12 +203,8 @@ export async function insertTokenToBlacklist(token) {
   redisClient.expireAt(token_key, expiryDate);
 }
 
-export async function isTokenInBlacklist(req, res) {
-  const { token } = req.body;
+export async function isTokenInBlacklist(token) {
   const inDenyList = await redisClient.get(`bl_${token}`);
-  if (inDenyList) {
-    return res.status(200).json({ message: `${token} in blacklist` });
-  } else {
-    return res.status(500).json({ message: `${token} NOT in blacklist` });
-  }
+  
+  return inDenyList;
 }

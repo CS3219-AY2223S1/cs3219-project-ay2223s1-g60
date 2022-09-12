@@ -1,5 +1,5 @@
 import { URL_USER_SIGNUP, URL_USER_LOGIN, URL_USER_LOGOUT, URL_USER_LOGIN_WITH_TOKEN } from "../configs";
-import { STATUS_CODE_CONFLICT, STATUS_CODE_CREATED } from "../constants";
+import { STATUS_CODE_CONFLICT, ERROR_UNAME_PASSWORD, UNAME_PASSWORD_MISSING } from "../constants";
 
 import axios from "axios";
 
@@ -14,7 +14,6 @@ async function signUp(username:string, password:string):Promise<any> {
     };
 
     const resp =  await axios.post(URL_USER_SIGNUP, body).catch((err) => {
-        console.log("Error catched", err);
         if (err.response.status === STATUS_CODE_CONFLICT) {
             throw new Error("This username already exists");
         } else {
@@ -39,17 +38,18 @@ async function loginWithUsername(username:string, password:string):Promise<any> 
         body: JSON.stringify(body) 
     }
 
-    const resp =  await fetch(URL_USER_LOGIN, config);
+    const resp =  await axios.post(URL_USER_LOGIN, body).catch((err) => {
+        if (err.response.status === UNAME_PASSWORD_MISSING) {
+            throw new Error("Username or password is missing!");
+        } else {
+            throw new Error("Username or password is incorrect!");
+        }
+    });
 
-    const data = await resp.json();
-
-    if (resp.status != 201) {
-        return resp;
-    }
-    
+    const data = resp.data;
     window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, data.token);
     window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, data.username);
-    return resp;
+    return data.username;
 
 }
 
@@ -61,20 +61,46 @@ async function loginWithToken():Promise<any> {
         'Authorization' : `Bearer ${token}`,
     };
 
-    // if (token) {
-    //     headers.Authorization = `${token}`;
-    // }
-
     const body = {
         username : username,
     };
-
-    return await fetch(URL_USER_LOGIN_WITH_TOKEN, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(body) 
+    
+    const resp =  await axios.post(URL_USER_LOGIN_WITH_TOKEN, body, { headers : headers }).catch((err) => {
+        if (err.response.status === UNAME_PASSWORD_MISSING) {
+            throw new Error("Username or password is missing!");
+        } else {
+            throw new Error("Username or password is incorrect!");
+        }
     });
+
+    return username;
 
 }
 
-export { loginWithUsername, loginWithToken, signUp };
+async function logout():Promise<any> {
+    const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+    const username = window.localStorage.getItem(LOCAL_STORAGE_USERNAME_KEY);
+
+    const body = {
+        username : username,
+        token : token
+    };
+    
+    const resp =  await axios.post(URL_USER_LOGOUT, body).catch((err) => {
+        console.log("Response login with token :", err);
+        if (err.response.status === UNAME_PASSWORD_MISSING) {
+            throw new Error("Username or password is missing!");
+        } else {
+            throw new Error("Username or password is incorrect!");
+        }
+    });
+
+
+    window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+    window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
+
+    return resp;
+
+}
+
+export { loginWithUsername, loginWithToken, signUp, logout };

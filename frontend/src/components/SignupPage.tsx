@@ -9,14 +9,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { SetStateAction, useContext, useState } from "react";
-import axios from "axios";
-import { URL_USER_SIGNUP } from "../configs";
-import { STATUS_CODE_CONFLICT, STATUS_CODE_CREATED } from "../constants";
+import { SetStateAction, useState } from "react";
 import { Link } from "react-router-dom";
 import React from "react";
 import { useAuth, useUser } from "../context/UserContext";
-import { User } from "../@types/UserContext";
 
 function SignupPage() {
   const [username, setUsername] = useState("");
@@ -31,33 +27,17 @@ function SignupPage() {
 
   const handleSignup = async () => {
 
-    setIsSignupSuccess(false);
-    // const res = await axios
-    //   .post(URL_USER_SIGNUP, { username, password })
-      // .catch((err) => {
-      //   if (err.response.status === STATUS_CODE_CONFLICT) {
-      //     setErrorDialog("This username already exists");
-      //   } else {
-      //     setErrorDialog("Please try again later");
-      //   }
-    //   });
-    // if (res && res.status === STATUS_CODE_CREATED) {
-    //   setSuccessDialog("Account successfully created");
-    //   console.log("Resp : " + res);
-    //   // const user: User = { username: res.username, token: res.token };
-    //   //setUser(user);
-    //   setIsSignupSuccess(true);
-    // }
-
-    await authClient.signup(username, password);
-
-    if (authClient.response) {
-      console.log(authClient.response);
-      setErrorDialog(authClient.response);
-    } else {
-      setSuccessDialog("Account successfully created");
+    try {
+      await authClient.signup(username, password);
       setIsSignupSuccess(true);
+      setSuccessDialog("Account successfully created");
+    } catch (error) {
+      let message = 'Unknown Error'
+      if (error instanceof Error) message = error.message
+      setErrorDialog(message);
     }
+
+    
     
   };
 

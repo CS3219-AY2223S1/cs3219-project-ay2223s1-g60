@@ -10,12 +10,10 @@ import {
     Typography
 } from "@mui/material";
 import { SetStateAction, useState, useEffect } from "react";
-import axios from "axios";
-import { STATUS_CODE_CONFLICT, STATUS_CODE_CREATED } from "../constants";
 import { Link } from "react-router-dom";
 import React from "react";
-import { loginWithUsername, loginWithToken } from "../utils/auth-client";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/UserContext";
 
 
 function LoginPage() {
@@ -26,38 +24,34 @@ function LoginPage() {
     const [dialogMsg, setDialogMsg] = useState("")
     const [isLoginSuccess, setIsLoginSuccess] = useState(false)
     const navigate = useNavigate();
+    const authClient = useAuth();
+
     useEffect(() => {
-
         const login = async () => {
-            const resp = await loginWithToken();
-
-            console.log(await resp.json())
-
-            if (resp.status == 201) {
-                navigate("/home");
-            }
+            await authClient.loginWithToken();
         }
 
-        login();
-        setIsLoginSuccess(false)
+        try {   
+            login();
+            navigate("/home");
+        } catch (error) {
+            
+        }
+
     }, [])
     
-
     const handleLogin = async () => {
-        const res = await loginWithUsername(username, password);
-
-        if (res.status == STATUS_CODE_CREATED) {
-            navigate("/home")
-        }
+        try {
+            await authClient.loginWithUname(username, password);
+            navigate("/home");
+          } catch (error) {
+            let message = 'Unknown Error'
+            if (error instanceof Error) message = error.message
+            setErrorDialog(message);
+          }
     }
 
     const closeDialog = () => setIsDialogOpen(false)
-
-    const setSuccessDialog = (msg: SetStateAction<string>) => {
-        setIsDialogOpen(true)
-        setDialogTitle('Success')
-        setDialogMsg(msg)
-    }
 
     const setErrorDialog = (msg: SetStateAction<string>) => {
         setIsDialogOpen(true)
