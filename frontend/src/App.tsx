@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import SignupPage from './components/SignupPage';
 import MatchingPage from './components/MatchingPage';
-import RoomPage from './components/RoomPage';
+import RoomPage from './views/RoomPage';
 import { Box } from '@mui/material';
 import React from 'react';
 
