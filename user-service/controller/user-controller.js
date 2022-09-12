@@ -4,6 +4,9 @@ import {
   ormGetToken as _getToken,
   ormGetUser as _getUser,
   ormAddTokenToUser as _addToken,
+  ormChangePassword as _changePassword,
+  ormChangeUsername as _changeUsername,
+  ormDeleteUser as _deleteUser,
 } from "../model/user-orm.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -21,16 +24,15 @@ export async function createUser(req, res) {
       const resp = await _createUser(username, hashedPassword);
       console.log("response controller: ");
       console.log(resp);
-      if (resp.err.name === "MongoServerError" && resp.err.code === 11000) {
-        return res.status(402).json({ message: "Duplicate user!" });
-      }
 
       if (resp.err) {
-        console.log("ERRORRR");
-        console.log(resp.err);
-        // if (resp.err === 402) {
-        //   return res.status(402).json({ message: "Existing user found" });
-        // } else {
+        if (
+          resp.err.name &&
+          resp.err.name === "MongoServerError" &&
+          resp.err.code === 11000
+        ) {
+          return res.status(402).json({ message: "Duplicate user!" });
+        }
         return res
           .status(400)
           .json({ message: "Could not create a new user!" });
@@ -72,6 +74,83 @@ export async function signIn(req, res) {
           username: username,
           token: token,
         });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Username and/or Password are missing!" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Could not found user" });
+  }
+}
+
+export async function changePassword(req, res) {
+  try {
+    const { username, oldPassword, newPassword } = req.body;
+    if (username && oldPassword && newPassword) {
+      let saltRounds = parseInt(process.env.SALT_ROUNDS);
+      const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+      const updated = await _changePassword(
+        username,
+        oldPassword,
+        hashedNewPassword
+      );
+      if (updated) {
+        return res
+          .status(200)
+          .json({ message: "Successfully changed password." });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Wrong username and/or password!" });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Username and/or Passwords are missing!" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Could not found user" });
+  }
+}
+
+export async function changeUsername(req, res) {
+  try {
+    const { username, newUsername, password } = req.body;
+    if (username && newUsername && password) {
+      const updated = await _changeUsername(username, newUsername, password);
+      console.log("Controller: " + JSON.stringify(updated));
+      if (updated.err) {
+        return res
+          .status(400)
+          .json({ message: "Wrong username and/or password!" });
+      } else if (updated) {
+        return res
+          .status(200)
+          .json({ message: "Successfully changed username." });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Username and/or Password are missing!" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Could not found user" });
+  }
+}
+
+export async function deleteUser(req, res) {
+  // TODO : CHECK BEARER TOKEN (AUTHORIZATION)
+  try {
+    const { username, password } = req.body;
+    if (username && password) {
+      const isDeleted = await _deleteUser(username, password);
+      console.log("Controller: " + JSON.stringify(isDeleted));
+      if (!isDeleted) {
+        return res.status(400).json({ message: "User does not exist!" });
+      } else if (isDeleted) {
+        return res.status(200).json({ message: "Successfully deleted user." });
       }
     } else {
       return res
