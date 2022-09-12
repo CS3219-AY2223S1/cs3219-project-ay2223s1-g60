@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
+import LoadingModal from './loading/LoadingModal';
 
 function MatchingPage() {
   const [loading, setLoading] = useState(false);
@@ -7,6 +8,14 @@ function MatchingPage() {
 
   return (
     <div className='matching-page'>
+      {loading && (
+        <LoadingModal
+          open={loading}
+          closeModal={() => setLoading(false)}
+          userId={2} // TODO: Obtain username
+          difficulty={difficulty}
+        />
+      )}
       <Box display={'flex'} flexDirection={'column'} width={'30%'}>
         <Typography variant={'h3'} marginBottom={'2rem'}>
           Difficulty Setting
