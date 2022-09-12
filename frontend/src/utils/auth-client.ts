@@ -1,7 +1,30 @@
-import { URL_USER_LOGIN, URL_USER_LOGOUT, URL_USER_LOGIN_WITH_TOKEN } from "../configs";
+import { URL_USER_SIGNUP, URL_USER_LOGIN, URL_USER_LOGOUT, URL_USER_LOGIN_WITH_TOKEN } from "../configs";
+import { STATUS_CODE_CONFLICT, STATUS_CODE_CREATED } from "../constants";
+
+import axios from "axios";
 
 const LOCAL_STORAGE_TOKEN_KEY = "token";
 const LOCAL_STORAGE_USERNAME_KEY = "username";
+
+async function signUp(username:string, password:string):Promise<any> {
+
+    const body = {
+        username : username,
+        password : password
+    };
+
+    const resp =  await axios.post(URL_USER_SIGNUP, body).catch((err) => {
+        console.log("Error catched", err);
+        if (err.response.status === STATUS_CODE_CONFLICT) {
+            throw new Error("This username already exists");
+        } else {
+            throw new Error("Please try again later");
+        }
+    });
+    
+    return resp;
+
+}
 
 async function loginWithUsername(username:string, password:string):Promise<any> {
 
@@ -54,4 +77,4 @@ async function loginWithToken():Promise<any> {
 
 }
 
-export { loginWithUsername, loginWithToken };
+export { loginWithUsername, loginWithToken, signUp };

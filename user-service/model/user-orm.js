@@ -6,13 +6,31 @@ import {
   getUser,
 } from "./repository.js";
 import "dotenv/config";
+import mongooseErrorHandler from "mongoose-validation-error-message-handler";
 
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function ormCreateUser(username, hashedPassword) {
   try {
     const newUser = await createUser({ username, hashedPassword });
-    newUser.save();
-    return true;
+
+    let res = true;
+    await newUser.save((err) => {
+      if (err) {
+        if (err.name === "MongoServerError" && err.code === 11000) {
+          console.log("ORM1 error : ", JSON.stringify(err));
+          const error = mongooseErrorHandler(err, {
+            messages: {
+              string: 'Duplicate username! GBLK'
+            }
+          });
+          console.log("ORM2 error : ", error);
+          return err;
+        }
+      } else {
+        return true;
+      }
+    });
+    return res;
   } catch (err) {
     console.log("ERROR: Could not create new user");
     return { err };
