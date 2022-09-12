@@ -8,12 +8,15 @@ app.use(express.json());
 app.use(cors()); // config cors so that front-end can use
 app.options("*", cors());
 import {
-  createUser,
-  signIn,
+  changePassword,
+  changeUsername,
   connectToRedis,
+  createUser,
+  deleteUser,
+  isTokenInBlacklist,
   logout,
   loginWithToken,
-  isTokenInBlacklist,
+  signIn,
 } from "./controller/user-controller.js";
 
 const router = express.Router();
@@ -26,6 +29,10 @@ router.post("/signup", createUser);
 router.post("/logout", logout);
 router.post("/loginWithToken", loginWithToken);
 router.post("/login", signIn);
+router.post("/change-password", changePassword);
+router.post("/change-username", changeUsername);
+
+router.delete("/delete-user", deleteUser);
 
 app.use("/api/user", router).all((_, res) => {
   res.setHeader("content-type", "application/json");
