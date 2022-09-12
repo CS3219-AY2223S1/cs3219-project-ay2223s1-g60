@@ -19,11 +19,22 @@ export async function createUser(req, res) {
     if (username && password) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       const resp = await _createUser(username, hashedPassword);
-      console.log("response: " + resp);
+      console.log("response controller: ");
+      console.log(resp);
+      if (resp.err.name === "MongoServerError" && resp.err.code === 11000) {
+        return res.status(402).json({ message: "Duplicate user!" });
+      }
+
       if (resp.err) {
+        console.log("ERRORRR");
+        console.log(resp.err);
+        // if (resp.err === 402) {
+        //   return res.status(402).json({ message: "Existing user found" });
+        // } else {
         return res
           .status(400)
           .json({ message: "Could not create a new user!" });
+        // }
       } else {
         console.log(`Created new user ${username} successfully!`);
         return res
@@ -58,7 +69,7 @@ export async function signIn(req, res) {
         const updated = await _addToken(username, token);
 
         return res.status(200).json({
-          username: username, 
+          username: username,
           token: token,
         });
       }
@@ -123,10 +134,10 @@ export async function loginWithToken(req, res) {
                 token,
                 process.env.JWT_PRIVATE_KEY,
                 function (err, decodedFromUser) {
-                  console.log(decodedFromDb)
-                  console.log("db password : ", decodedFromDb.hashedPassword)
-                  console.log("Username : ", decodedFromUser.username)
-                  console.log("password : ", decodedFromUser.hashedPassword)
+                  console.log(decodedFromDb);
+                  console.log("db password : ", decodedFromDb.hashedPassword);
+                  console.log("Username : ", decodedFromUser.username);
+                  console.log("password : ", decodedFromUser.hashedPassword);
                   if (
                     decodedFromDb.username === decodedFromUser.username &&
                     decodedFromDb.hashedPassword ===

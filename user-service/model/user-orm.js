@@ -14,7 +14,6 @@ export async function ormCreateUser(username, hashedPassword) {
     newUser.save();
     return true;
   } catch (err) {
-    console.log("ERROR: Could not create new user");
     return { err };
   }
 }
