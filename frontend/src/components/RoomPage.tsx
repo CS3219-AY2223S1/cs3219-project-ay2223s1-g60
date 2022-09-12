@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -7,19 +7,36 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { io } from 'socket.io-client';
+import { ChatModel } from './chat-model';
 
 function RoomPage() {
   const [codingQuestion, setCodingQuestion] = useState('Lorem Ipsum');
-  const [chats, setChats] = useState<string[]>([]);
+  const [chats, setChats] = useState<ChatModel[]>([]);
   const [message, setMessage] = useState('');
 
   const codeEditorPlaceholder = '/* Insert your code here */';
   const chatPlaceholder = 'Type your message here';
 
-  const sendMessage = () => {
-    setChats([...chats, message]);
+  const socket = io('http://localhost:8001');
+
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    socket.emit('message', {
+      text: message,
+      name: 'User ID', // TODO: replace with actual user id
+      id: `${socket.id}${Math.random()}`,
+      socketId: socket.id,
+    });
     setMessage('');
   };
+
+  useEffect(() => {
+    socket.on('messageResponse', (data) => {
+      console.log(data);
+      setChats([...chats, data]);
+    });
+  }, [socket, chats]);
 
   const Message = (msg: string) => (
     <Box
@@ -60,20 +77,24 @@ function RoomPage() {
         <Stack spacing={2}>
           <Typography variant={'h3'}>Chat</Typography>
           <Container>
-            <Stack spacing={1}>{chats.map((chat, i) => Message(chat))}</Stack>
+            <Stack spacing={1}>
+              {chats.map((chat, i) => Message(chat.text))}
+            </Stack>
           </Container>
-          <Stack direction={'row'}>
-            <TextField
-              placeholder={chatPlaceholder}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              sx={{ width: '100%' }}
-            ></TextField>
-            <Button variant={'contained'} onClick={sendMessage}>
-              Send
-            </Button>
-          </Stack>
+          <form onSubmit={handleSendMessage}>
+            <Stack direction={'row'}>
+              <TextField
+                placeholder={chatPlaceholder}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter'}
+                sx={{ width: '100%' }}
+              ></TextField>
+              <Button variant={'contained'} type='submit'>
+                Send
+              </Button>
+            </Stack>
+          </form>
         </Stack>
       </Box>
     </div>
