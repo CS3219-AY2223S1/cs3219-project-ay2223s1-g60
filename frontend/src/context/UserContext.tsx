@@ -14,6 +14,8 @@ const UserContext = createContext({
   signup: (username: string, password: string) => {},
   loginWithToken: () => {},
   logout: () => {},
+  changeUsername:(username:string, newUsername:string, password:string) => {},
+  deleteUser:() => {}
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -24,9 +26,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const signup = (username:string, password:string) => authClient.signUp(username, password);
   const loginWithToken = () => authClient.loginWithToken().then((resp) => setUser({username : resp}));
   const logout = () => authClient.logout().then((resp) => setUser({username : ""}));
+  const changeUsername = (username:string, newUsername:string, password:string) => authClient.changeUsername(username, newUsername, password).then((newUsername) => setUser({username : newUsername}));
+  const deleteUser = () => authClient.deleteUser().then((res) => setUser({username : ""}));
 
   return (
-    <UserContext.Provider value={{ user, loginWithUname, setUser, signup, response, loginWithToken, logout }}>
+    <UserContext.Provider value={{ user, loginWithUname, setUser, signup, response, loginWithToken, logout, changeUsername, deleteUser }}>
       {children}
     </UserContext.Provider>
   );

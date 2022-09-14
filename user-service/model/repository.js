@@ -72,9 +72,9 @@ export async function addTokenToUser(params) {
 }
 
 // DELETE FUNCTION
-export async function deleteUser(username, password) {
+export async function deleteUser(username) {
   const user = await UserModel.findOne({ username: username });
-  if (user && user.comparePassword(password)) {
+  if (user) {
     const deleted = await UserModel.deleteOne({ username: username });
     console.log(deleted);
     return deleted.acknowledged;

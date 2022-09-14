@@ -5,7 +5,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useUser } from "../../context/UserContext";
+import { useUser, useAuth } from "../../context/UserContext";
 import {
   URL_USER_CHANGE_USERNAME,
   LOCAL_STORAGE_USERNAME_KEY,
@@ -14,8 +14,8 @@ import axios from "axios";
 
 export default function ChangeUsernameDialog({ isOpen }: { isOpen: boolean }) {
   const user = useUser();
-
-  const [open, setOpen] = React.useState(false);
+  const authClient = useAuth();
+  const [open, setOpen] = React.useState(isOpen);
   const [username, setUsername] = React.useState("");
   const [newUsername, setNewUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -27,33 +27,22 @@ export default function ChangeUsernameDialog({ isOpen }: { isOpen: boolean }) {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const changeUsername = async (newUsername: string, password: string) => {
-    const body = {
-      username: user.username,
-      newUsername: newUsername,
-      password: password,
-    };
-
-    const resp = await axios
-      .post(URL_USER_CHANGE_USERNAME, body)
-      .catch((err) => {
-        if (err.response) {
-          throw new Error("Change password failed");
-        }
-      });
-
-    window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, newUsername);
-    handleClose();
-  };
-
+  
+  const handleSubmit = async () => {
+    try {
+      await authClient.changeUsername(username, newUsername, password);
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+  }
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
         Open form dialog
-      </Button>
+      </Button> */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Change Password</DialogTitle>
+        <DialogTitle>Change Username</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -88,7 +77,7 @@ export default function ChangeUsernameDialog({ isOpen }: { isOpen: boolean }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={() => changeUsername(newUsername, password)}>
+          <Button onClick={handleSubmit}>
             Apply
           </Button>
         </DialogActions>

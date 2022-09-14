@@ -5,6 +5,9 @@ import {
   URL_USER_LOGIN_WITH_TOKEN,
   LOCAL_STORAGE_TOKEN_KEY,
   LOCAL_STORAGE_USERNAME_KEY,
+  URL_USER_DELETE_USER,
+  URL_USER_CHANGE_USERNAME,
+  URL_USER_CHANGE_PASSWORD
 } from "../configs";
 import {
   STATUS_CODE_CONFLICT,
@@ -75,8 +78,8 @@ async function loginWithToken(): Promise<any> {
   const resp = await axios
     .post(URL_USER_LOGIN_WITH_TOKEN, body, { headers: headers })
     .catch((err) => {
-      if (err.response.status === UNAME_PASSWORD_MISSING) {
-        throw new Error("Username or password is missing!");
+      if (err.response.status === 400) {
+        throw new Error("Your token is invalid");
       } else {
         throw new Error("Username or password is incorrect!");
       }
@@ -102,11 +105,73 @@ async function logout(): Promise<any> {
       throw new Error("Username or password is incorrect!");
     }
   });
-
+  
   window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
   window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
 
   return resp;
 }
 
-export { loginWithUsername, loginWithToken, signUp, logout };
+const changeUsername = async (username:string, newUsername: string, password: string) => {
+  const body = {
+    username: username,
+    newUsername: newUsername,
+    password: password,
+  };
+
+  const resp = await axios
+    .post(URL_USER_CHANGE_USERNAME, body)
+    .catch((err) => {
+      if (err.response) {
+        throw new Error("Change password failed");
+      }
+    });
+
+  window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, newUsername);
+  return newUsername;
+};
+
+const changePassword = async (
+  username: string,
+  currentPassword: string,
+  newPassword: string
+) => {
+  const body = {
+    username: username,
+    newPassword: newPassword,
+    oldPassword: currentPassword,
+  };
+
+  const resp = await axios
+    .post(URL_USER_CHANGE_PASSWORD, body)
+    .catch((err) => {
+      if (err.response) {
+        throw new Error("Change password failed");
+      }
+    });
+};
+
+async function deleteUser(): Promise<any> {
+  const username = window.localStorage.getItem(LOCAL_STORAGE_USERNAME_KEY);
+
+  const body = {
+    username: username,
+  };
+
+  const resp = await axios
+    .delete(URL_USER_DELETE_USER, { data: body })
+    .catch((err) => {
+      if (err.response) {
+        throw new Error("Logout failed");
+      } else {
+        console.log(resp);
+      }
+    });
+
+  window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
+  window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+  // await logout();
+  return resp;
+}
+
+export { loginWithUsername, loginWithToken, signUp, logout, deleteUser, changeUsername, changePassword };

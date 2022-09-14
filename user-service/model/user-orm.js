@@ -100,7 +100,8 @@ export async function ormDeleteToken(username, token) {
   }
 }
 
-export async function ormDeleteUser(username, password) {
-  const isDeleted = await deleteUser(username, password);
+// TODO : Accept token
+export async function ormDeleteUser(username) {
+  const isDeleted = await deleteUser(username);
   return isDeleted;
 }

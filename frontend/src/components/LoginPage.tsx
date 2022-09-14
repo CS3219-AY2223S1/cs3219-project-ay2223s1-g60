@@ -28,15 +28,15 @@ function LoginPage() {
 
     useEffect(() => {
         const login = async () => {
-            await authClient.loginWithToken();
+            try {
+                await authClient.loginWithToken();
+                navigate("/home");
+            } catch (error) {
+                console.log("login " , error)
+            }
         }
 
-        try {   
-            login();
-            navigate("/home");
-        } catch (error) {
-            
-        }
+        login();
 
     }, [])
     

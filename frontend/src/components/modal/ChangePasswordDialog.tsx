@@ -5,12 +5,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useUser } from "../../context/UserContext";
 import { URL_USER_CHANGE_PASSWORD } from "../../configs";
 import axios from "axios";
+import { changePassword } from "../../utils/auth-client";
 
 export default function ChangePasswordDialog({ isOpen }: { isOpen: boolean }) {
-  const user = useUser();
 
   const [open, setOpen] = React.useState(isOpen);
   const [username, setUsername] = React.useState("");
@@ -18,6 +17,7 @@ export default function ChangePasswordDialog({ isOpen }: { isOpen: boolean }) {
   const [newPassword, setNewPassword] = React.useState("");
 
   const handleClickOpen = () => {
+    console.log("opened :", isOpen);
     setOpen(true);
   };
 
@@ -25,33 +25,20 @@ export default function ChangePasswordDialog({ isOpen }: { isOpen: boolean }) {
     setOpen(false);
   };
 
-  const changePassword = async (
-    currentPassword: string,
-    newPassword: string
-  ) => {
-    const body = {
-      username: user.username,
-      newPassword: newPassword,
-      oldPassword: currentPassword,
-    };
-
-    const resp = await axios
-      .post(URL_USER_CHANGE_PASSWORD, body)
-      .catch((err) => {
-        if (err.response) {
-          throw new Error("Change username failed");
-        }
-      });
-
-    handleClose();
-    return resp;
-  };
+  const handleSubmit = async () => {
+    try {
+      await changePassword(username, currentPassword, newPassword);
+      handleClose();
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
         Open form dialog
-      </Button>
+      </Button> */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
@@ -88,7 +75,7 @@ export default function ChangePasswordDialog({ isOpen }: { isOpen: boolean }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={() => changePassword(newPassword, currentPassword)}>
+          <Button onClick={handleSubmit}>
             Apply
           </Button>
         </DialogActions>

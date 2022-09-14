@@ -111,6 +111,8 @@ export async function changePassword(req, res) {
 }
 
 export async function changeUsername(req, res) {
+  // Todo: Check token in header
+  // Todo: handle existing username
   try {
     const { username, newUsername, password } = req.body;
     if (username && newUsername && password) {
@@ -137,10 +139,11 @@ export async function changeUsername(req, res) {
 
 export async function deleteUser(req, res) {
   // TODO : CHECK BEARER TOKEN (AUTHORIZATION)
+  // TODO : Token in req.body
   try {
-    const { username, password } = req.body;
-    if (username && password) {
-      const isDeleted = await _deleteUser(username, password);
+    const { username } = req.body;
+    if (username) {
+      const isDeleted = await _deleteUser(username);
       console.log("Controller: " + JSON.stringify(isDeleted));
       if (!isDeleted) {
         return res.status(400).json({ message: "User does not exist!" });
@@ -150,7 +153,7 @@ export async function deleteUser(req, res) {
     } else {
       return res
         .status(400)
-        .json({ message: "Username and/or Password are missing!" });
+        .json({ message: "Username is missing!" });
     }
   } catch (err) {
     return res.status(500).json({ message: "Could not found user" });
@@ -195,8 +198,6 @@ export async function loginWithToken(req, res) {
       // Invalid token
       return res.status(400).json({ message: "Token is blacklisted" });
     }
-    
-    console.log("username login with token : " , token);
     if (username && token) {
       const resp = await _getToken(username, token);
       if (resp.err) {
@@ -206,6 +207,7 @@ export async function loginWithToken(req, res) {
           process.env.JWT_PRIVATE_KEY,
           function (err, decodedFromDb) {
             try {
+              
               jwt.verify(
                 token,
                 process.env.JWT_PRIVATE_KEY,
@@ -214,8 +216,8 @@ export async function loginWithToken(req, res) {
                     decodedFromDb.username === decodedFromUser.username &&
                     decodedFromDb.hashedPassword ===
                       decodedFromUser.hashedPassword &&
-                    decodedFromDb._id === decodedFromUser._id
-                  ) {
+                      decodedFromDb._id === decodedFromUser._id
+                      ) {
                     return res.status(201).json({
                       message: `Successfully log ${username} in with token!`,
                     }).json({username : username});
