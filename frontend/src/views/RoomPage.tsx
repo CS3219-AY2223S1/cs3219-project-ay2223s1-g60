@@ -12,7 +12,7 @@ function RoomPage() {
     <Stack direction={'row'} spacing={8} alignItems={'stretch'}>
       <Stack flex={1}>
         <CodingQuestion />
-        <CodeEditor />
+        <CodeEditor socket={socket} />
       </Stack>
       <ChatBox socket={socket} />
     </Stack>
