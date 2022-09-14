@@ -54,28 +54,33 @@ function ChatBox(props: ChatBoxProps) {
   }, [socket, chats]);
 
   return (
-    <Box display={'flex'} flexDirection={'column'} padding={'4rem'}>
-      <Stack spacing={2}>
-        <Typography variant={'h3'}>Chat</Typography>
-        <Container>
-          <Stack spacing={1}>{chats.map((chat, i) => Message(chat))}</Stack>
-        </Container>
-        <form onSubmit={handleSendMessage}>
-          <Stack direction={'row'}>
-            <TextField
-              placeholder={chatPlaceholder}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter'}
-              sx={{ width: '100%' }}
-            ></TextField>
-            <Button variant={'contained'} type='submit'>
-              Send
-            </Button>
-          </Stack>
-        </form>
-      </Stack>
-    </Box>
+    <Stack
+      spacing={2}
+      paddingBottom={'2rem'}
+      sx={{ position: 'sticky', minWidth: '20%' }}
+    >
+      <Typography variant={'h3'}>Chat</Typography>
+      <Container>
+        {chats.length === 0 && (
+          <Typography>View your messages here...</Typography>
+        )}
+        <Stack spacing={1}>{chats.map((chat, i) => Message(chat))}</Stack>
+      </Container>
+      <form onSubmit={handleSendMessage}>
+        <Stack direction={'row'} sx={{ position: 'absolute', bottom: 0 }}>
+          <TextField
+            placeholder={chatPlaceholder}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter'}
+            fullWidth={true}
+          ></TextField>
+          <Button variant={'contained'} type='submit'>
+            Send
+          </Button>
+        </Stack>
+      </form>
+    </Stack>
   );
 }
 
