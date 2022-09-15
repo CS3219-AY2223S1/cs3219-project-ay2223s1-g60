@@ -28,10 +28,15 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
         // Server notifies client that a match is found
         socket.on("found-match", () => {
             console.log("found match!");
-            clearTimeout(startCountDown());
-            socket.disconnect();
-            closeModal();
-            //TODO: redirect to room page
+
+            socket.on("room", (roomId) => {
+                console.log(roomId);
+                clearTimeout(startCountDown());
+                socket.disconnect();
+                closeModal();
+
+                //TODO: redirect to room page
+            })
         })
     });
 
