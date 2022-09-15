@@ -22,7 +22,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "lint": "npx eslint .",
-    "prepare": "husky install"
+    "prepare": "cd .. && husky install frontend/.config/husky"
   },
   "eslintConfig": {
     "extends": [
