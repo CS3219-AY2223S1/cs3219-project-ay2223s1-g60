@@ -8,14 +8,12 @@ import {
   Typography,
 } from '@mui/material';
 import { ChatModel } from './chat-model';
-import { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
+import { URL_COMMUNICATION_SVC } from '../../configs';
 
-type ChatBoxProps = {
-  socket: Socket;
-};
+function ChatBox() {
+  const socket = io(URL_COMMUNICATION_SVC);
 
-function ChatBox(props: ChatBoxProps) {
-  const { socket } = props;
   const [chats, setChats] = useState<ChatModel[]>([]);
   const [message, setMessage] = useState('');
 

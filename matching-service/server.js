@@ -51,14 +51,6 @@ io.on('connection', (socket) => {
     console.log(rooms);
   });
 
-  socket.on('message', (data) => {
-    io.emit('messageResponse', data);
-  });
-
-  socket.on('typedCode', (data) => {
-    io.emit('typedCode', data);
-  });
-
   socket.on('disconnect', () => {
     let toDelete = rooms.findIndex((room) => {
       return room.socketId === socket.id;

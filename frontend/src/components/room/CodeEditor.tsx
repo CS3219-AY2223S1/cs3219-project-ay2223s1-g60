@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
-import { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
+import { URL_COLLABORATION_SVC } from '../../configs';
 
-type CodeEditorProps = {
-  socket: Socket;
-};
-
-function CodeEditor(props: CodeEditorProps) {
-  const { socket } = props;
+function CodeEditor() {
+  const socket = io(URL_COLLABORATION_SVC);
 
   const [typedCode, setTypedCode] = useState('');
 
@@ -33,18 +30,17 @@ function CodeEditor(props: CodeEditorProps) {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTypedCode(e.target.value);
     socket.emit('typedCode', {
       text: e.target.value,
       socketId: socket.id,
     });
-    setTypedCode(e.target.value);
   };
 
   useEffect(() => {
     socket.on('typedCode', (data: { text: string; socketId: string }) => {
       if (data.socketId === socket.id) return;
-      console.log(data.text);
       setTypedCode(data.text);
     });
   }, [socket, typedCode]);
