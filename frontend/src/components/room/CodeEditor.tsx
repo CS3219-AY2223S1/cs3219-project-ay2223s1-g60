@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
-import { io } from 'socket.io-client';
-import { URL_COLLABORATION_SVC } from '../../configs';
+import { Socket } from 'socket.io-client';
 
-function CodeEditor() {
-  const socket = io(URL_COLLABORATION_SVC);
-
+function CodeEditor(props: { socket: Socket }) {
+  const { socket } = props;
   const [typedCode, setTypedCode] = useState('');
 
   const codeEditorPlaceholder = '/* Insert your code here */';

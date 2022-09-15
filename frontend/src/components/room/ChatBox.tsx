@@ -8,12 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { ChatModel } from './chat-model';
-import { io } from 'socket.io-client';
-import { URL_COMMUNICATION_SVC } from '../../configs';
+import { Socket } from 'socket.io-client';
 
-function ChatBox() {
-  const socket = io(URL_COMMUNICATION_SVC);
-
+function ChatBox(props: { socket: Socket }) {
+  const { socket } = props;
   const [chats, setChats] = useState<ChatModel[]>([]);
   const [message, setMessage] = useState('');
 
@@ -33,14 +31,24 @@ function ChatBox() {
   const Message = (chat: ChatModel) => (
     <Box
       sx={{
-        backgroundColor: 'primary.main',
+        backgroundColor: `${
+          chat.socketId === socket.id ? 'primary.main' : 'secondary.main'
+        }`,
         borderRadius: '16px',
         width: 'fit-content',
+        display: 'flex',
+        alignSelf: `${chat.socketId === socket.id ? 'flex-end' : 'flex-start'}`,
       }}
       paddingX={'1rem'}
       paddingY={'0.5rem'}
     >
-      <Typography>{chat.text}</Typography>
+      <Typography
+        sx={{
+          textAlign: `${chat.socketId === socket.id ? 'right' : 'left'}`,
+        }}
+      >
+        {chat.text}
+      </Typography>
     </Box>
   );
 
@@ -55,14 +63,16 @@ function ChatBox() {
     <Stack
       spacing={2}
       paddingBottom={'2rem'}
-      sx={{ position: 'sticky', minWidth: '20%' }}
+      sx={{ position: 'sticky', width: '40%' }}
     >
       <Typography variant={'h3'}>Chat</Typography>
       <Container>
         {chats.length === 0 && (
           <Typography>View your messages here...</Typography>
         )}
-        <Stack spacing={1}>{chats.map((chat, i) => Message(chat))}</Stack>
+        <Stack spacing={1} display={'flex'}>
+          {chats.map((chat, i) => Message(chat))}
+        </Stack>
       </Container>
       <form onSubmit={handleSendMessage}>
         <Stack direction={'row'} sx={{ position: 'absolute', bottom: 0 }}>
