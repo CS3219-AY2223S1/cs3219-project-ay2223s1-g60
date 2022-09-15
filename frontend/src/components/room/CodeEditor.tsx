@@ -13,21 +13,23 @@ function CodeEditor(props: CodeEditorProps) {
 
   const codeEditorPlaceholder = '/* Insert your code here */';
 
-  const handleTyping = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleTyping = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Tab') {
       e.preventDefault();
 
-      const { value } = e.target;
+      const target = e.target as HTMLInputElement;
 
-      const startPos = e.target.selectionStart || 0;
-      const endPos = e.target.selectionEnd || 0;
+      const { value } = target;
+
+      const startPos = target.selectionStart || 0;
+      const endPos = target.selectionEnd || 0;
       const tab = '    ';
 
-      e.target.value =
+      target.value =
         value.substring(0, startPos) + tab + value.substring(endPos);
 
-      e.target.selectionStart = startPos + tab.length;
-      e.target.selectionEnd = startPos + tab.length;
+      target.selectionStart = startPos + tab.length;
+      target.selectionEnd = startPos + tab.length;
     }
   };
 
