@@ -1,13 +1,8 @@
 import mongoose from 'mongoose';
 
 var Schema = mongoose.Schema;
-let MatchModelSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  requestId: {
+let RoomModelSchema = new Schema({
+  user1: {
     type: String,
     required: true,
     unique: true,
@@ -16,9 +11,10 @@ let MatchModelSchema = new Schema({
     type: String,
     required: true,
   },
-  matchedUser: {
+  user2: {
     type: String,
     default: null,
+    unique: true,
   },
   sessionInfo: {
     type: Object,
@@ -26,4 +22,4 @@ let MatchModelSchema = new Schema({
   },
 });
 
-export default mongoose.model('MatchModel', MatchModel);
+export default mongoose.model('RoomModel', RoomModelSchema);

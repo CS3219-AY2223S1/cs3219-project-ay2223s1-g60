@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from "socket.io";
+import { ormCreateRoom as createRoom } from "./model/room-orm.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }))
@@ -30,16 +31,23 @@ io.on("connection", (socket) => {
         })
 
         if (index < 0) {
-            rooms.push({ userId: req.userId, difficulty: req.difficulty, socketId: req.socketId })
+            rooms.push({userId: req.userId, difficulty: req.difficulty, socketId: req.socketId})
         } else {
             io.to(rooms[index].socketId).emit("found-match");
             io.to(req.socketId).emit("found-match");
 
-            // TODO: create room in db
-            // return roomId
-            // emit to both clients
+            // create room using orm
+            createRoom(rooms[index].userId, req.userId, req.difficulty).then((res) => {
+                if (res.error) {
+                    // TODO: handle error for when room creation fails
+                    console.log(res.message);
+                }
 
-            rooms.splice(index, 1);
+                io.to(rooms[index].socketId).emit("room", res.roomId);
+                io.to(req.socketId).emit("room", res.roomId);
+
+                rooms.splice(index, 1);
+            })
         }
 
         console.log(rooms);

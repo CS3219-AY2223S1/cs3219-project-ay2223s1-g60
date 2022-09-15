@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import MatchModel from './match-model.js';
+import RoomModel from "./room-model.js";
 
 //Set up mongoose connection
 import mongoose from 'mongoose';
@@ -15,7 +15,6 @@ let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => console.log('Successfully connected to MongoDB'));
 
-// TODO: Implement function findMatch, etc...
-export async function findMatch(params) {
-  return new MatchModel(params);
+export async function createRoomModel(params) {
+  return new RoomModel(params);
 }
