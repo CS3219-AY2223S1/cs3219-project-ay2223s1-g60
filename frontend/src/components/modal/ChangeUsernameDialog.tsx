@@ -27,7 +27,7 @@ export default function ChangeUsernameDialog({ isOpen }: { isOpen: boolean }) {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const handleSubmit = async () => {
     try {
       await authClient.changeUsername(username, newUsername, password);
@@ -35,7 +35,7 @@ export default function ChangeUsernameDialog({ isOpen }: { isOpen: boolean }) {
     } catch (err) {
       console.log(err);
     }
-  }
+  };
   return (
     <div>
       {/* <Button variant="outlined" onClick={handleClickOpen}>
@@ -77,9 +77,7 @@ export default function ChangeUsernameDialog({ isOpen }: { isOpen: boolean }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>
-            Apply
-          </Button>
+          <Button onClick={handleSubmit}>Apply</Button>
         </DialogActions>
       </Dialog>
     </div>

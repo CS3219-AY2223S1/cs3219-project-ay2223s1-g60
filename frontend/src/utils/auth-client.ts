@@ -7,7 +7,7 @@ import {
   LOCAL_STORAGE_USERNAME_KEY,
   URL_USER_DELETE_USER,
   URL_USER_CHANGE_USERNAME,
-  URL_USER_CHANGE_PASSWORD
+  URL_USER_CHANGE_PASSWORD,
 } from "../configs";
 import {
   STATUS_CODE_CONFLICT,
@@ -105,27 +105,29 @@ async function logout(): Promise<any> {
       throw new Error("Username or password is incorrect!");
     }
   });
-  
+
   window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
   window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
 
   return resp;
 }
 
-const changeUsername = async (username:string, newUsername: string, password: string) => {
+const changeUsername = async (
+  username: string,
+  newUsername: string,
+  password: string
+) => {
   const body = {
     username: username,
     newUsername: newUsername,
     password: password,
   };
 
-  const resp = await axios
-    .post(URL_USER_CHANGE_USERNAME, body)
-    .catch((err) => {
-      if (err.response) {
-        throw new Error("Change password failed");
-      }
-    });
+  const resp = await axios.post(URL_USER_CHANGE_USERNAME, body).catch((err) => {
+    if (err.response) {
+      throw new Error("Change password failed");
+    }
+  });
 
   window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, newUsername);
   return newUsername;
@@ -142,13 +144,11 @@ const changePassword = async (
     oldPassword: currentPassword,
   };
 
-  const resp = await axios
-    .post(URL_USER_CHANGE_PASSWORD, body)
-    .catch((err) => {
-      if (err.response) {
-        throw new Error("Change password failed");
-      }
-    });
+  const resp = await axios.post(URL_USER_CHANGE_PASSWORD, body).catch((err) => {
+    if (err.response) {
+      throw new Error("Change password failed");
+    }
+  });
 };
 
 async function deleteUser(): Promise<any> {
@@ -174,4 +174,12 @@ async function deleteUser(): Promise<any> {
   return resp;
 }
 
-export { loginWithUsername, loginWithToken, signUp, logout, deleteUser, changeUsername, changePassword };
+export {
+  loginWithUsername,
+  loginWithToken,
+  signUp,
+  logout,
+  deleteUser,
+  changeUsername,
+  changePassword,
+};

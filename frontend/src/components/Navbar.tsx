@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useUser, useAuth } from "../context/UserContext";
 import axios from "axios";
 import {
@@ -16,16 +16,18 @@ function Navbar() {
   const user = useUser();
   const navigate = useNavigate();
 
-  const [usernameModalIsOpen, setUsernameModalIsOpen] = useState<boolean>(false);
-  const [passwordModalIsOpen, setPasswordModalIsOpen] = useState<boolean>(false);
+  const [usernameModalIsOpen, setUsernameModalIsOpen] =
+    useState<boolean>(false);
+  const [passwordModalIsOpen, setPasswordModalIsOpen] =
+    useState<boolean>(false);
 
   const toggleOpenUsernameModal = () => {
     setUsernameModalIsOpen(!usernameModalIsOpen);
-  }
-  
+  };
+
   const toggleOpenPasswordModal = () => {
     setPasswordModalIsOpen(!passwordModalIsOpen);
-  }
+  };
 
   const handleLogout = async () => {
     try {
@@ -34,7 +36,7 @@ function Navbar() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleDeleteUser = async () => {
     try {
@@ -43,20 +45,24 @@ function Navbar() {
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   return (
     <div>
       <button>
         <a href="/">PeerPrep</a>
       </button>
-      {usernameModalIsOpen && <ChangeUsernameDialog isOpen={usernameModalIsOpen}/>}
-      {passwordModalIsOpen && <ChangePasswordDialog isOpen={passwordModalIsOpen}/>}
+      {usernameModalIsOpen && (
+        <ChangeUsernameDialog isOpen={usernameModalIsOpen} />
+      )}
+      {passwordModalIsOpen && (
+        <ChangePasswordDialog isOpen={passwordModalIsOpen} />
+      )}
       <button onClick={toggleOpenUsernameModal}>Change username</button>
       <button onClick={toggleOpenPasswordModal}>Change password</button>
       <button onClick={handleDeleteUser}>Delete user</button>
       <button onClick={handleLogout}>Logout</button>
-    </div> 
+    </div>
   );
 }
 

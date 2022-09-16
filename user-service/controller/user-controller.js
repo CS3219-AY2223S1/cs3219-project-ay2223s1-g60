@@ -25,13 +25,16 @@ export async function createUser(req, res) {
       console.log("response controller: ");
       console.log(resp);
       if (resp.err) {
-        if (resp.err.name && resp.err.name === "MongoServerError" && resp.err.code === 11000) {
+        if (
+          resp.err.name &&
+          resp.err.name === "MongoServerError" &&
+          resp.err.code === 11000
+        ) {
           return res.status(409).json({ message: "Duplicate user!" });
         }
         return res
           .status(400)
           .json({ message: "Could not create a new user!" });
-        // }
       } else {
         console.log(`Created new user ${username} successfully!`);
         return res
@@ -44,7 +47,7 @@ export async function createUser(req, res) {
         .json({ message: "Username and/or Password are missing!" });
     }
   } catch (err) {
-    console.log("Here error ", err)
+    console.log("Here error ", err);
     return res
       .status(500)
       .json({ message: "Database failure when creating new user!" });
@@ -151,9 +154,7 @@ export async function deleteUser(req, res) {
         return res.status(200).json({ message: "Successfully deleted user." });
       }
     } else {
-      return res
-        .status(400)
-        .json({ message: "Username is missing!" });
+      return res.status(400).json({ message: "Username is missing!" });
     }
   } catch (err) {
     return res.status(500).json({ message: "Could not found user" });
@@ -192,7 +193,6 @@ export async function loginWithToken(req, res) {
     const { username } = req.body;
     const token = req.headers.authorization.split(" ")[1];
 
-    
     const resp = await isTokenInBlacklist(token);
     if (resp) {
       // Invalid token
@@ -207,7 +207,6 @@ export async function loginWithToken(req, res) {
           process.env.JWT_PRIVATE_KEY,
           function (err, decodedFromDb) {
             try {
-              
               jwt.verify(
                 token,
                 process.env.JWT_PRIVATE_KEY,
@@ -216,11 +215,14 @@ export async function loginWithToken(req, res) {
                     decodedFromDb.username === decodedFromUser.username &&
                     decodedFromDb.hashedPassword ===
                       decodedFromUser.hashedPassword &&
-                      decodedFromDb._id === decodedFromUser._id
-                      ) {
-                    return res.status(201).json({
-                      message: `Successfully log ${username} in with token!`,
-                    }).json({username : username});
+                    decodedFromDb._id === decodedFromUser._id
+                  ) {
+                    return res
+                      .status(201)
+                      .json({
+                        message: `Successfully log ${username} in with token!`,
+                      })
+                      .json({ username: username });
                   } else {
                     return res
                       .status(400)
@@ -282,6 +284,6 @@ export async function insertTokenToBlacklist(token) {
 
 export async function isTokenInBlacklist(token) {
   const inDenyList = await redisClient.get(`bl_${token}`);
-  
+
   return inDenyList;
 }
