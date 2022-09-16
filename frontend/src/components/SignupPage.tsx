@@ -26,19 +26,15 @@ function SignupPage() {
   const user = useUser();
 
   const handleSignup = async () => {
-
     try {
       await authClient.signup(username, password);
       setIsSignupSuccess(true);
       setSuccessDialog("Account successfully created");
     } catch (error) {
-      let message = 'Unknown Error'
-      if (error instanceof Error) message = error.message
+      let message = "Unknown Error";
+      if (error instanceof Error) message = error.message;
       setErrorDialog(message);
     }
-
-    
-    
   };
 
   const closeDialog = () => setIsDialogOpen(false);
@@ -56,7 +52,7 @@ function SignupPage() {
   };
 
   return (
-    <Box display={"flex"} flexDirection={"column"} width={"30%"}>
+    <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
       <Typography variant={"h3"} marginBottom={"2rem"}>
         Sign Up
       </Typography>

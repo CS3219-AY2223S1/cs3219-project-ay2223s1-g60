@@ -15,7 +15,7 @@ function App() {
   return (
     <div className="App">
       <UserProvider>
-        <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
+        <Box sx={{ display: "flex", flexDirection: "column", padding: "4rem" }}>
           <Router>
             <Routes>
               <Route
