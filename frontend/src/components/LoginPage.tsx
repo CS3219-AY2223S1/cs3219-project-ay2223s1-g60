@@ -76,7 +76,13 @@ function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
         sx={{ marginBottom: "2rem" }}
       />
-      <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
+        }}
+      >
         <Button variant={"outlined"} onClick={handleLogin}>
           Login
         </Button>
