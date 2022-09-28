@@ -23,10 +23,6 @@ let QuestionModelSchema = new Schema({
     type: Number,
     required: true,
   },
-  question_type: {
-    type: [{ type: String }],
-    required: false,
-  },
   discussion_urls: {
     type: [{ type: String }],
     required: false,
