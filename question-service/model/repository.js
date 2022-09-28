@@ -18,27 +18,24 @@ db.once("open", () => console.log("Successfully connected to MongoDB"));
 
 export async function getRandomQuestion(params) {
   // Get all questions that is associated to question_type and difficulty
-  let type = params.question_type ? params.question_type : null;
+  console.log("Difficulty: " + params.question_difficulty);
+  console.log("Type: " + params.question_type);
+
   var questions_to_randomize;
-  if (type) {
-    questions_to_randomize = await QuestionTypeModel.findOne(
-      {
-        question_type: type,
-        question_difficulty: params.question_difficulty,
-      },
-      "question_frontend_id"
-    );
+  if (params.question_type) {
+    questions_to_randomize = await QuestionTypeModel.find({
+      question_type: params.question_type,
+      question_difficulty: params.question_difficulty,
+    });
   } else {
-    questions_to_randomize = await QuestionTypeModel.findOne(
-      {
-        question_difficulty: params.question_difficulty,
-      },
-      "question_frontend_id"
-    );
+    questions_to_randomize = await QuestionTypeModel.find({
+      question_difficulty: params.question_difficulty,
+    });
   }
 
   // Randomize id
-  let id = questions_to_randomize.random();
+  let index = Math.floor(Math.random() * questions_to_randomize.length);
+  let id = questions_to_randomize[index].question_frontend_id;
 
   const question = await QuestionModel.findOne({
     question_frontend_id: id,

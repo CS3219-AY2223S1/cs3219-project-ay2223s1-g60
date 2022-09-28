@@ -2,11 +2,13 @@ import { ormGetRandomQuestion as _getRandomQuestion } from "../model/question-or
 
 export async function getRandomQuestion(req, res) {
   try {
-    const { difficulty } = req.body;
-    let type = req.body.type ? req.body.type : null;
+    const { difficulty } = req.query;
+    console.log(req.query);
+    let type = req.query.type ? req.query.type : null;
 
     if (difficulty) {
-      const resp = await _getRandomQuestion(difficulty, type);
+      console.log(typeof difficulty);
+      const resp = await _getRandomQuestion(parseInt(difficulty), type);
       console.log(resp);
       if (resp.err) {
         return res.status(400).json({ message: "Could not get question!" });
