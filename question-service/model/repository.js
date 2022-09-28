@@ -21,14 +21,20 @@ export async function getRandomQuestion(params) {
   let type = params.question_type ? params.question_type : null;
   var questions_to_randomize;
   if (type) {
-    questions_to_randomize = await QuestionTypeModel.findOne({
-      question_type: type,
-      question_difficulty: params.question_difficulty,
-    });
+    questions_to_randomize = await QuestionTypeModel.findOne(
+      {
+        question_type: type,
+        question_difficulty: params.question_difficulty,
+      },
+      "question_frontend_id"
+    );
   } else {
-    questions_to_randomize = await QuestionTypeModel.findOne({
-      question_difficulty: params.question_difficulty,
-    });
+    questions_to_randomize = await QuestionTypeModel.findOne(
+      {
+        question_difficulty: params.question_difficulty,
+      },
+      "question_frontend_id"
+    );
   }
 
   // Randomize id
