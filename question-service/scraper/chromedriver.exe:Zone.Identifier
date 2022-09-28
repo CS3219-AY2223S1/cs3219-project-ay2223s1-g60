@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://github.com/samlsm/cs3219-project-ay2122-2122-s1-g18-1/blob/main/utils/coding-questions-scraper/driver/chromedriver.exe
+HostUrl=https://raw.githubusercontent.com/samlsm/cs3219-project-ay2122-2122-s1-g18-1/main/utils/coding-questions-scraper/driver/chromedriver.exe
