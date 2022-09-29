@@ -9,27 +9,38 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import React from "react";
-import { useAuth, useUser } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/UserContext";
 
-function SignupPage() {
+function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogMsg, setDialogMsg] = useState("");
-  const [isSignupSuccess, setIsSignupSuccess] = useState(false);
-
+  const [isLoginSuccess, setIsLoginSuccess] = useState(false);
+  const navigate = useNavigate();
   const authClient = useAuth();
-  const user = useUser();
 
-  const handleSignup = async () => {
+  useEffect(() => {
+    const login = async () => {
+      try {
+        await authClient.loginWithToken();
+        navigate("/home");
+      } catch (error) {
+        console.log("login ", error);
+      }
+    };
+    login();
+  }, []);
+
+  const handleLogin = async () => {
     try {
-      await authClient.signup(username, password);
-      setIsSignupSuccess(true);
-      setSuccessDialog("Account successfully created");
+      await authClient.loginWithUname(username, password);
+      navigate("/home");
     } catch (error) {
       let message = "Unknown Error";
       if (error instanceof Error) message = error.message;
@@ -38,12 +49,6 @@ function SignupPage() {
   };
 
   const closeDialog = () => setIsDialogOpen(false);
-
-  const setSuccessDialog = (msg: SetStateAction<string>) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Success");
-    setDialogMsg(msg);
-  };
 
   const setErrorDialog = (msg: SetStateAction<string>) => {
     setIsDialogOpen(true);
@@ -54,7 +59,7 @@ function SignupPage() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
       <Typography variant={"h3"} marginBottom={"2rem"}>
-        Sign Up
+        Login
       </Typography>
       <TextField
         label="Username"
@@ -73,8 +78,8 @@ function SignupPage() {
         sx={{ marginBottom: "2rem" }}
       />
       <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
-        <Button variant={"outlined"} onClick={handleSignup}>
-          Sign up
+        <Button variant={"outlined"} onClick={handleLogin}>
+          Login
         </Button>
       </Box>
 
@@ -84,8 +89,8 @@ function SignupPage() {
           <DialogContentText>{dialogMsg}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          {isSignupSuccess ? (
-            <Button component={Link} to="/login">
+          {isLoginSuccess ? (
+            <Button component={Link} to="/home">
               Log in
             </Button>
           ) : (
@@ -97,4 +102,4 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+export default LoginPage;
