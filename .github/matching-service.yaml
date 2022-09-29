@@ -6,9 +6,9 @@ name: matching-service
 on:
   push:
     # branches: ["main"]
-    paths:
-      - "backend/matching-service/**"
-      # - ".github/workflows/matching-service.yaml"
+    # paths:
+    #   - "backend/matching-service/"
+    # - ".github/workflows/matching-service.yaml"
   # pull_request:
   # branches: ["main"]
 
