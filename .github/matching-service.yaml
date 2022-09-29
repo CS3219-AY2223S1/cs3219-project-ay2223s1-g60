@@ -8,7 +8,7 @@ on:
     # branches: ["main"]
     paths:
       - "backend/matching-service/**"
-      - ".github/workflows/matching-service.yaml"
+      # - ".github/workflows/matching-service.yaml"
   # pull_request:
   # branches: ["main"]
 
@@ -29,5 +29,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       - run: npm ci
+        working-directory: "backend/matching-service"
       - run: npm run build --if-present
+        working-directory: "backend/matching-service"
       - run: npm test
+        working-directory: "backend/matching-service"
