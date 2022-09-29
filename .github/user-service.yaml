@@ -5,12 +5,12 @@ name: user-service
 
 on:
   push:
-    branches: ["main"]
+    # branches: ["main"]
     paths:
       - "backend/user-service/**"
       - ".github/workflows/user-service.yaml"
-  pull_request:
-    branches: ["main"]
+  # pull_request:
+  # branches: ["main"]
 
 jobs:
   build:
