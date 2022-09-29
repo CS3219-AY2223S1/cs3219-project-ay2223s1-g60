@@ -5,13 +5,8 @@ name: frontend
 
 on:
   push:
-    branches: ["matching-ci-cd"]
-  # paths:
-  #   - "backend/matching-service/"
-  # - ".github/workflows/matching-svc.yaml"
   pull_request:
-    branches: ["matching-ci-cd"]
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,5 +35,5 @@ jobs:
         env:
           CI: false
         # working-directory: "backend/matching-service"
-      - run: npm test --passWithNoTests
+      - run: npm test
       # working-directory: "backend/matching-service"

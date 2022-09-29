@@ -5,13 +5,8 @@ name: matching-service
 
 on:
   push:
-    branches: ["matching-ci-cd"]
-  # paths:
-  #   - "backend/matching-service/"
-  # - ".github/workflows/matching-svc.yaml"
   pull_request:
-    branches: ["matching-ci-cd"]
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest
