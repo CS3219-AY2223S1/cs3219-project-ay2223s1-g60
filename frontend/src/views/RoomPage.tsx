@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Stack } from '@mui/material';
-import ChatBox from '../components/room/ChatBox';
+import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
 import { io } from 'socket.io-client';
