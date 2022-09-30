@@ -47,12 +47,6 @@ function CodeEditor(props: { socket: Socket; room: string }) {
     );
   }, [socket, typedCode]);
 
-  useEffect(() => {
-    socket.on('get-room', () =>
-      socket.emit('join-room', { socketId: socket.id, room: room })
-    );
-  }, [socket]);
-
   return (
     <Stack spacing={2}>
       <Typography variant={'h3'} marginBottom={'2rem'}>
