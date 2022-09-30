@@ -17,7 +17,7 @@ function ChatView(props: { socket: Socket }) {
 
   useEffect(() => {
     socket.on('typingMessage', (data: { socketId: string; name: string }) => {
-      if (socket.id != data.socketId) {
+      if (socket.id !== data.socketId) {
         setTypingMessage(`${data.name} is typing`);
       }
     });
@@ -34,7 +34,11 @@ function ChatView(props: { socket: Socket }) {
       )}
       <Stack spacing={1} display={'flex'}>
         {chats.map((chat, i) => (
-          <ChatBubble chat={chat} isSelf={chat.socketId == socket.id} key={i} />
+          <ChatBubble
+            chat={chat}
+            isSelf={chat.socketId === socket.id}
+            key={i}
+          />
         ))}
         {typingMessage.length > 0 && <Typography>{typingMessage}</Typography>}
       </Stack>
