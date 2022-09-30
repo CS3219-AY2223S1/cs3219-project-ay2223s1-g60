@@ -10,8 +10,8 @@ import {
 import { ChatModel } from './chat-model';
 import { Socket } from 'socket.io-client';
 
-function ChatBox(props: { socket: Socket }) {
-  const { socket } = props;
+function ChatBox(props: { socket: Socket; room: string }) {
+  const { socket, room } = props;
   const [chats, setChats] = useState<ChatModel[]>([]);
   const [message, setMessage] = useState('');
 
@@ -24,6 +24,7 @@ function ChatBox(props: { socket: Socket }) {
       name: 'User ID', // TODO: replace with actual user id
       id: `${socket.id}${Math.random()}`,
       socketId: socket.id,
+      room: room,
     });
     setMessage('');
   };

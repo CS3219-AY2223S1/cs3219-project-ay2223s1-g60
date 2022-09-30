@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   Stack,
@@ -6,9 +6,9 @@ import {
   Button,
   CircularProgress,
   DialogTitle,
-} from "@mui/material";
-import { io } from "socket.io-client";
-import { useNavigate } from "react-router-dom";
+} from '@mui/material';
+import { io } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 type LoadingModalProps = {
   open: boolean;
@@ -19,7 +19,7 @@ type LoadingModalProps = {
 
 const LoadingModal: React.FC<LoadingModalProps> = (props) => {
   const { open, closeModal, difficulty, userId } = props;
-  const socket = io("http://localhost:8001");
+  const socket = io('http://localhost:8001');
   const navigate = useNavigate();
 
   // timeout
@@ -29,24 +29,23 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
       closeModal();
     }, 30000);
 
-  socket.on("connect", () => {
+  socket.on('connect', () => {
     console.log(`${socket.id} is trying to connect`);
 
-    socket.emit("find-match", { userId, socketId: socket.id, difficulty });
+    socket.emit('find-match', { userId, socketId: socket.id, difficulty });
     startCountDown();
 
     // Server notifies client that a match is found
-    socket.on("found-match", () => {
-      console.log("found match!");
+    socket.on('found-match', () => {
+      console.log('found match!');
 
-      socket.on("room", (roomId) => {
+      socket.on('join-room', (roomId) => {
         console.log(roomId);
         clearTimeout(startCountDown());
         socket.disconnect();
         closeModal();
-
-        navigate(`/room`);
-        // navigate(`/room/${roomId}`);
+        console.log(`/room?id=${roomId}`);
+        navigate(`/room?id=${roomId}`);
       });
     });
   });
@@ -63,13 +62,13 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
 
       <Box sx={{ width: 400, height: 180 }}>
         <Stack
-          sx={{ height: "100%" }}
-          justifyContent="space-around"
-          alignItems="center"
+          sx={{ height: '100%' }}
+          justifyContent='space-around'
+          alignItems='center'
         >
           <CircularProgress size={60} />
 
-          <Button variant="contained" onClick={cleanUp}>
+          <Button variant='contained' onClick={cleanUp}>
             Cancel
           </Button>
         </Stack>

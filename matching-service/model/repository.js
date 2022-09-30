@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import RoomModel from "./room-model.js";
+import RoomModel from './room-model.js';
 
 //Set up mongoose connection
 import mongoose from 'mongoose';
@@ -17,4 +17,10 @@ db.once('open', () => console.log('Successfully connected to MongoDB'));
 
 export async function createRoomModel(params) {
   return new RoomModel(params);
+}
+
+export async function deleteRoomModel(user) {
+  return db.db
+    .collection('test.roommodels')
+    .deleteOne({ $or: [{ user1: user }, { user2: user }] });
 }

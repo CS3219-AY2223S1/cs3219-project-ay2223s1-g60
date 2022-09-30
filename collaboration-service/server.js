@@ -3,6 +3,7 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import 'dotenv';
+import createEventListeners from './socket-controller.js';
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -23,14 +24,10 @@ const io = new Server(httpServer, {
 
 io.on('connection', (socket) => {
   console.log(`Connected to ${socket.id}`);
-
-  socket.on('typedCode', (data) => {
-    io.emit('typedCode', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`Disconnected with ${socket.id}`);
-  });
+  const room = socket.handshake.query.room;
+  socket.join(room);
+  console.log('Joined room ', room);
+  createEventListeners(socket, io);
 });
 
 const port = process.env.PORT || 8003;

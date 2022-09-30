@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import createEventListeners from './socket-controller.js';
 import 'dotenv';
 
 const app = express();
@@ -24,18 +25,10 @@ const io = new Server(httpServer, {
 
 io.on('connection', (socket) => {
   console.log(`Connected to ${socket.id}`);
-
-  socket.on('message', (data) => {
-    io.emit('messageResponse', data);
-  });
-
-  socket.on('typedCode', (data) => {
-    io.emit('typedCode', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`Disconnected with ${socket.id}`);
-  });
+  const room = socket.handshake.query.room;
+  socket.join(room);
+  console.log('Joined room ', room);
+  createEventListeners(socket, io);
 });
 
 const port = process.env.PORT || 8002;
