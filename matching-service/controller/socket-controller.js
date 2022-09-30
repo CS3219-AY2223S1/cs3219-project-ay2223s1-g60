@@ -62,10 +62,6 @@ const onFindMatchEvent = (req, io) => {
   console.log(waitingRoom);
 };
 
-const onJoinRoomEvent = (socket, roomId) => {
-  socket.join(roomId);
-};
-
 const onDisconnectEvent = (socket) => {
   removeWaitingUser(socket.id);
   // TODO: change hard code
@@ -75,7 +71,6 @@ const onDisconnectEvent = (socket) => {
 
 const createEventListeners = (socket, io) => {
   socket.on('find-match', (req) => onFindMatchEvent(req, io));
-  socket.on('join-room', (roomId) => onJoinRoomEvent(socket, roomId));
   socket.on('disconnect', () => onDisconnectEvent(socket));
 };
 
