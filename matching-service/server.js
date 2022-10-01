@@ -3,6 +3,7 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import createEventListeners from './controller/socket-controller.js';
+import 'dotenv';
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -17,7 +18,7 @@ app.get('/', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:3000'],
+    origin: [process.env.ORIGIN || 'http://localhost:3000'],
   },
 });
 

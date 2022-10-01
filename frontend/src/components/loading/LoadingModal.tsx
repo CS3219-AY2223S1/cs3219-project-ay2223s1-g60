@@ -13,12 +13,12 @@ import { useNavigate } from 'react-router-dom';
 type LoadingModalProps = {
   open: boolean;
   closeModal: () => void;
-  userId: number;
+  username: string;
   difficulty: number;
 };
 
 const LoadingModal: React.FC<LoadingModalProps> = (props) => {
-  const { open, closeModal, difficulty, userId } = props;
+  const { open, closeModal, difficulty, username } = props;
   const socket = io('http://localhost:8001');
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
   socket.on('connect', () => {
     console.log(`${socket.id} is trying to connect`);
 
-    socket.emit('find-match', { userId, socketId: socket.id, difficulty });
+    socket.emit('find-match', { username, socketId: socket.id, difficulty });
     startCountDown();
 
     // Server notifies client that a match is found
@@ -44,7 +44,6 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
         clearTimeout(startCountDown());
         socket.disconnect();
         closeModal();
-        console.log(`/room?id=${roomId}`);
         navigate(`/room?id=${roomId}`);
       });
     });

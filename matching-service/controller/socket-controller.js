@@ -15,7 +15,7 @@ const findMatch = (req) => {
 // Adds user to waiting room
 const addWaitingUser = (req) => {
   waitingRoom.push({
-    userId: req.userId,
+    username: req.username,
     difficulty: req.difficulty,
     socketId: req.socketId,
   });
@@ -42,21 +42,15 @@ const onFindMatchEvent = (req, io) => {
     io.to(req.socketId).emit('found-match');
 
     // create room using orm
-    const room = createRoom(
-      waitingRoom[index].socketId,
-      req.socketId,
-      req.difficulty
-    ).then((res) => {
-      if (res.error) {
-        // TODO: handle error for when room creation fails
-        console.log(res.message);
-      }
+    createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
+      (res) => {
+        io.to(waitingRoom[index].socketId).emit('join-room', res.roomId);
+        io.to(req.socketId).emit('join-room', res.roomId);
 
-      io.to(waitingRoom[index].socketId).emit('join-room', res.roomId);
-      io.to(req.socketId).emit('join-room', res.roomId);
-
-      removeWaitingUser(waitingRoom[index].socketId);
-    });
+        removeWaitingUser(waitingRoom[index].socketId);
+      },
+      (err) => console.log(err) // TODO: handle room creation error
+    );
   }
 
   console.log(waitingRoom);
@@ -64,8 +58,6 @@ const onFindMatchEvent = (req, io) => {
 
 const onDisconnectEvent = (socket) => {
   removeWaitingUser(socket.id);
-  // TODO: change hard code
-  deleteRoom(socket.id);
   console.log(`Disconnected with ${socket.id}`);
 };
 
