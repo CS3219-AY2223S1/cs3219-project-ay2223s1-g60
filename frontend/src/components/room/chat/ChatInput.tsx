@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Button, Stack, TextField } from '@mui/material';
 import { Socket } from 'socket.io-client';
+import { useUser } from '../../../context/UserContext';
 
 function ChatInput(props: { socket: Socket; room: string }) {
   const { socket, room } = props;
+  const username = useUser().username;
+
   const [message, setMessage] = useState('');
   const chatPlaceholder = 'Type your message here';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const data = { socketId: socket.id, name: 'User ID', room: room };
+    const data = { socketId: socket.id, name: username, room: room };
     setMessage(e.target.value);
     e.target.value.length !== 0
       ? socket.emit('typing', data)
@@ -19,8 +22,7 @@ function ChatInput(props: { socket: Socket; room: string }) {
     e.preventDefault();
     socket.emit('message', {
       text: message,
-      name: 'User ID', // TODO: replace with actual user id
-      id: `${socket.id}${Math.random()}`,
+      name: username,
       socketId: socket.id,
       room: room,
     });

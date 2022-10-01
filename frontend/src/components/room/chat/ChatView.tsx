@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Stack, Typography } from '@mui/material';
 import { Socket } from 'socket.io-client';
-import { ChatModel } from './chat-model';
+import { ChatModel } from '../../../models/ChatModel';
 import ChatBubble from './ChatBubble';
 
 function ChatView(props: { socket: Socket }) {

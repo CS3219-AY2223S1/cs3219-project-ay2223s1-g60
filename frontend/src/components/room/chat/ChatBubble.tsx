@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { ChatModel } from './chat-model';
+import { ChatModel } from '../../../models/ChatModel';
 
 const ChatBubble = (props: { chat: ChatModel; isSelf: boolean }) => {
   const { chat, isSelf } = props;

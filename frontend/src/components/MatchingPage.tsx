@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import LoadingModal from './loading/LoadingModal';
+import { useUser } from '../context/UserContext';
 
 function MatchingPage() {
+  const username = useUser().username || '';
   const [loading, setLoading] = useState(false);
   const [difficulty, setDifficulty] = useState(0);
+
+  const SelectButton = (props: { name: string; id: number }) => (
+    <Button
+      variant={difficulty === props.id ? 'contained' : 'outlined'}
+      onClick={() => setDifficulty(props.id)}
+    >
+      {props.name}
+    </Button>
+  );
 
   return (
     <div className='matching-page'>
@@ -12,7 +23,7 @@ function MatchingPage() {
         <LoadingModal
           open={loading}
           closeModal={() => setLoading(false)}
-          userId={2} // TODO: Obtain username
+          username={username}
           difficulty={difficulty}
         />
       )}
@@ -21,15 +32,9 @@ function MatchingPage() {
           Difficulty Setting
         </Typography>
         <Stack spacing={2}>
-          <Button variant={'outlined'} onClick={() => setDifficulty(1)}>
-            Easy
-          </Button>
-          <Button variant={'outlined'} onClick={() => setDifficulty(2)}>
-            Medium
-          </Button>
-          <Button variant={'outlined'} onClick={() => setDifficulty(3)}>
-            Hard
-          </Button>
+          <SelectButton name={'easy'} id={1} />
+          <SelectButton name={'medium'} id={2} />
+          <SelectButton name={'hard'} id={3} />
           <Button variant={'contained'} onClick={() => setLoading(true)}>
             Find Match
           </Button>
