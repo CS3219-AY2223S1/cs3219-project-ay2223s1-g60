@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import { URL_MATCHING_SVC } from '../../configs';
 
 type LoadingModalProps = {
   open: boolean;
@@ -19,7 +20,7 @@ type LoadingModalProps = {
 
 const LoadingModal: React.FC<LoadingModalProps> = (props) => {
   const { open, closeModal, difficulty, username } = props;
-  const socket = io('http://localhost:8001');
+  const socket = io(URL_MATCHING_SVC);
   const navigate = useNavigate();
 
   // timeout

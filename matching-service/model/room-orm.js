@@ -15,13 +15,12 @@ export async function ormCreateRoom(user1, user2, difficulty) {
   }
 }
 
-export async function ormDeleteRoom(user) {
+export async function ormDeleteRoom(roomId) {
   try {
-    await deleteRoomModel(user);
+    await deleteRoomModel(roomId);
     return {
       error: false,
       message: 'Room deletion successful!',
-      roomId: newRoom._id,
     };
   } catch (err) {
     return { error: true, message: err };

@@ -44,12 +44,16 @@ const onFindMatchEvent = (req, io) => {
     // create room using orm
     createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
       (res) => {
-        io.to(waitingRoom[index].socketId).emit('join-room', res.roomId);
-        io.to(req.socketId).emit('join-room', res.roomId);
+        console.log(res);
+        if (!res.err) {
+          io.to(waitingRoom[index].socketId).emit('join-room', res.roomId);
+          io.to(req.socketId).emit('join-room', res.roomId);
 
-        removeWaitingUser(waitingRoom[index].socketId);
-      },
-      (err) => console.log(err) // TODO: handle room creation error
+          removeWaitingUser(waitingRoom[index].socketId);
+        } else {
+          console.log(res.message); // TODO: handle room creation error
+        }
+      }
     );
   }
 
@@ -61,9 +65,16 @@ const onDisconnectEvent = (socket) => {
   console.log(`Disconnected with ${socket.id}`);
 };
 
+const onDeleteRoomEvent = (req) => {
+  deleteRoom(req.room).then((res) =>
+    res.err ? console.log(res.message) : console.log('Delete room: ', req.room)
+  );
+};
+
 const createEventListeners = (socket, io) => {
   socket.on('find-match', (req) => onFindMatchEvent(req, io));
   socket.on('disconnect', () => onDisconnectEvent(socket));
+  socket.on('delete-room', (req) => onDeleteRoomEvent(req));
 };
 
 export default createEventListeners;

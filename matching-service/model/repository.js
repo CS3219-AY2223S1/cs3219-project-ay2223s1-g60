@@ -19,8 +19,6 @@ export async function createRoomModel(params) {
   return new RoomModel(params);
 }
 
-export async function deleteRoomModel(user) {
-  return db.db
-    .collection('test.roommodels')
-    .deleteOne({ $or: [{ user1: user }, { user2: user }] });
+export async function deleteRoomModel(roomId) {
+  return RoomModel.deleteOne({ _id: mongoose.Types.ObjectId(roomId) });
 }
