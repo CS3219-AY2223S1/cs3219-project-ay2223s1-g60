@@ -25,7 +25,7 @@ export async function ormCreateUser(username, hashedPassword) {
 }
 
 // READ FUNCTION
-export async function ormGetToken(username, token) {
+export async function ormGetToken(username) {
   try {
     const dbToken = await getToken(username);
     return dbToken;
