@@ -190,59 +190,15 @@ export async function connectToRedis() {
 
 export async function loginWithToken(req, res) {
   try {
-    const { username } = req.body;
-    const token = req.headers.authorization.split(" ")[1];
-
-    const resp = await isTokenInBlacklist(token);
-    if (resp) {
-      // Invalid token
-      return res.status(400).json({ message: "Token is blacklisted" });
-    }
-    if (username && token) {
-      const resp = await _getToken(username, token);
-      if (resp.err) {
-      } else {
-        jwt.verify(
-          resp,
-          process.env.JWT_PRIVATE_KEY,
-          function (err, decodedFromDb) {
-            try {
-              jwt.verify(
-                token,
-                process.env.JWT_PRIVATE_KEY,
-                function (err, decodedFromUser) {
-                  if (
-                    decodedFromDb.username === decodedFromUser.username &&
-                    decodedFromDb.hashedPassword ===
-                      decodedFromUser.hashedPassword &&
-                    decodedFromDb._id === decodedFromUser._id
-                  ) {
-                    return res
-                      .status(201)
-                      .json({
-                        message: `Successfully log ${username} in with token!`,
-                      })
-                      .json({ username: username });
-                  } else {
-                    return res
-                      .status(400)
-                      .json({ message: "Your token is invalid" });
-                  }
-                  console.log(decoded); // bar
-                }
-              );
-            } catch (err) {
-              return res.status(400).json({ message: "Your token is invalid" });
-            } // bar
-          }
-        );
-      }
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Username and/or token are missing!" });
-    }
-  } catch (err) {}
+    return res.status(201).json({
+      message: `Successfully log ${req.body.username} in with token!`,
+      username: req.body.username,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: `Database failure!`,
+    });
+  }
 }
 
 export async function logout(req, res) {

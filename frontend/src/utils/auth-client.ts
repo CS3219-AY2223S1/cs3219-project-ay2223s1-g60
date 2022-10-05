@@ -81,6 +81,7 @@ async function loginWithToken(): Promise<any> {
       if (err.response.status === 400) {
         throw new Error("Your token is invalid");
       } else {
+        console.log(err);
         throw new Error("Username or password is incorrect!");
       }
     });

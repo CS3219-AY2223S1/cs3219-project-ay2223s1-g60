@@ -19,6 +19,8 @@ import {
   signIn,
 } from "./controller/user-controller.js";
 
+import { verifyToken } from "./middlewares/authJWT.js";
+
 const router = express.Router();
 
 // Controller will contain all the User-defined Routes
@@ -27,12 +29,12 @@ router.get("/blacklist", isTokenInBlacklist);
 
 router.post("/signup", createUser);
 router.post("/logout", logout);
-router.post("/loginWithToken", loginWithToken);
+router.post("/loginWithToken", verifyToken, loginWithToken);
 router.post("/login", signIn);
-router.post("/change-password", changePassword);
-router.post("/change-username", changeUsername);
+router.post("/change-password", verifyToken, changePassword);
+router.post("/change-username", verifyToken, changeUsername);
 
-router.delete("/delete-user", deleteUser);
+router.delete("/delete-user", verifyToken, deleteUser);
 
 app.use("/api/user", router).all((_, res) => {
   res.setHeader("content-type", "application/json");
