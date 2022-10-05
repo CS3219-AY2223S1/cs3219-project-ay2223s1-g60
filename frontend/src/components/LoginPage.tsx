@@ -25,17 +25,17 @@ function LoginPage() {
   const navigate = useNavigate();
   const authClient = useAuth();
 
-  useEffect(() => {
-    const login = async () => {
-      try {
-        await authClient.loginWithToken();
-        navigate("/home");
-      } catch (error) {
-        console.log("login ", error);
-      }
-    };
-    login();
-  }, []);
+  // useEffect(() => {
+  //   const login = async () => {
+  //     try {
+  //       await authClient.loginWithToken();
+  //       navigate("/home");
+  //     } catch (error) {
+  //       console.log("login ", error);
+  //     }
+  //   };
+  //   login();
+  // }, []);
 
   const handleLogin = async () => {
     try {

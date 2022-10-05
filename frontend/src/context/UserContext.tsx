@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { User } from "../@types/UserContext";
 import * as authClient from "../utils/auth-client";
 
@@ -12,7 +12,7 @@ const UserContext = createContext({
   loginWithUname: (username: string, password: string) => {},
   setUser: (user: User) => {},
   signup: (username: string, password: string) => {},
-  loginWithToken: () => {},
+  //loginWithToken: () => {},
   logout: () => {},
   changeUsername: (
     username: string,
@@ -23,6 +23,17 @@ const UserContext = createContext({
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
+  
+  useEffect(() => {
+    
+    const tryLoginWithToken = async () => {
+      authClient.loginWithToken().then((resp) => setUser({ username: resp }));
+    }
+  
+    tryLoginWithToken();
+  },[]);
+  
+
   const [user, setUser] = useState<User>({ username: "" });
   const [response, setResponse] = useState<string>("");
 
@@ -32,8 +43,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       .then((resp) => setUser({ username: resp }));
   const signup = (username: string, password: string) =>
     authClient.signUp(username, password);
-  const loginWithToken = () =>
-    authClient.loginWithToken().then((resp) => setUser({ username: resp }));
   const logout = () =>
     authClient.logout().then((resp) => setUser({ username: "" }));
   const changeUsername = (
@@ -55,7 +64,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser,
         signup,
         response,
-        loginWithToken,
+        //loginWithToken,
         logout,
         changeUsername,
         deleteUser,

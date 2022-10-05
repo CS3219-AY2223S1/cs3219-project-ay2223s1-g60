@@ -1,12 +1,5 @@
 import React, { useState } from "react";
 import { useUser, useAuth } from "../context/UserContext";
-import axios from "axios";
-import {
-  URL_USER_LOGOUT,
-  URL_USER_DELETE_USER,
-  LOCAL_STORAGE_TOKEN_KEY,
-  LOCAL_STORAGE_USERNAME_KEY,
-} from "../configs";
 import ChangeUsernameDialog from "./modal/ChangeUsernameDialog";
 import ChangePasswordDialog from "./modal/ChangePasswordDialog";
 import { useNavigate } from "react-router-dom";

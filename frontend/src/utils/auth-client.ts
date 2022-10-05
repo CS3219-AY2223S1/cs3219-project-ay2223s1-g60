@@ -11,7 +11,6 @@ import {
 } from "../configs";
 import {
   STATUS_CODE_CONFLICT,
-  ERROR_UNAME_PASSWORD,
   UNAME_PASSWORD_MISSING,
 } from "../constants";
 
@@ -41,12 +40,6 @@ async function loginWithUsername(
   const body = {
     username: username,
     password: password,
-  };
-
-  const config = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
   };
 
   const resp = await axios.post(URL_USER_LOGIN, body).catch((err) => {

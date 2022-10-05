@@ -6,11 +6,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useUser, useAuth } from "../../context/UserContext";
-import {
-  URL_USER_CHANGE_USERNAME,
-  LOCAL_STORAGE_USERNAME_KEY,
-} from "../../configs";
-import axios from "axios";
 
 export default function ChangeUsernameDialog({ isOpen }: { isOpen: boolean }) {
   const user = useUser();
