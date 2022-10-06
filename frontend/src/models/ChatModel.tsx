@@ -3,4 +3,5 @@ export interface ChatModel {
   name: string;
   id: number;
   socketId: string;
+  room: string;
 }

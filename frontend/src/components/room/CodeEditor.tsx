@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Socket } from 'socket.io-client';
 
-function CodeEditor(props: { socket: Socket }) {
-  const { socket } = props;
+function CodeEditor(props: { socket: Socket; room: string }) {
+  const { socket, room } = props;
   const [typedCode, setTypedCode] = useState('');
 
   const codeEditorPlaceholder = '/* Insert your code here */';
@@ -33,14 +33,18 @@ function CodeEditor(props: { socket: Socket }) {
     socket.emit('typedCode', {
       text: e.target.value,
       socketId: socket.id,
+      room: room,
     });
   };
 
   useEffect(() => {
-    socket.on('typedCode', (data: { text: string; socketId: string }) => {
-      if (data.socketId === socket.id) return;
-      setTypedCode(data.text);
-    });
+    socket.on(
+      'typedCode',
+      (data: { text: string; socketId: string; room: string }) => {
+        if (data.socketId === socket.id) return;
+        setTypedCode(data.text);
+      }
+    );
   }, [socket, typedCode]);
 
   return (
