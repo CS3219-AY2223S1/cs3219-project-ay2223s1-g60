@@ -13,7 +13,7 @@ import { SetStateAction, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/UserContext";
+import { useAuth, useUser } from "../context/UserContext";
 
 function LoginPage() {
   const [username, setUsername] = useState("");
@@ -24,18 +24,13 @@ function LoginPage() {
   const [isLoginSuccess, setIsLoginSuccess] = useState(false);
   const navigate = useNavigate();
   const authClient = useAuth();
+  const user = useUser();
 
   useEffect(() => {
-    const login = async () => {
-      try {
-        await authClient.loginWithToken();
-        navigate("/home");
-      } catch (error) {
-        console.log("login ", error);
-      }
-    };
-    login();
-  }, []);
+    if (user.username) {
+      navigate("/home");
+    }
+  }, [navigate, user]);
 
   const handleLogin = async () => {
     try {

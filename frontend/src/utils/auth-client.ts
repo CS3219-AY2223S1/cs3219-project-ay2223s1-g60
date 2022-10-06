@@ -1,66 +1,72 @@
 import {
-  URL_USER_SIGNUP,
-  URL_USER_LOGIN,
-  URL_USER_LOGOUT,
-  URL_USER_LOGIN_WITH_TOKEN,
   LOCAL_STORAGE_TOKEN_KEY,
   LOCAL_STORAGE_USERNAME_KEY,
-  URL_USER_DELETE_USER,
-  URL_USER_CHANGE_USERNAME,
   URL_USER_CHANGE_PASSWORD,
+  URL_USER_CHANGE_USERNAME,
+  URL_USER_DELETE_USER,
+  URL_USER_LOGIN,
+  URL_USER_LOGIN_WITH_TOKEN,
+  URL_USER_LOGOUT,
+  URL_USER_SIGNUP,
 } from "../configs";
-import {
-  STATUS_CODE_CONFLICT,
-  ERROR_UNAME_PASSWORD,
-  UNAME_PASSWORD_MISSING,
-} from "../constants";
+import { STATUS_CODE_CONFLICT, UNAME_PASSWORD_MISSING } from "../constants";
+import { Response } from "../@types/UserContext";
 
 import axios from "axios";
 
-async function signUp(username: string, password: string): Promise<any> {
-  const body = {
-    username: username,
-    password: password,
-  };
+async function signUp(body: {
+  username: string;
+  password: string;
+}): Promise<Response<{}>> {
+  return await axios
+    .post(URL_USER_SIGNUP, body)
+    .then((response) => {
+      const res: Response<{}> = {
+        status: response.status,
+        statusText: response.statusText,
+        data: {},
+      };
 
-  const resp = await axios.post(URL_USER_SIGNUP, body).catch((err) => {
-    if (err.response.status === STATUS_CODE_CONFLICT) {
-      throw new Error("This username already exists");
-    } else {
-      throw new Error("Please try again later");
-    }
-  });
+      return res;
+    })
+    .catch((err) => {
+      const res: Response<{}> = {
+        status: err.response.status,
+        statusText: err.response.statusText,
+        data: {},
+      };
 
-  return resp;
+      return res;
+    });
 }
 
-async function loginWithUsername(
-  username: string,
-  password: string
-): Promise<any> {
-  const body = {
-    username: username,
-    password: password,
-  };
+async function loginWithUsername(body: {
+  username: string;
+  password: string;
+}): Promise<Response<{ username: string; token: string }>> {
+  return await axios
+    .post(URL_USER_LOGIN, body)
+    .then((response) => {
+      const data = response.data;
+      const res: Response<{ username: string; token: string }> = {
+        status: response.status,
+        statusText: response.statusText,
+        data: data,
+      };
 
-  const config = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  };
+      return res;
+    })
+    .catch((err) => {
+      const res: Response<{ username: string; token: string }> = {
+        status: err.response.status,
+        statusText: err.response.statusText,
+        data: err.response.data,
+      };
 
-  const resp = await axios.post(URL_USER_LOGIN, body).catch((err) => {
-    if (err.response.status === UNAME_PASSWORD_MISSING) {
-      throw new Error("Username or password is missing!");
-    } else {
-      throw new Error("Username or password is incorrect!");
-    }
-  });
+      console.log(err);
 
-  const data = resp.data;
-  window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, data.token);
-  window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, data.username);
-  return data.username;
+      return res;
+    });
 }
 
 async function loginWithToken(): Promise<any> {
