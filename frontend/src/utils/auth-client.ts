@@ -9,8 +9,10 @@ import {
   URL_USER_LOGOUT,
   URL_USER_SIGNUP,
   URL_USER_SVC,
+  USER_CHANGE_USERNAME,
   USER_LOGIN,
   USER_LOGIN_WITH_TOKEN,
+  USER_LOGOUT,
   USER_SIGNUP,
 } from "../configs";
 import { STATUS_CODE_CONFLICT, UNAME_PASSWORD_MISSING } from "../constants";
@@ -88,51 +90,21 @@ export const AuthClient = {
       { headers }
     );
   },
-};
 
-async function logout(): Promise<any> {
-  const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
-  const username = window.localStorage.getItem(LOCAL_STORAGE_USERNAME_KEY);
+  logout: (body: {
+    token: string;
+    username: string;
+  }): Promise<Response<{}>> => {
+    return requests.post(USER_LOGOUT, body);
+  },
 
-  const body = {
-    username: username,
-    token: token,
-  };
-
-  const resp = await axios.post(URL_USER_LOGOUT, body).catch((err) => {
-    console.log("Response login with token :", err);
-    if (err.response.status === UNAME_PASSWORD_MISSING) {
-      throw new Error("Username or password is missing!");
-    } else {
-      throw new Error("Username or password is incorrect!");
-    }
-  });
-
-  window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
-  window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
-
-  return resp;
-}
-
-const changeUsername = async (
-  username: string,
-  newUsername: string,
-  password: string
-) => {
-  const body = {
-    username: username,
-    newUsername: newUsername,
-    password: password,
-  };
-
-  const resp = await axios.post(URL_USER_CHANGE_USERNAME, body).catch((err) => {
-    if (err.response) {
-      throw new Error("Change password failed");
-    }
-  });
-
-  window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, newUsername);
-  return newUsername;
+  changeUsername: (body: {
+    username: string;
+    newUsername: string;
+    password: string;
+  }): Promise<Response<{}>> => {
+    return requests.post(USER_CHANGE_USERNAME, body);
+  },
 };
 
 const changePassword = async (
@@ -176,4 +148,4 @@ async function deleteUser(): Promise<any> {
   return resp;
 }
 
-export { logout, deleteUser, changeUsername, changePassword };
+export { deleteUser, changePassword };

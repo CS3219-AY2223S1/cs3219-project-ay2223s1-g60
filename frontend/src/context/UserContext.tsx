@@ -23,6 +23,11 @@ const getTokens = () => {
   return { token: token || "", username: username || "" };
 };
 
+const removeTokens = () => {
+  window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+  window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
+};
+
 const UserContext = createContext({
   user: defaultUser,
   response: "test",
@@ -92,28 +97,51 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         setUser({ username });
       })
-      .catch(() => {
+      .catch((err) => {
         setUser({ username: "" });
+        throw new Error(err);
       })
       .finally(() => {
         setLoading(false);
       });
   };
 
-  const logout = () =>
-    authClient.logout().then((resp) => {
-      console.log("logout");
-      setUser({ username: "" });
-    });
+  const logout = () => {
+    setLoading(true);
+    const { username, token } = getTokens();
+    authClient.AuthClient.logout({ token, username })
+      .then((resp) => {
+        if (resp.status === UNAME_PASSWORD_MISSING)
+          throw new Error("Username or password is missing!");
+        // if (resp.status === ) throw new Error("Username or password is incorrect!");
+
+        setUser({ username: "" });
+        removeTokens();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const changeUsername = (
     username: string,
     newUsername: string,
     password: string
-  ) =>
-    authClient
-      .changeUsername(username, newUsername, password)
-      .then((newUsername) => setUser({ username: newUsername }));
+  ) => {
+    authClient.AuthClient.changeUsername({
+      username,
+      newUsername,
+      password,
+    }).then((resp) => {
+      if (resp.status !== 200)
+        throw new Error("Something went wrong when updating username");
+
+      const { token } = getTokens();
+      saveTokens(token, newUsername);
+      setUser({ username: newUsername });
+    });
+  };
+
   const deleteUser = () =>
     authClient.deleteUser().then((res) => setUser({ username: "" }));
 
