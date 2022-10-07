@@ -45,67 +45,59 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [response, setResponse] = useState<string>("");
 
   useEffect(() => {
+    loginWithToken().then();
+  }, []);
+
+  const loginWithUname = (username: string, password: string) => {
     setLoading(true);
-    authClient
-      .loginWithToken()
-      .then((resp) => {
-        setUser({ username: resp });
+    authClient.AuthClient.loginWithUname({ username, password })
+      .then(({ data: { username, token }, status }) => {
+        if (status === UNAME_PASSWORD_MISSING)
+          throw new Error("Username or password is incorrect!");
+        if (status === UNAME_PASSWORD_MISSING)
+          throw new Error("Username or password is missing!");
+        if (status === 500)
+          throw new Error("Something went wrong when logging in");
+
+        saveTokens(token, username);
+        setUser({ username });
       })
-      .catch((err) => {
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const signup = (username: string, password: string) => {
+    authClient.AuthClient.signUp({ username, password }).then((response) => {
+      if (response.status === STATUS_CODE_CONFLICT)
+        throw new Error("This username already exists");
+      if (response.status !== 200)
+        throw new Error("Something went wrong when trying to register");
+    });
+  };
+
+  const loginWithToken = async () => {
+    const { token, username } = getTokens();
+
+    if (!token || !username) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    authClient.AuthClient.loginWithToken(token, username)
+      .then((resp) => {
+        if (resp.status === 400) throw new Error("Your token is invalid");
+        if (resp.status !== 201) throw new Error(resp.data.message);
+
+        setUser({ username });
+      })
+      .catch(() => {
         setUser({ username: "" });
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
-
-  const loginWithUname = (username: string, password: string) => {
-    setLoading(true);
-    authClient.AuthClient.loginWithUname({ username, password }).then(
-      (resp) => {
-        const {
-          data: { username, token },
-          status,
-        } = resp;
-
-        if (status === UNAME_PASSWORD_MISSING) {
-          setLoading(false);
-          throw new Error("Username or password is incorrect!");
-        }
-
-        if (status === UNAME_PASSWORD_MISSING) {
-          setLoading(false);
-          throw new Error("Username or password is missing!");
-        }
-
-        if (status === 500) {
-          setLoading(false);
-          throw new Error("Something went wrong when logging in");
-        }
-
-        saveTokens(token, username);
-        setUser({ username: resp.data.username });
-        setLoading(false);
-      }
-    );
-  };
-
-  const signup = (username: string, password: string) => {
-    authClient.AuthClient.signUp({ username, password }).then((response) => {
-      if (response.status === STATUS_CODE_CONFLICT) {
-        throw new Error("This username already exists");
-      }
-
-      if (response.status !== 200) {
-        throw new Error("Something went wrong when trying to register");
-      }
-    });
-  };
-
-  const loginWithToken = () => {
-    authClient.loginWithToken().then((resp) => {
-      setUser({ username: resp });
-    });
   };
 
   const logout = () =>

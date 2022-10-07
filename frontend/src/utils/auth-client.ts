@@ -10,6 +10,7 @@ import {
   URL_USER_SIGNUP,
   URL_USER_SVC,
   USER_LOGIN,
+  USER_LOGIN_WITH_TOKEN,
   USER_SIGNUP,
 } from "../configs";
 import { STATUS_CODE_CONFLICT, UNAME_PASSWORD_MISSING } from "../constants";
@@ -43,6 +44,11 @@ const requests = {
       .post(url, body)
       .then(responseBody)
       .catch((err) => responseBody(err.response)),
+  postWithHeaders: (url: string, body: {}, headers: {}) =>
+    instance
+      .post(url, body, headers)
+      .then(responseBody)
+      .catch((err) => responseBody(err.response)),
   put: (url: string, body: {}) =>
     instance
       .put(url, body)
@@ -66,32 +72,23 @@ export const AuthClient = {
     password: string;
   }): Promise<Response<{ username: string; token: string }>> =>
     requests.post(USER_LOGIN, body),
+
+  loginWithToken: (
+    token: string,
+    username: string
+  ): Promise<Response<{ message: string; username: string }>> => {
+    let headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    return requests.postWithHeaders(
+      USER_LOGIN_WITH_TOKEN,
+      { username },
+      { headers }
+    );
+  },
 };
-
-async function loginWithToken(): Promise<any> {
-  const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
-  const username = window.localStorage.getItem(LOCAL_STORAGE_USERNAME_KEY);
-  let headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-
-  const body = {
-    username: username,
-  };
-
-  const resp = await axios
-    .post(URL_USER_LOGIN_WITH_TOKEN, body, { headers: headers })
-    .catch((err) => {
-      if (err.response.status === 400) {
-        throw new Error("Your token is invalid");
-      } else {
-        throw new Error("Username or password is incorrect!");
-      }
-    });
-
-  return username;
-}
 
 async function logout(): Promise<any> {
   const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
@@ -179,4 +176,4 @@ async function deleteUser(): Promise<any> {
   return resp;
 }
 
-export { loginWithToken, logout, deleteUser, changeUsername, changePassword };
+export { logout, deleteUser, changeUsername, changePassword };

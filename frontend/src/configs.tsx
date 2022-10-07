@@ -10,7 +10,7 @@ const USER_LOGOUT = "/logout";
 const USER_CHANGE_PASSWORD = "/change-password";
 const USER_CHANGE_USERNAME = "/change-username";
 const USER_DELETE_USER = "/delete-user";
-const USER_LOGIN_WITH_TOKEN = "/loginWithToken";
+export const USER_LOGIN_WITH_TOKEN = "/loginWithToken";
 
 export const URL_USER_SIGNUP = URL_USER_SVC + USER_SIGNUP;
 export const URL_USER_LOGIN = URL_USER_SVC + USER_LOGIN;
