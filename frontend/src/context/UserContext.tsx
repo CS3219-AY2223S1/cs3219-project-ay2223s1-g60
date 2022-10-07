@@ -30,13 +30,16 @@ const removeTokens = () => {
 
 const UserContext = createContext({
   user: defaultUser,
-  response: "test",
   loginWithUname: (username: string, password: string) => {},
-  setUser: (user: User) => {},
   signup: (username: string, password: string) => {},
   loginWithToken: () => {},
   logout: () => {},
   changeUsername: (
+    username: string,
+    newUsername: string,
+    password: string
+  ) => {},
+  changePassword: (
     username: string,
     newUsername: string,
     password: string
@@ -47,7 +50,6 @@ const UserContext = createContext({
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>({ username: "" });
   const [loading, setLoading] = useState(true);
-  const [response, setResponse] = useState<string>("");
 
   useEffect(() => {
     loginWithToken().then();
@@ -76,7 +78,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     authClient.AuthClient.signUp({ username, password }).then((response) => {
       if (response.status === STATUS_CODE_CONFLICT)
         throw new Error("This username already exists");
-      if (response.status !== 200)
+      if (response.status !== 201)
         throw new Error("Something went wrong when trying to register");
     });
   };
@@ -142,8 +144,36 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const deleteUser = () =>
-    authClient.deleteUser().then((res) => setUser({ username: "" }));
+  const changePassword = (
+    username: string,
+    oldPassword: string,
+    newPassword: string
+  ) => {
+    authClient.AuthClient.changePassword({
+      username,
+      oldPassword,
+      newPassword,
+    }).then((resp) => {
+      console.log(resp);
+      if (resp.status !== 200) throw new Error(resp.data.message);
+    });
+  };
+
+  const deleteUser = () => {
+    setLoading(true);
+    const { username } = getTokens();
+    authClient.AuthClient.deleteUser({ username })
+      .then((resp) => {
+        if (resp.status !== 200)
+          throw new Error("Something went wrong when deleting the account!");
+
+        removeTokens();
+        setUser({ username: "" });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   if (loading) {
     return <div>Loading ...</div>;
@@ -153,13 +183,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     <UserContext.Provider
       value={{
         user,
-        loginWithUname,
-        setUser,
         signup,
-        response,
+        loginWithUname,
         loginWithToken,
         logout,
         changeUsername,
+        changePassword,
         deleteUser,
       }}
     >

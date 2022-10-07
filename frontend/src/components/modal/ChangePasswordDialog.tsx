@@ -5,14 +5,14 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { URL_USER_CHANGE_PASSWORD } from "../../configs";
-import { changePassword } from "../../utils/auth-client";
+import { useAuth } from "../../context/UserContext";
 
 export default function ChangePasswordDialog({ isOpen }: { isOpen: boolean }) {
   const [open, setOpen] = React.useState(isOpen);
   const [username, setUsername] = React.useState("");
   const [currentPassword, setCurrentPassword] = React.useState("");
   const [newPassword, setNewPassword] = React.useState("");
+  const auth = useAuth();
 
   const handleClickOpen = () => {
     console.log("opened :", isOpen);
@@ -25,7 +25,7 @@ export default function ChangePasswordDialog({ isOpen }: { isOpen: boolean }) {
 
   const handleSubmit = async () => {
     try {
-      await changePassword(username, currentPassword, newPassword);
+      auth.changePassword(username, currentPassword, newPassword);
       handleClose();
     } catch (err) {
       console.log(err);

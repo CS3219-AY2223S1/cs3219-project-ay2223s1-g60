@@ -7,9 +7,9 @@ export const URL_USER_SVC = URI_USER_SVC + PREFIX_USER_SVC;
 export const USER_SIGNUP = "/signup";
 export const USER_LOGIN = "/login";
 export const USER_LOGOUT = "/logout";
-const USER_CHANGE_PASSWORD = "/change-password";
+export const USER_CHANGE_PASSWORD = "/change-password";
 export const USER_CHANGE_USERNAME = "/change-username";
-const USER_DELETE_USER = "/delete-user";
+export const USER_DELETE_USER = "/delete-user";
 export const USER_LOGIN_WITH_TOKEN = "/loginWithToken";
 
 export const URL_USER_SIGNUP = URL_USER_SVC + USER_SIGNUP;
