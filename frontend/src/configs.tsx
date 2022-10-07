@@ -2,10 +2,10 @@ const URI_USER_SVC = process.env.URI_USER_SVC || "http://localhost:8000";
 
 const PREFIX_USER_SVC = "/api/user";
 
-const URL_USER_SVC = URI_USER_SVC + PREFIX_USER_SVC;
+export const URL_USER_SVC = URI_USER_SVC + PREFIX_USER_SVC;
 
-const USER_SIGNUP = "/signup";
-const USER_LOGIN = "/login";
+export const USER_SIGNUP = "/signup";
+export const USER_LOGIN = "/login";
 const USER_LOGOUT = "/logout";
 const USER_CHANGE_PASSWORD = "/change-password";
 const USER_CHANGE_USERNAME = "/change-username";
@@ -24,19 +24,18 @@ export const LOCAL_STORAGE_TOKEN_KEY = "token";
 export const LOCAL_STORAGE_USERNAME_KEY = "username";
 
 const URI_MATCHING_SVC =
-    process.env.URI_MATCHING_SVC || 'http://localhost:8001';
-const PREFIX_MATCHING_SVC = '';
+  process.env.URI_MATCHING_SVC || "http://localhost:8001";
+const PREFIX_MATCHING_SVC = "";
 export const URL_MATCHING_SVC = URI_MATCHING_SVC + PREFIX_MATCHING_SVC;
 
 const URI_COMMUNICATION_SVC =
-    process.env.URI_COMMUNICATION_SVC || 'http://localhost:8002';
-const PREFIX_COMMUNICATION_SVC = '';
+  process.env.URI_COMMUNICATION_SVC || "http://localhost:8002";
+const PREFIX_COMMUNICATION_SVC = "";
 export const URL_COMMUNICATION_SVC =
-    URI_COMMUNICATION_SVC + PREFIX_COMMUNICATION_SVC;
+  URI_COMMUNICATION_SVC + PREFIX_COMMUNICATION_SVC;
 
 const URI_COLLABORATION_SVC =
-    process.env.URI_COLLABORATION_SVC || 'http://localhost:8003';
-const PREFIX_COLLABORATION_SVC = '';
+  process.env.URI_COLLABORATION_SVC || "http://localhost:8003";
+const PREFIX_COLLABORATION_SVC = "";
 export const URL_COLLABORATION_SVC =
-    URI_COLLABORATION_SVC + PREFIX_COLLABORATION_SVC;
-    
+  URI_COLLABORATION_SVC + PREFIX_COLLABORATION_SVC;

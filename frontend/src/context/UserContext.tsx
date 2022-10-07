@@ -50,43 +50,48 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       .loginWithToken()
       .then((resp) => {
         setUser({ username: resp });
-        setLoading(false);
       })
       .catch((err) => {
         setUser({ username: "" });
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, []);
 
   const loginWithUname = (username: string, password: string) => {
     setLoading(true);
-    authClient.loginWithUsername({ username, password }).then((resp) => {
-      const {
-        data: { username, token },
-        status,
-      } = resp;
+    authClient.AuthClient.loginWithUname({ username, password }).then(
+      (resp) => {
+        const {
+          data: { username, token },
+          status,
+        } = resp;
 
-      if (status === UNAME_PASSWORD_MISSING) {
+        if (status === UNAME_PASSWORD_MISSING) {
+          setLoading(false);
+          throw new Error("Username or password is incorrect!");
+        }
+
+        if (status === UNAME_PASSWORD_MISSING) {
+          setLoading(false);
+          throw new Error("Username or password is missing!");
+        }
+
+        if (status === 500) {
+          setLoading(false);
+          throw new Error("Something went wrong when logging in");
+        }
+
+        saveTokens(token, username);
+        setUser({ username: resp.data.username });
         setLoading(false);
-        throw new Error("Username or password is incorrect!");
       }
-
-      if (status === UNAME_PASSWORD_MISSING) {
-        setLoading(false);
-        throw new Error("Username or password is missing!");
-      }
-
-      console.log(token);
-      console.log(username);
-      console.log(resp.data);
-      saveTokens(token, username);
-      setUser({ username: resp.data.username });
-      setLoading(false);
-    });
+    );
   };
 
   const signup = (username: string, password: string) => {
-    authClient.signUp({ username, password }).then((response) => {
+    authClient.AuthClient.signUp({ username, password }).then((response) => {
       if (response.status === STATUS_CODE_CONFLICT) {
         throw new Error("This username already exists");
       }

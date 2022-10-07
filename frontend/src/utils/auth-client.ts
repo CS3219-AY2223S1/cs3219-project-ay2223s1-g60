@@ -8,66 +8,65 @@ import {
   URL_USER_LOGIN_WITH_TOKEN,
   URL_USER_LOGOUT,
   URL_USER_SIGNUP,
+  URL_USER_SVC,
+  USER_LOGIN,
+  USER_SIGNUP,
 } from "../configs";
 import { STATUS_CODE_CONFLICT, UNAME_PASSWORD_MISSING } from "../constants";
 import { Response } from "../@types/UserContext";
 
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
-async function signUp(body: {
-  username: string;
-  password: string;
-}): Promise<Response<{}>> {
-  return await axios
-    .post(URL_USER_SIGNUP, body)
-    .then((response) => {
-      const res: Response<{}> = {
-        status: response.status,
-        statusText: response.statusText,
-        data: {},
-      };
+const instance = axios.create({
+  baseURL: URL_USER_SVC,
+  timeout: 15000,
+});
 
-      return res;
-    })
-    .catch((err) => {
-      const res: Response<{}> = {
-        status: err.response.status,
-        statusText: err.response.statusText,
-        data: {},
-      };
+const responseBody = (response: AxiosResponse) => {
+  const res: Response<typeof response.data> = {
+    status: response.status,
+    statusText: response.statusText,
+    data: response.data,
+  };
 
-      return res;
-    });
-}
+  return res;
+};
 
-async function loginWithUsername(body: {
-  username: string;
-  password: string;
-}): Promise<Response<{ username: string; token: string }>> {
-  return await axios
-    .post(URL_USER_LOGIN, body)
-    .then((response) => {
-      const data = response.data;
-      const res: Response<{ username: string; token: string }> = {
-        status: response.status,
-        statusText: response.statusText,
-        data: data,
-      };
+const requests = {
+  get: (url: string) =>
+    instance
+      .get(url)
+      .then(responseBody)
+      .catch((err) => responseBody(err.response)),
+  post: (url: string, body: {}) =>
+    instance
+      .post(url, body)
+      .then(responseBody)
+      .catch((err) => responseBody(err.response)),
+  put: (url: string, body: {}) =>
+    instance
+      .put(url, body)
+      .then(responseBody)
+      .catch((err) => responseBody(err.response)),
+  delete: (url: string) =>
+    instance
+      .delete(url)
+      .then(responseBody)
+      .catch((err) => responseBody(err.response)),
+};
 
-      return res;
-    })
-    .catch((err) => {
-      const res: Response<{ username: string; token: string }> = {
-        status: err.response.status,
-        statusText: err.response.statusText,
-        data: err.response.data,
-      };
+export const AuthClient = {
+  signUp: (body: {
+    username: string;
+    password: string;
+  }): Promise<Response<{}>> => requests.post(USER_SIGNUP, body),
 
-      console.log(err);
-
-      return res;
-    });
-}
+  loginWithUname: (body: {
+    username: string;
+    password: string;
+  }): Promise<Response<{ username: string; token: string }>> =>
+    requests.post(USER_LOGIN, body),
+};
 
 async function loginWithToken(): Promise<any> {
   const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
@@ -180,12 +179,4 @@ async function deleteUser(): Promise<any> {
   return resp;
 }
 
-export {
-  loginWithUsername,
-  loginWithToken,
-  signUp,
-  logout,
-  deleteUser,
-  changeUsername,
-  changePassword,
-};
+export { loginWithToken, logout, deleteUser, changeUsername, changePassword };
