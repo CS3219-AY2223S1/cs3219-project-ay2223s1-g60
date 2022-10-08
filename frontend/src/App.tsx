@@ -38,7 +38,7 @@ function App() {
 
   return (
     <div className="App">
-      <Box sx={{ display: "flex", flexDirection: "column", padding: "4rem" }}>
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Router>
           {user.username && <Navbar />}
           {user.username ? loggedInRoutes : guestRoutes}
