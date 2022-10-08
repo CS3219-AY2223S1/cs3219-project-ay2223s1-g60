@@ -5,7 +5,7 @@ import {
   LOCAL_STORAGE_TOKEN_KEY,
   LOCAL_STORAGE_USERNAME_KEY,
 } from "../configs";
-import { STATUS_CODE_CONFLICT, UNAME_PASSWORD_MISSING } from "../constants";
+import { UNAME_PASSWORD_MISSING } from "../constants";
 
 export const defaultUser: User = {
   username: null,
@@ -30,8 +30,7 @@ const removeTokens = () => {
 
 const UserContext = createContext({
   user: defaultUser,
-  loginWithUname: (username: string, password: string) => {},
-  signup: (username: string, password: string) => {},
+  setUser: (user: User) => {},
   loginWithToken: () => {},
   logout: () => {},
   changeUsername: (
@@ -55,34 +54,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     loginWithToken().then();
   }, []);
 
-  const loginWithUname = (username: string, password: string) => {
-    setLoading(true);
-    authClient.AuthClient.loginWithUname({ username, password })
-      .then(({ data: { username, token }, status }) => {
-        if (status === UNAME_PASSWORD_MISSING)
-          throw new Error("Username or password is incorrect!");
-        if (status === UNAME_PASSWORD_MISSING)
-          throw new Error("Username or password is missing!");
-        if (status === 500)
-          throw new Error("Something went wrong when logging in");
-
-        saveTokens(token, username);
-        setUser({ username });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const signup = (username: string, password: string) => {
-    authClient.AuthClient.signUp({ username, password }).then((response) => {
-      if (response.status === STATUS_CODE_CONFLICT)
-        throw new Error("This username already exists");
-      if (response.status !== 201)
-        throw new Error("Something went wrong when trying to register");
-    });
-  };
-
   const loginWithToken = async () => {
     const { token, username } = getTokens();
 
@@ -94,14 +65,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     authClient.AuthClient.loginWithToken(token, username)
       .then((resp) => {
-        if (resp.status === 400) throw new Error("Your token is invalid");
         if (resp.status !== 201) throw new Error(resp.data.message);
 
         setUser({ username });
       })
-      .catch((err) => {
+      .catch(() => {
         setUser({ username: "" });
-        throw new Error(err);
       })
       .finally(() => {
         setLoading(false);
@@ -183,8 +152,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     <UserContext.Provider
       value={{
         user,
-        signup,
-        loginWithUname,
+        setUser,
         loginWithToken,
         logout,
         changeUsername,

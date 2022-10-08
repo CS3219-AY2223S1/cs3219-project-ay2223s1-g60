@@ -71,8 +71,9 @@ export const AuthClient = {
   loginWithUname: (body: {
     username: string;
     password: string;
-  }): Promise<API.Response<{ username: string; token: string }>> =>
-    requests.post(USER_LOGIN, body),
+  }): Promise<
+    API.Response<{ username: string; token: string; message: string }>
+  > => requests.post(USER_LOGIN, body),
 
   loginWithToken: (
     token: string,

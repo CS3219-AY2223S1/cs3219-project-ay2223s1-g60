@@ -24,6 +24,7 @@ function App() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/match" element={<MatchingPage />} />
       <Route path="/room/*" element={<RoomPage />} />
+      <Route path="*" element={<Navigate replace to="/home" />} />
     </Routes>
   );
 

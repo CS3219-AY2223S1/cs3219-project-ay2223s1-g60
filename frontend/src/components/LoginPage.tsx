@@ -1,99 +1,170 @@
+import React, { useState } from "react";
 import {
+  Alert,
+  AlertTitle,
+  Avatar,
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  CircularProgress,
+  Container,
+  Grid,
+  InputAdornment,
+  Link,
   TextField,
   Typography,
 } from "@mui/material";
-import { SetStateAction, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import React from "react";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useUser } from "../context/UserContext";
+import { AuthClient } from "../utils/auth-client";
+import {
+  LOCAL_STORAGE_TOKEN_KEY,
+  LOCAL_STORAGE_USERNAME_KEY,
+} from "../configs";
+import { useAuth } from "../context/UserContext";
 
 function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogMsg, setDialogMsg] = useState("");
-  const [isLoginSuccess, setIsLoginSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loginFailMessage, setLoginFailMessage] = useState<string>("");
+  const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
   const authClient = useAuth();
-  const user = useUser();
 
-  useEffect(() => {
-    if (user.username) {
-      navigate("/home");
+  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const username = data.get("username");
+    const password = data.get("password");
+
+    if (!username || !password) {
+      return;
     }
-  }, [navigate, user]);
 
-  const handleLogin = async () => {
-    try {
-      await authClient.loginWithUname(username, password);
-      navigate("/home");
-    } catch (error) {
-      let message = "Unknown Error";
-      if (error instanceof Error) message = error.message;
-      setErrorDialog(message);
-    }
-  };
+    const body = {
+      username: username.toString(),
+      password: password.toString(),
+    };
 
-  const closeDialog = () => setIsDialogOpen(false);
+    setLoading(true);
+    AuthClient.loginWithUname(body)
+      .then(({ data: { username, token, message }, status }) => {
+        if (status !== 201) throw new Error(message);
 
-  const setErrorDialog = (msg: SetStateAction<string>) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Error");
-    setDialogMsg(msg);
+        authClient.setUser({ username: username });
+        window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
+        window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, username);
+        navigate("/home");
+      })
+      .catch((err) => {
+        setLoginFailMessage(err);
+        setShowAlert(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
-      <Typography variant={"h3"} marginBottom={"2rem"}>
-        Login
-      </Typography>
-      <TextField
-        label="Username"
-        variant="standard"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        sx={{ marginBottom: "1rem" }}
-        autoFocus
-      />
-      <TextField
-        label="Password"
-        variant="standard"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        sx={{ marginBottom: "2rem" }}
-      />
-      <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
-        <Button variant={"outlined"} onClick={handleLogin}>
-          Login
-        </Button>
-      </Box>
+    <Container
+      maxWidth="xs"
+      sx={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mb: 20,
+        }}
+      >
+        <Avatar />
 
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
-        <DialogTitle>{dialogTitle}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{dialogMsg}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          {isLoginSuccess ? (
-            <Button component={Link} to="/home">
-              Log in
-            </Button>
-          ) : (
-            <Button onClick={closeDialog}>Done</Button>
+        <Typography component="h1" variant="h5">
+          Log in
+        </Typography>
+
+        <Box
+          sx={{
+            mt: 3,
+          }}
+          component="form"
+          autoComplete={"off"}
+          onSubmit={handleLogin}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircleOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder={"Username"}
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <ShieldOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder={"Password"}
+                required
+                fullWidth
+                id="password"
+                label="Password"
+                name="password"
+                type="password"
+              />
+            </Grid>
+          </Grid>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            disabled={loading}
+            sx={{ mt: 3, mb: 2 }}
+          >
+            {loading && <CircularProgress size={18} sx={{ mr: 1 }} />}
+            Log in
+          </Button>
+
+          {showAlert && (
+            <Alert
+              onClose={() => setShowAlert(false)}
+              severity={"error"}
+              sx={{ mb: 1 }}
+            >
+              <AlertTitle>{loginFailMessage.toString()}</AlertTitle>
+            </Alert>
           )}
-        </DialogActions>
-      </Dialog>
-    </Box>
+
+          <Grid container>
+            <Grid item>
+              <Link href="/signup" variant="body2">
+                Don't have an account? Sign up here
+              </Link>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Container>
   );
 }
 
