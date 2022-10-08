@@ -23,7 +23,7 @@ enum RegisterStatus {
   IN_PROGRESS = 3,
 }
 
-function SignUpPage2() {
+function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [signUpStatus, setSignUpStatus] = useState<RegisterStatus>(
     RegisterStatus.IN_PROGRESS
@@ -179,4 +179,4 @@ function SignUpPage2() {
   );
 }
 
-export default SignUpPage2;
+export default SignUpPage;
