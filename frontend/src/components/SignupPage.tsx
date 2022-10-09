@@ -1,100 +1,182 @@
+import React, { useState } from "react";
 import {
-  Box,
+  Alert,
+  AlertTitle,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   TextField,
+  Container,
+  Box,
+  Avatar,
+  Grid,
   Typography,
+  Link,
+  InputAdornment,
+  CircularProgress,
 } from "@mui/material";
-import { SetStateAction, useState } from "react";
-import { Link } from "react-router-dom";
-import React from "react";
-import { useAuth, useUser } from "../context/UserContext";
+import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import { AuthClient } from "../utils/auth-client";
 
-function SignupPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogMsg, setDialogMsg] = useState("");
-  const [isSignupSuccess, setIsSignupSuccess] = useState(false);
+enum RegisterStatus {
+  SUCCESS = 1,
+  FAILED = 2,
+  IN_PROGRESS = 3,
+}
 
-  const authClient = useAuth();
-  const user = useUser();
+function SignUpPage() {
+  const [loading, setLoading] = useState(false);
+  const [signUpStatus, setSignUpStatus] = useState<RegisterStatus>(
+    RegisterStatus.IN_PROGRESS
+  );
+  const [signUpFailMessage, setSignUpFailMessage] = useState<string>("");
+  const [showAlert, setShowAlert] = useState(false);
 
-  const handleSignup = async () => {
-    try {
-      await authClient.signup(username, password);
-      setIsSignupSuccess(true);
-      setSuccessDialog("Account successfully created");
-    } catch (error) {
-      let message = "Unknown Error";
-      if (error instanceof Error) message = error.message;
-      setErrorDialog(message);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const username = data.get("username");
+    const password = data.get("password");
+
+    if (!username || !password) {
+      return;
     }
-  };
 
-  const closeDialog = () => setIsDialogOpen(false);
+    const body = {
+      username: username.toString(),
+      password: password.toString(),
+    };
 
-  const setSuccessDialog = (msg: SetStateAction<string>) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Success");
-    setDialogMsg(msg);
-  };
+    setLoading(true);
+    AuthClient.signUp(body)
+      .then((resp) => {
+        if (resp.status !== 201) throw new Error(resp.data.message);
 
-  const setErrorDialog = (msg: SetStateAction<string>) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Error");
-    setDialogMsg(msg);
+        setSignUpStatus(RegisterStatus.SUCCESS);
+      })
+      .catch((err) => {
+        setSignUpStatus(RegisterStatus.FAILED);
+        setSignUpFailMessage(err);
+      })
+      .finally(() => {
+        setShowAlert(true);
+        setLoading(false);
+      });
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
-      <Typography variant={"h3"} marginBottom={"2rem"}>
-        Sign Up
-      </Typography>
-      <TextField
-        label="Username"
-        variant="standard"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        sx={{ marginBottom: "1rem" }}
-        autoFocus
-      />
-      <TextField
-        label="Password"
-        variant="standard"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        sx={{ marginBottom: "2rem" }}
-      />
-      <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
-        <Button variant={"outlined"} onClick={handleSignup}>
-          Sign up
-        </Button>
-      </Box>
+    <Container
+      maxWidth="xs"
+      sx={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mb: 20,
+        }}
+      >
+        <Avatar />
 
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
-        <DialogTitle>{dialogTitle}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{dialogMsg}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          {isSignupSuccess ? (
-            <Button component={Link} to="/login">
-              Log in
-            </Button>
-          ) : (
-            <Button onClick={closeDialog}>Done</Button>
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
+
+        <Box
+          sx={{
+            mt: 3,
+          }}
+          component="form"
+          autoComplete={"off"}
+          onSubmit={handleSubmit}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircleOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder={"Username"}
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <ShieldOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder={"Password"}
+                required
+                fullWidth
+                id="password"
+                label="Password"
+                name="password"
+                type="password"
+              />
+            </Grid>
+          </Grid>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            disabled={loading}
+            sx={{ mt: 3, mb: 2 }}
+          >
+            {loading && <CircularProgress size={18} sx={{ mr: 1 }} />}
+            Sign Up
+          </Button>
+
+          {showAlert && (
+            <Alert
+              onClose={() => setShowAlert(false)}
+              severity={
+                signUpStatus === RegisterStatus.SUCCESS ? "success" : "error"
+              }
+              sx={{ mb: 1 }}
+            >
+              <AlertTitle>
+                {signUpStatus === RegisterStatus.SUCCESS
+                  ? "Account created"
+                  : signUpFailMessage.toString()}
+              </AlertTitle>
+
+              {signUpStatus === RegisterStatus.SUCCESS && (
+                <Link href="/login" variant="body2">
+                  Click here to sign in
+                </Link>
+              )}
+            </Alert>
           )}
-        </DialogActions>
-      </Dialog>
-    </Box>
+
+          <Grid container>
+            <Grid item>
+              <Link href="/login" variant="body2">
+                Already have an account? Sign in
+              </Link>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Container>
   );
 }
 
-export default SignupPage;
+export default SignUpPage;

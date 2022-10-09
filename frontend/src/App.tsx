@@ -11,11 +11,12 @@ import LoginPage from './components/LoginPage';
 import HomePage from './components/HomePage';
 import MatchingPage from './components/MatchingPage';
 import Navbar from './components/Navbar';
-import { useUser } from '../src/context/UserContext';
+import { useUser } from './context/UserContext';
 import RoomPage from './views/RoomPage';
 
 function App() {
   const user = useUser();
+  console.log(user);
 
   const loggedInRoutes = (
     <Routes>
@@ -23,6 +24,7 @@ function App() {
       <Route path='/home' element={<HomePage />} />
       <Route path='/match' element={<MatchingPage />} />
       <Route path='/room/*' element={<RoomPage />} />
+      <Route path='*' element={<Navigate replace to='/home' />} />
     </Routes>
   );
 
@@ -37,7 +39,7 @@ function App() {
 
   return (
     <div className='App'>
-      <Box sx={{ display: 'flex', flexDirection: 'column', padding: '4rem' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Router>
           {user.username && <Navbar />}
           {user.username ? loggedInRoutes : guestRoutes}
