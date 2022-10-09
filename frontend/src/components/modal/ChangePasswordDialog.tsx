@@ -1,81 +1,135 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import { useAuth } from "../../context/UserContext";
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  Grid,
+  IconButton,
+  TextField,
+} from '@mui/material';
+import { Close } from '@mui/icons-material';
+import { AuthClient } from '../../utils/auth-client';
+import { useSnackbar } from '../../context/SnackbarContext';
 
-export default function ChangePasswordDialog({ isOpen }: { isOpen: boolean }) {
-  const [open, setOpen] = React.useState(isOpen);
-  const [username, setUsername] = React.useState("");
-  const [currentPassword, setCurrentPassword] = React.useState("");
-  const [newPassword, setNewPassword] = React.useState("");
-  const auth = useAuth();
+type ChangePasswordDialogProps = {
+  dialogOpen: boolean;
+  setDialogOpen: (isOpen: boolean) => void;
+};
 
-  const handleClickOpen = () => {
-    console.log("opened :", isOpen);
-    setOpen(true);
-  };
+function ChangePasswordDialog(props: ChangePasswordDialogProps) {
+  const { dialogOpen, setDialogOpen } = props;
+  const [loading, setLoading] = useState(false);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const snackBar = useSnackbar();
 
-  const handleSubmit = async () => {
-    try {
-      auth.changePassword(username, currentPassword, newPassword);
-      handleClose();
-    } catch (err) {
-      console.log(err);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const username = data.get('username');
+    const password = data.get('password');
+    const newPassword = data.get('newPassword');
+
+    if (!username || !password || !newPassword) {
+      return;
     }
+
+    const body = {
+      username: username.toString(),
+      oldPassword: password.toString(),
+      newPassword: newPassword.toString(),
+    };
+
+    setLoading(true);
+    AuthClient.changePassword(body)
+      .then((resp) => {
+        if (resp.status !== 200) throw new Error(resp.data.message);
+
+        // success
+        setDialogOpen(false);
+        snackBar.setSuccess('Change password success', 2000);
+      })
+      .catch((err) => {
+        snackBar.setError(err.toString());
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
-    <div>
-      {/* <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
-      </Button> */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Change Password</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="username"
-            label="Username"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={(event) => setUsername(event.target.value)}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="currentPass"
-            label="Current Password"
-            type="password"
-            fullWidth
-            variant="standard"
-            onChange={(event) => setCurrentPassword(event.target.value)}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="newPass"
-            label="New Password"
-            type="password"
-            fullWidth
-            variant="standard"
-            onChange={(event) => setNewPassword(event.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Apply</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+    <Dialog open={dialogOpen}>
+      <DialogTitle>Change password</DialogTitle>
+
+      <Box position='absolute' top={0} right={0}>
+        <IconButton onClick={() => setDialogOpen(false)}>
+          <Close />
+        </IconButton>
+      </Box>
+
+      <Box
+        sx={{
+          paddingLeft: 5,
+          paddingRight: 5,
+          paddingBottom: 5,
+        }}
+        component='form'
+        autoComplete='off'
+        onSubmit={handleSubmit}
+      >
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <TextField
+              placeholder='Username'
+              required
+              fullWidth
+              id='username'
+              label='Username'
+              name='username'
+              variant='standard'
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              placeholder='Password'
+              required
+              fullWidth
+              id='password'
+              label='Password'
+              name='password'
+              type='password'
+              variant='standard'
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              placeholder='New password'
+              required
+              fullWidth
+              id='newPassword'
+              label='New password'
+              name='newPassword'
+              variant='standard'
+            />
+          </Grid>
+
+          <Grid
+            item
+            sx={{ display: 'flex', justifyContent: 'flex-end' }}
+            xs={12}
+          >
+            <Button variant='contained' type='submit' disabled={loading}>
+              {loading && <CircularProgress size={18} sx={{ mr: 1 }} />}
+              Confirm
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </Dialog>
   );
 }
+
+export default ChangePasswordDialog;

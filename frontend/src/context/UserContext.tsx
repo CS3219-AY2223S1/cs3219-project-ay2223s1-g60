@@ -34,11 +34,6 @@ const UserContext = createContext({
   setUser: (user: User) => {},
   loginWithToken: () => {},
   logout: () => {},
-  changePassword: (
-    username: string,
-    newUsername: string,
-    password: string
-  ) => {},
   deleteUser: () => {},
 });
 
@@ -87,24 +82,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser({ username: '' });
         removeTokens();
       })
+      .catch((err) => {
+        snackbar.setError(err.toString());
+      })
       .finally(() => {
         setLoading(false);
       });
-  };
-
-  const changePassword = (
-    username: string,
-    oldPassword: string,
-    newPassword: string
-  ) => {
-    authClient.AuthClient.changePassword({
-      username,
-      oldPassword,
-      newPassword,
-    }).then((resp) => {
-      console.log(resp);
-      if (resp.status !== 200) throw new Error(resp.data.message);
-    });
   };
 
   const deleteUser = () => {
@@ -138,7 +121,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser,
         loginWithToken,
         logout,
-        changePassword,
         deleteUser,
       }}
     >

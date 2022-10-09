@@ -12,11 +12,14 @@ import ConfirmationDialog from './modal/ConfirmationDialog';
 import { useAuth } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import ChangeUsernameDialog from './modal/ChangeUsernameDialog';
+import ChangePasswordDialog from './modal/ChangePasswordDialog';
 
 function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [changeUnameDialogOpen, setChangeUnameDialogOpen] = useState(false);
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
+    useState(false);
 
   const authClient = useAuth();
   const navigate = useNavigate();
@@ -25,8 +28,14 @@ function Navbar() {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleCloseSettingsMenu = () => {
+  const handleChangeUsername = () => {
     setAnchorEl(null);
+    setChangeUnameDialogOpen(true);
+  };
+
+  const handleChangePassword = () => {
+    setAnchorEl(null);
+    setChangePasswordDialogOpen(true);
   };
 
   const handleDeleteAccount = () => {
@@ -34,13 +43,12 @@ function Navbar() {
     setConfirmDialogOpen(true);
   };
 
-  const handleChangeUsername = () => {
-    setAnchorEl(null);
-    setChangeUnameDialogOpen(true);
-  };
-
   const handleDeleteUser = () => {
     authClient.deleteUser();
+  };
+
+  const handleLogout = () => {
+    authClient.logout();
   };
 
   return (
@@ -77,14 +85,14 @@ function Navbar() {
             horizontal: 'right',
           }}
           open={Boolean(anchorEl)}
-          onClose={handleCloseSettingsMenu}
+          onClose={() => setAnchorEl(null)}
         >
           <MenuItem onClick={handleChangeUsername}>Change username</MenuItem>
-          <MenuItem onClick={handleCloseSettingsMenu}>Change password</MenuItem>
+          <MenuItem onClick={handleChangePassword}>Change password</MenuItem>
           <MenuItem onClick={handleDeleteAccount} sx={{ color: 'red' }}>
             Delete account
           </MenuItem>
-          <MenuItem onClick={handleCloseSettingsMenu}>Logout</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </Toolbar>
 
@@ -98,6 +106,11 @@ function Navbar() {
       <ChangeUsernameDialog
         dialogOpen={changeUnameDialogOpen}
         setDialogOpen={setChangeUnameDialogOpen}
+      />
+
+      <ChangePasswordDialog
+        dialogOpen={changePasswordDialogOpen}
+        setDialogOpen={setChangePasswordDialogOpen}
       />
     </AppBar>
   );
