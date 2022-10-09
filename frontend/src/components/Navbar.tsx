@@ -11,10 +11,13 @@ import { SchoolSharp, SettingsSharp } from '@mui/icons-material';
 import ConfirmationDialog from './modal/ConfirmationDialog';
 import { useAuth } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import ChangeUsernameDialog from './modal/ChangeUsernameDialog';
 
 function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [changeUnameDialogOpen, setChangeUnameDialogOpen] = useState(false);
+
   const authClient = useAuth();
   const navigate = useNavigate();
 
@@ -29,6 +32,11 @@ function Navbar() {
   const handleDeleteAccount = () => {
     setAnchorEl(null);
     setConfirmDialogOpen(true);
+  };
+
+  const handleChangeUsername = () => {
+    setAnchorEl(null);
+    setChangeUnameDialogOpen(true);
   };
 
   const handleDeleteUser = () => {
@@ -77,7 +85,7 @@ function Navbar() {
           open={Boolean(anchorEl)}
           onClose={handleCloseSettingsMenu}
         >
-          <MenuItem onClick={handleCloseSettingsMenu}>Change username</MenuItem>
+          <MenuItem onClick={handleChangeUsername}>Change username</MenuItem>
           <MenuItem onClick={handleCloseSettingsMenu}>Change password</MenuItem>
           <MenuItem onClick={handleDeleteAccount} sx={{ color: 'red' }}>
             Delete account
@@ -92,6 +100,11 @@ function Navbar() {
         message={'Confirm the deletion of your account?'}
         onConfirmAction={handleDeleteUser}
       ></ConfirmationDialog>
+
+      <ChangeUsernameDialog
+        dialogOpen={changeUnameDialogOpen}
+        setDialogOpen={setChangeUnameDialogOpen}
+      />
     </AppBar>
   );
 }

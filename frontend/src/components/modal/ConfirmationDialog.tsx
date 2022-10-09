@@ -8,6 +8,7 @@ import {
   IconButton,
   Box,
   Button,
+  Divider,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
@@ -34,6 +35,8 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
       <DialogContent>
         <Typography>{message}</Typography>
       </DialogContent>
+
+      <Divider />
 
       <DialogActions>
         <Button

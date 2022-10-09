@@ -1,29 +1,29 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { User } from "../@types/UserContext";
-import * as authClient from "../utils/auth-client";
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { User } from '../@types/UserContext';
+import * as authClient from '../utils/auth-client';
 import {
   LOCAL_STORAGE_TOKEN_KEY,
   LOCAL_STORAGE_USERNAME_KEY,
-} from "../configs";
-import { UNAME_PASSWORD_MISSING } from "../constants";
+} from '../configs';
+import { UNAME_PASSWORD_MISSING } from '../constants';
 
 export const defaultUser: User = {
   username: null,
 };
 
-const saveTokens = (token: string, username: string) => {
+export const saveTokens = (token: string, username: string) => {
   window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
   window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, username);
 };
 
-const getTokens = () => {
+export const getTokens = () => {
   const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
   const username = window.localStorage.getItem(LOCAL_STORAGE_USERNAME_KEY);
 
-  return { token: token || "", username: username || "" };
+  return { token: token || '', username: username || '' };
 };
 
-const removeTokens = () => {
+export const removeTokens = () => {
   window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
   window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
 };
@@ -33,11 +33,6 @@ const UserContext = createContext({
   setUser: (user: User) => {},
   loginWithToken: () => {},
   logout: () => {},
-  changeUsername: (
-    username: string,
-    newUsername: string,
-    password: string
-  ) => {},
   changePassword: (
     username: string,
     newUsername: string,
@@ -47,7 +42,7 @@ const UserContext = createContext({
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>({ username: "" });
+  const [user, setUser] = useState<User>({ username: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,7 +65,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser({ username });
       })
       .catch(() => {
-        setUser({ username: "" });
+        setUser({ username: '' });
       })
       .finally(() => {
         setLoading(false);
@@ -83,34 +78,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     authClient.AuthClient.logout({ token, username })
       .then((resp) => {
         if (resp.status === UNAME_PASSWORD_MISSING)
-          throw new Error("Username or password is missing!");
+          throw new Error('Username or password is missing!');
         // if (resp.status === ) throw new Error("Username or password is incorrect!");
 
-        setUser({ username: "" });
+        setUser({ username: '' });
         removeTokens();
       })
       .finally(() => {
         setLoading(false);
       });
-  };
-
-  const changeUsername = (
-    username: string,
-    newUsername: string,
-    password: string
-  ) => {
-    authClient.AuthClient.changeUsername({
-      username,
-      newUsername,
-      password,
-    }).then((resp) => {
-      if (resp.status !== 200)
-        throw new Error("Something went wrong when updating username");
-
-      const { token } = getTokens();
-      saveTokens(token, newUsername);
-      setUser({ username: newUsername });
-    });
   };
 
   const changePassword = (
@@ -134,10 +110,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     authClient.AuthClient.deleteUser({ username })
       .then((resp) => {
         if (resp.status !== 200)
-          throw new Error("Something went wrong when deleting the account!");
+          throw new Error('Something went wrong when deleting the account!');
 
         removeTokens();
-        setUser({ username: "" });
+        setUser({ username: '' });
       })
       .finally(() => {
         setLoading(false);
@@ -155,7 +131,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser,
         loginWithToken,
         logout,
-        changeUsername,
         changePassword,
         deleteUser,
       }}
