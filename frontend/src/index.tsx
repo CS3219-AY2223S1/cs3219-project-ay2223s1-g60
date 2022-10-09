@@ -9,11 +9,11 @@ import { SnackbarProvider } from './context/SnackbarContext';
 // @ts-ignore
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <UserProvider>
-    <SnackbarProvider>
+  <SnackbarProvider>
+    <UserProvider>
       <App />
-    </SnackbarProvider>
-  </UserProvider>
+    </UserProvider>
+  </SnackbarProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

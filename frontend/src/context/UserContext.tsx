@@ -6,6 +6,7 @@ import {
   LOCAL_STORAGE_USERNAME_KEY,
 } from '../configs';
 import { UNAME_PASSWORD_MISSING } from '../constants';
+import { useSnackbar } from './SnackbarContext';
 
 export const defaultUser: User = {
   username: null,
@@ -44,6 +45,8 @@ const UserContext = createContext({
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>({ username: '' });
   const [loading, setLoading] = useState(true);
+
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     loginWithToken().then();
@@ -114,6 +117,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         removeTokens();
         setUser({ username: '' });
+        snackbar.setSuccess('Account deleted');
+      })
+      .catch((err) => {
+        snackbar.setError(err.toString());
       })
       .finally(() => {
         setLoading(false);
