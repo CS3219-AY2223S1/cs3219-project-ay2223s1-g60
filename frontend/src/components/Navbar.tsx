@@ -11,6 +11,7 @@ import { SchoolSharp, SettingsSharp } from '@mui/icons-material';
 import ConfirmationDialog from './modal/ConfirmationDialog';
 import { useAuth } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from '../context/SnackbarContext';
 import ChangeUsernameDialog from './modal/ChangeUsernameDialog';
 
 function Navbar() {
@@ -20,6 +21,7 @@ function Navbar() {
 
   const authClient = useAuth();
   const navigate = useNavigate();
+  const snackbar = useSnackbar();
 
   const handleOpenSettingsMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -44,8 +46,7 @@ function Navbar() {
       authClient.deleteUser();
       navigate('/');
     } catch (err) {
-      // TODO: error handling
-      console.log(err);
+      snackbar.setError('Something went wrong when deleting account!');
     }
   };
 
@@ -57,7 +58,7 @@ function Navbar() {
           edge='start'
           color='inherit'
           aria-label='menu'
-          onClick={() => console.log('clicked')}
+          onClick={() => navigate('/home')}
         >
           <SchoolSharp />
         </IconButton>

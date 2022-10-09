@@ -12,6 +12,7 @@ import {
 import { Close } from '@mui/icons-material';
 import { AuthClient } from '../../utils/auth-client';
 import { getTokens, saveTokens, useAuth } from '../../context/UserContext';
+import { useSnackbar } from '../../context/SnackbarContext';
 
 type ChangeUsernameDialogProps = {
   dialogOpen: boolean;
@@ -21,7 +22,9 @@ type ChangeUsernameDialogProps = {
 function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
   const { dialogOpen, setDialogOpen } = props;
   const [loading, setLoading] = useState(false);
+
   const authClient = useAuth();
+  const snackBar = useSnackbar();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,7 +40,7 @@ function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
     const body = {
       username: username.toString(),
       password: password.toString(),
-      newUsername: password.toString(),
+      newUsername: newUsername.toString(),
     };
 
     setLoading(true);
@@ -49,10 +52,12 @@ function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
         const { token } = getTokens();
         saveTokens(token, newUsername.toString()); // save in browser
         authClient.setUser({ username: newUsername.toString() }); // save in context
+
         setDialogOpen(false);
+        snackBar.setSuccess('Change username success', 2000);
       })
       .catch((err) => {
-        // error
+        snackBar.setError(err.toString());
       })
       .finally(() => {
         setLoading(false);
