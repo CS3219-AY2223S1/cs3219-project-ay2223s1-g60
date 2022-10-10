@@ -3,7 +3,7 @@ import { Socket } from 'socket.io-client';
 import { Stack, Typography } from '@mui/material';
 import ChatInput from './ChatInput';
 import ChatView from './ChatView';
-import { defaultRole, Roles } from './roles';
+import { defaultRole, Roles } from './ChatModel.d';
 
 function ChatBox(props: { socket: Socket; room: string }) {
   const { socket, room } = props;

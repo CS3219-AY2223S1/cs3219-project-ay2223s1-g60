@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Stack, Typography } from '@mui/material';
 import { Socket } from 'socket.io-client';
-import { ChatModel } from '../../../models/ChatModel';
+import { ChatModel, Roles } from './ChatModel.d';
 import ChatBubble from './ChatBubble';
-import { Roles } from './roles';
 
 const Placeholder = () => <Typography>View your messages here...</Typography>;
 

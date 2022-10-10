@@ -12,11 +12,10 @@ import HomePage from './components/HomePage';
 import MatchingPage from './components/MatchingPage';
 import Navbar from './components/Navbar';
 import { useUser } from './context/UserContext';
-import RoomPage from './views/RoomPage';
+import RoomPage from './pages/RoomPage';
 
 function App() {
   const user = useUser();
-  console.log(user);
 
   const loggedInRoutes = (
     <Routes>
