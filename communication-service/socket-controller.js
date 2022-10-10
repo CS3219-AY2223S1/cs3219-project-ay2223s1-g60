@@ -1,26 +1,24 @@
+// Mapping of room and roles
 const roles = {};
 
 const handleGetRole = ({ room, username }, io) => {
   if (roles[room] && roles[room].interviewer && roles[room].interviewee) {
-    console.log('Assigned role to room: ', room);
     io.to(room).emit('assign-role', roles[room]);
     return;
   }
 
   if (!roles[room]) {
-    if (Math.floor(Math.random()) == 0) {
-      roles[room] = { interviewer: username, interviewee: null };
-    } else {
-      roles[room] = { interviewer: null, interviewee: username };
-    }
+    const isInterviewer = Math.floor(Math.random()) === 0; // decide randomly
+    roles[room] = {
+      interviewer: isInterviewer ? username : null,
+      interviewee: !isInterviewer ? username : null,
+    };
     return;
   }
 
-  if (roles[room].interviewee) {
-    roles[room].interviewer = username;
-  } else {
-    roles[room].interviewee = username;
-  }
+  roles[room].interviewee
+    ? (roles[room].interviewer = username)
+    : (roles[room].interviewee = username);
 };
 
 const createEventListeners = (socket, io) => {
