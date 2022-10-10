@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import LoadingModal from './loading/LoadingModal';
 import { useUser } from '../context/UserContext';

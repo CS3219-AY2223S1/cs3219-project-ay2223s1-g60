@@ -11,14 +11,29 @@ import {
   URL_MATCHING_SVC,
 } from '../configs';
 import TimerModal from '../components/modal/TimerModal';
+import { useUser } from '../context/UserContext';
 
 function RoomPage() {
   const { search } = useLocation();
+  const user = useUser().username;
+
   const room =
     React.useMemo(() => new URLSearchParams(search), [search]).get('id') || '0';
   const collabSocket = io(URL_COLLABORATION_SVC, { query: { room: room } });
   const chatSocket = io(URL_COMMUNICATION_SVC, { query: { room: room } });
   const timerSocket = io(URL_MATCHING_SVC);
+
+  chatSocket.on('join-room', () =>
+    chatSocket.emit('get-role', { room: room, username: user })
+  );
+
+  chatSocket.on('disconnect', () =>
+    chatSocket.emit('delete-room', { room: room })
+  );
+
+  timerSocket.on('disconnect', () =>
+    timerSocket.emit('delete-room', { room: room })
+  );
 
   return (
     <Box>

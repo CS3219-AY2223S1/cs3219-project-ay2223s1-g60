@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
   console.log(`Connected to ${socket.id}`);
   const room = socket.handshake.query.room;
   socket.join(room);
-  console.log('Joined room ', room);
+  io.to(room).emit('join-room');
   createEventListeners(socket, io);
 });
 

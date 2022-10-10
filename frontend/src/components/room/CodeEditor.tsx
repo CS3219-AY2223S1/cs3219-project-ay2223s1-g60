@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Socket } from 'socket.io-client';
 
@@ -37,15 +37,13 @@ function CodeEditor(props: { socket: Socket; room: string }) {
     });
   };
 
-  useEffect(() => {
-    socket.on(
-      'typedCode',
-      (data: { text: string; socketId: string; room: string }) => {
-        if (data.socketId === socket.id) return;
-        setTypedCode(data.text);
-      }
-    );
-  }, [socket, typedCode]);
+  socket.on(
+    'typedCode',
+    (data: { text: string; socketId: string; room: string }) => {
+      if (data.socketId === socket.id) return;
+      setTypedCode(data.text);
+    }
+  );
 
   return (
     <Stack spacing={2}>
