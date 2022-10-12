@@ -1,6 +1,4 @@
-/frontend/.env
-/user-service/.env
-.env
+/*/.env
 .idea/
 node_modules
 package-lock.json
