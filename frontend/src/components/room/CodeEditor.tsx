@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack, TextField, Typography } from '@mui/material';
+import { Stack, TextField } from '@mui/material';
 import { Socket } from 'socket.io-client';
 
 function CodeEditor(props: { socket: Socket; room: string }) {
@@ -46,12 +46,9 @@ function CodeEditor(props: { socket: Socket; room: string }) {
   );
 
   return (
-    <Stack spacing={2}>
-      <Typography variant={'h3'} marginBottom={'2rem'}>
-        Code Editor
-      </Typography>
+    <Stack spacing={2} sx={{ flexGrow: '1' }}>
       <TextField
-        inputProps={{ style: { fontFamily: '"Roboto Mono"' } }}
+        inputProps={{ style: { fontFamily: 'Roboto Mono' } }}
         placeholder={codeEditorPlaceholder}
         value={typedCode}
         onChange={handleChange}

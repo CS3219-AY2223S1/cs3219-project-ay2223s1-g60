@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Stack } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
-import { useLocation } from 'react-router-dom';
 import TimerModal from '../components/modal/TimerModal';
 import useRoomSockets from '../components/hooks/useRoomSockets';
 
@@ -15,13 +15,15 @@ function RoomPage() {
   const { timerSocket, collabSocket, chatSocket } = useRoomSockets(room);
 
   return (
-    <Box>
+    <Box style={{ height: '100vh' }}>
       <TimerModal socket={timerSocket} seconds={30} room={room} />
-      <Stack direction={'row'} spacing={8} alignItems={'stretch'}>
-        <Stack flex={1}>
-          <CodingQuestion />
-          <CodeEditor socket={collabSocket} room={room} />
-        </Stack>
+      <Stack
+        direction={'row'}
+        spacing={2}
+        style={{ width: '100vw', height: '100vh' }}
+      >
+        <CodingQuestion />
+        <CodeEditor socket={collabSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>
     </Box>
