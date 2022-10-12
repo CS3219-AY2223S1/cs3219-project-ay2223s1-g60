@@ -18,6 +18,8 @@ import {
   loginWithToken,
   signIn,
 } from "./controller/user-controller.js";
+import { verifyToken } from "./middlewares/authJwt.js";
+
 
 const router = express.Router();
 
@@ -26,11 +28,11 @@ router.get("/", (_, res) => res.send("Hello World from user-service"));
 router.get("/blacklist", isTokenInBlacklist);
 
 router.post("/signup", createUser);
-router.post("/logout", logout);
-router.post("/loginWithToken", loginWithToken);
+router.post("/logout", verifyToken, logout);
+router.post("/loginWithToken", verifyToken, loginWithToken);
 router.post("/login", signIn);
-router.post("/change-password", changePassword);
-router.post("/change-username", changeUsername);
+router.post("/change-password", verifyToken, changePassword);
+router.post("/change-username", verifyToken, changeUsername);
 
 router.delete("/delete-user", deleteUser);
 
