@@ -1,37 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Stack, Typography } from '@mui/material';
 import { Socket } from 'socket.io-client';
-import { ChatModel } from '../../../models/ChatModel';
+import { ChatModel, Roles } from './ChatModel.d';
 import ChatBubble from './ChatBubble';
 
-function ChatView(props: { socket: Socket }) {
-  const { socket } = props;
+const Placeholder = () => <Typography>View your messages here...</Typography>;
+
+function ChatView(props: { socket: Socket; role: Roles }) {
+  const { socket, role } = props;
   const [chats, setChats] = useState<ChatModel[]>([]);
   const [typingMessage, setTypingMessage] = useState('');
 
-  useEffect(() => {
-    socket.on('messageResponse', (data: ChatModel) =>
-      setChats([...chats, data])
-    );
-  }, [socket, chats]);
-
-  useEffect(() => {
-    socket.on('typingMessage', (data: { socketId: string; name: string }) => {
-      if (socket.id !== data.socketId) {
-        setTypingMessage(`${data.name} is typing`);
-      }
-    });
-
-    socket.on('stop-typingMessage', () => setTypingMessage(''));
-
-    console.log(typingMessage);
-  }, [socket, typingMessage]);
+  socket.on('messageResponse', (data: ChatModel) => setChats([...chats, data]));
+  socket.on('typingMessage', (data: { socketId: string; name: string }) => {
+    if (socket.id !== data.socketId) {
+      setTypingMessage(`${data.name} is typing`);
+    }
+  });
+  socket.on('stop-typingMessage', () => setTypingMessage(''));
 
   return (
     <Container>
-      {chats.length === 0 && (
-        <Typography>View your messages here...</Typography>
-      )}
+      {chats.length === 0 && <Placeholder />}
+      <Typography>{role.interviewer} as Interviewer</Typography>
+      <Typography>{role.interviewee} as Interviewee</Typography>
       <Stack spacing={1} display={'flex'}>
         {chats.map((chat, i) => (
           <ChatBubble
