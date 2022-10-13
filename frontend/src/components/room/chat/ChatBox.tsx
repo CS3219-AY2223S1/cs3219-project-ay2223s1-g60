@@ -12,12 +12,10 @@ function ChatBox(props: { socket: Socket; room: string }) {
   socket.on('assign-role', (roles: Roles) => setRoles(roles));
 
   return (
-    <Stack
-      spacing={2}
-      paddingBottom={'2rem'}
-      sx={{ position: 'sticky', width: '40%' }}
-    >
-      <Typography variant={'h3'}>Chat</Typography>
+    <Stack spacing={2} sx={{ width: '500px', justifyContent: 'space-between' }}>
+      <Typography variant={'h6'} sx={{ textAlign: 'center' }}>
+        Chat
+      </Typography>
       <ChatView socket={socket} role={roles} />
       <ChatInput socket={socket} room={room} />
     </Stack>

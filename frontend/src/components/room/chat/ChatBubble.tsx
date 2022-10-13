@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import { ChatModel } from './ChatModel.d';
 
 const ChatBubble = (props: { chat: ChatModel; isSelf: boolean }) => {
@@ -8,16 +9,23 @@ const ChatBubble = (props: { chat: ChatModel; isSelf: boolean }) => {
   return (
     <Box
       sx={{
-        backgroundColor: `${isSelf ? 'primary.main' : 'secondary.main'}`,
+        backgroundColor: `${isSelf ? 'transparent' : 'primary.main'}`,
         borderRadius: '16px',
         width: 'fit-content',
         display: 'flex',
-        alignSelf: `${isSelf ? 'flex-end' : 'flex-start'}`,
+        border: `${isSelf ? '1px solid' : 'none'}`,
+        borderColor: isSelf ? grey[400] : 'none',
+        alignSelf: `${isSelf ? 'flex-start' : 'flex-end'}`,
       }}
       paddingX={'1rem'}
       paddingY={'0.5rem'}
     >
-      <Typography sx={{ textAlign: `${isSelf ? 'right' : 'left'}` }}>
+      <Typography
+        sx={{
+          textAlign: `${isSelf ? 'right' : 'left'}`,
+          color: `${isSelf ? 'black' : 'white'}`,
+        }}
+      >
         {chat.text}
       </Typography>
     </Box>
