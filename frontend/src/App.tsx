@@ -39,11 +39,11 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className='App'>
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <div className='App' style={{ minHeight: '100vh' }}>
+        <Box>
           <Router>
-            {user.username && <Navbar />}
-            {user.username ? loggedInRoutes : guestRoutes}
+            {true && <Navbar />}
+            {true ? loggedInRoutes : guestRoutes}
           </Router>
         </Box>
       </div>

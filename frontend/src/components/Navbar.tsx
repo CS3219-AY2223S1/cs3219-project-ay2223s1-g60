@@ -52,7 +52,7 @@ function Navbar() {
   };
 
   return (
-    <AppBar position={'relative'} sx={{ boxShadow: 'none' }}>
+    <AppBar position='relative' sx={{ boxShadow: 'none', height: '60px' }}>
       <Toolbar>
         <IconButton
           size='large'

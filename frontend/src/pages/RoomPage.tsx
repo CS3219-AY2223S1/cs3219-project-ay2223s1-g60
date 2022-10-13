@@ -15,12 +15,12 @@ function RoomPage() {
   const { timerSocket, collabSocket, chatSocket } = useRoomSockets(room);
 
   return (
-    <Box style={{ height: '100vh' }}>
+    <Box style={{ height: 'calc(100vh - 82px)' }}>
       <TimerModal socket={timerSocket} seconds={30} room={room} />
       <Stack
         direction={'row'}
         spacing={2}
-        style={{ width: '100vw', height: '100vh' }}
+        style={{ width: '100vw', maxHeight: '100%' }}
       >
         <CodingQuestion />
         <CodeEditor socket={collabSocket} room={room} />

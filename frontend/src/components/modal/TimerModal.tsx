@@ -8,13 +8,13 @@ function TimerModal(props: { socket: Socket; seconds: number; room: string }) {
   const { socket, seconds, room } = props;
   const currTime = useCountDown(seconds);
 
-  useEffect(() => {
-    if (currTime <= 0) {
-      socket.emit('delete-room', { room: room });
-      socket.disconnect();
-      navigate('/match');
-    }
-  }, [currTime, navigate, room, socket]);
+  // useEffect(() => {
+  //   if (currTime <= 0) {
+  //     socket.emit('delete-room', { room: room });
+  //     socket.disconnect();
+  //     navigate('/match');
+  //   }
+  // }, [currTime, navigate, room, socket]);
 
   return <div>{currTime}</div>;
 }
