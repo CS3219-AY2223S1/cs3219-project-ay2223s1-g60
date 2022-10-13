@@ -20,7 +20,12 @@ const ChatBubble = (props: { chat: ChatModel; isSelf: boolean }) => {
       paddingX={'1rem'}
       paddingY={'0.5rem'}
     >
-      <Typography sx={{ textAlign: `${isSelf ? 'right' : 'left'}` }}>
+      <Typography
+        sx={{
+          textAlign: `${isSelf ? 'right' : 'left'}`,
+          color: `${isSelf ? 'black' : 'white'}`,
+        }}
+      >
         {chat.text}
       </Typography>
     </Box>

@@ -11,15 +11,7 @@ const TypographyPlaceholder = (props: PropsWithChildren) => (
 
 function ChatView(props: { socket: Socket; role: Roles }) {
   const { socket, role } = props;
-  const [chats, setChats] = useState<ChatModel[]>([
-    {
-      text: 'hoho',
-      name: 'xiuxi',
-      id: 1,
-      socketId: socket.id,
-      room: 'ketek',
-    },
-  ]);
+  const [chats, setChats] = useState<ChatModel[]>([]);
   const [typingMessage, setTypingMessage] = useState('');
 
   socket.on('messageResponse', (data: ChatModel) => setChats([...chats, data]));
@@ -32,11 +24,6 @@ function ChatView(props: { socket: Socket; role: Roles }) {
 
   return (
     <Container sx={{ flexGrow: '1' }}>
-      {chats.length === 0 && (
-        <TypographyPlaceholder>
-          View your messages here...
-        </TypographyPlaceholder>
-      )}
       <TypographyPlaceholder>
         {role.interviewer} as Interviewer
       </TypographyPlaceholder>
