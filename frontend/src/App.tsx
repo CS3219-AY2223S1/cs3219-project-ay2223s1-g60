@@ -20,7 +20,7 @@ function App() {
 
   const loggedInRoutes = (
     <Routes>
-      <Route path='/' element={<Navigate replace to='/' />} />
+      <Route path='/' element={<Navigate replace to='/home' />} />
       <Route path='/home' element={<HomePage />} />
       <Route path='/match' element={<MatchingPage />} />
       <Route path='/room/*' element={<RoomPage />} />
