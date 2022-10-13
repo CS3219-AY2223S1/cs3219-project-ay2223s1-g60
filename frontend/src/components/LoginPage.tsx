@@ -17,11 +17,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import { useNavigate } from 'react-router-dom';
 import { AuthClient } from '../utils/auth-client';
-import {
-  LOCAL_STORAGE_TOKEN_KEY,
-  LOCAL_STORAGE_USERNAME_KEY,
-} from '../configs';
-import { useAuth } from '../context/UserContext';
+import { saveTokens, useAuth } from '../context/UserContext';
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -51,8 +47,7 @@ function LoginPage() {
         if (status !== 201) throw new Error(message);
 
         authClient.setUser({ username: username });
-        window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
-        window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, username);
+        saveTokens(token, username);
         navigate('/home');
       })
       .catch((err) => {

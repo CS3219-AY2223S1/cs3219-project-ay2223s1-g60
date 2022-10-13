@@ -6,24 +6,25 @@ import {
   LOCAL_STORAGE_USERNAME_KEY,
 } from '../configs';
 import { UNAME_PASSWORD_MISSING } from '../constants';
+import { useSnackbar } from './SnackbarContext';
 
 export const defaultUser: User = {
   username: null,
 };
 
-const saveTokens = (token: string, username: string) => {
+export const saveTokens = (token: string, username: string) => {
   window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
   window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, username);
 };
 
-const getTokens = () => {
+export const getTokens = () => {
   const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
   const username = window.localStorage.getItem(LOCAL_STORAGE_USERNAME_KEY);
 
   return { token: token || '', username: username || '' };
 };
 
-const removeTokens = () => {
+export const removeTokens = () => {
   window.localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
   window.localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
 };
@@ -33,22 +34,14 @@ const UserContext = createContext({
   setUser: (user: User) => {},
   loginWithToken: () => {},
   logout: () => {},
-  changeUsername: (
-    username: string,
-    newUsername: string,
-    password: string
-  ) => {},
-  changePassword: (
-    username: string,
-    newUsername: string,
-    password: string
-  ) => {},
   deleteUser: () => {},
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>({ username: '' });
   const [loading, setLoading] = useState(true);
+
+  const snackbar = useSnackbar();
 
   useEffect(() => {
     loginWithToken().then();
@@ -89,43 +82,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser({ username: '' });
         removeTokens();
       })
+      .catch((err) => {
+        snackbar.setError(err.toString());
+      })
       .finally(() => {
         setLoading(false);
       });
-  };
-
-  const changeUsername = (
-    username: string,
-    newUsername: string,
-    password: string
-  ) => {
-    authClient.AuthClient.changeUsername({
-      username,
-      newUsername,
-      password,
-    }).then((resp) => {
-      if (resp.status !== 200)
-        throw new Error('Something went wrong when updating username');
-
-      const { token } = getTokens();
-      saveTokens(token, newUsername);
-      setUser({ username: newUsername });
-    });
-  };
-
-  const changePassword = (
-    username: string,
-    oldPassword: string,
-    newPassword: string
-  ) => {
-    authClient.AuthClient.changePassword({
-      username,
-      oldPassword,
-      newPassword,
-    }).then((resp) => {
-      console.log(resp);
-      if (resp.status !== 200) throw new Error(resp.data.message);
-    });
   };
 
   const deleteUser = () => {
@@ -138,6 +100,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         removeTokens();
         setUser({ username: '' });
+        snackbar.setSuccess('Account deleted');
+      })
+      .catch((err) => {
+        snackbar.setError(err.toString());
       })
       .finally(() => {
         setLoading(false);
@@ -155,8 +121,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser,
         loginWithToken,
         logout,
-        changeUsername,
-        changePassword,
         deleteUser,
       }}
     >
