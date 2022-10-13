@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from 'axios';
 import {
   URL_USER_SVC,
   USER_CHANGE_PASSWORD,
@@ -8,7 +8,7 @@ import {
   USER_LOGIN_WITH_TOKEN,
   USER_LOGOUT,
   USER_SIGNUP,
-} from "../configs";
+} from '../configs';
 
 declare namespace API {
   type Response<T> = {
@@ -80,7 +80,7 @@ export const AuthClient = {
     username: string
   ): Promise<API.Response<{ message: string; username: string }>> => {
     let headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     };
 

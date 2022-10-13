@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Alert,
   AlertTitle,
@@ -12,20 +12,20 @@ import {
   Link,
   TextField,
   Typography,
-} from "@mui/material";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
-import { useNavigate } from "react-router-dom";
-import { AuthClient } from "../utils/auth-client";
+} from '@mui/material';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import { useNavigate } from 'react-router-dom';
+import { AuthClient } from '../utils/auth-client';
 import {
   LOCAL_STORAGE_TOKEN_KEY,
   LOCAL_STORAGE_USERNAME_KEY,
-} from "../configs";
-import { useAuth } from "../context/UserContext";
+} from '../configs';
+import { useAuth } from '../context/UserContext';
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
-  const [loginFailMessage, setLoginFailMessage] = useState<string>("");
+  const [loginFailMessage, setLoginFailMessage] = useState<string>('');
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
   const authClient = useAuth();
@@ -33,8 +33,8 @@ function LoginPage() {
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const username = data.get("username");
-    const password = data.get("password");
+    const username = data.get('username');
+    const password = data.get('password');
 
     if (!username || !password) {
       return;
@@ -53,7 +53,7 @@ function LoginPage() {
         authClient.setUser({ username: username });
         window.localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
         window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, username);
-        navigate("/home");
+        navigate('/home');
       })
       .catch((err) => {
         setLoginFailMessage(err);
@@ -66,24 +66,24 @@ function LoginPage() {
 
   return (
     <Container
-      maxWidth="xs"
+      maxWidth='xs'
       sx={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           mb: 20,
         }}
       >
         <Avatar />
 
-        <Typography component="h1" variant="h5">
+        <Typography component='h1' variant='h5'>
           Log in
         </Typography>
 
@@ -91,8 +91,8 @@ function LoginPage() {
           sx={{
             mt: 3,
           }}
-          component="form"
-          autoComplete={"off"}
+          component='form'
+          autoComplete={'off'}
           onSubmit={handleLogin}
         >
           <Grid container spacing={2}>
@@ -100,17 +100,17 @@ function LoginPage() {
               <TextField
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">
+                    <InputAdornment position='start'>
                       <AccountCircleOutlinedIcon />
                     </InputAdornment>
                   ),
                 }}
-                placeholder={"Username"}
+                placeholder={'Username'}
                 required
                 fullWidth
-                id="username"
-                label="Username"
-                name="username"
+                id='username'
+                label='Username'
+                name='username'
               />
             </Grid>
 
@@ -118,26 +118,26 @@ function LoginPage() {
               <TextField
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">
+                    <InputAdornment position='start'>
                       <ShieldOutlinedIcon />
                     </InputAdornment>
                   ),
                 }}
-                placeholder={"Password"}
+                placeholder={'Password'}
                 required
                 fullWidth
-                id="password"
-                label="Password"
-                name="password"
-                type="password"
+                id='password'
+                label='Password'
+                name='password'
+                type='password'
               />
             </Grid>
           </Grid>
 
           <Button
-            type="submit"
+            type='submit'
             fullWidth
-            variant="contained"
+            variant='contained'
             disabled={loading}
             sx={{ mt: 3, mb: 2 }}
           >
@@ -148,7 +148,7 @@ function LoginPage() {
           {showAlert && (
             <Alert
               onClose={() => setShowAlert(false)}
-              severity={"error"}
+              severity={'error'}
               sx={{ mb: 1 }}
             >
               <AlertTitle>{loginFailMessage.toString()}</AlertTitle>
@@ -157,7 +157,7 @@ function LoginPage() {
 
           <Grid container>
             <Grid item>
-              <Link href="/signup" variant="body2">
+              <Link href='/signup' variant='body2'>
                 Don't have an account? Sign up here
               </Link>
             </Grid>
