@@ -1,37 +1,43 @@
 import React, { useState } from 'react';
-import { Stack, TextField } from '@mui/material';
+import {
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from '@mui/material';
 import { Socket } from 'socket.io-client';
+import * as monaco from 'monaco-editor';
+import MonacoEditor from 'react-monaco-editor';
+
+const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
+  autoIndent: 'full',
+  quickSuggestions: true,
+  quickSuggestionsDelay: 100,
+  hideCursorInOverviewRuler: true,
+  matchBrackets: 'always',
+  wordWrap: 'on',
+  wordWrapColumn: 80,
+  codeLens: true,
+  colorDecorators: true,
+  minimap: {
+    enabled: false,
+  },
+};
 
 function CodeEditor(props: { socket: Socket; room: string }) {
   const { socket, room } = props;
   const [typedCode, setTypedCode] = useState('');
+  const [language, setLanguage] = useState('javascript');
 
-  const codeEditorPlaceholder = '/* Insert your code here */';
-
-  const handleTyping = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-
-      const target = e.target as HTMLInputElement;
-
-      const { value } = target;
-
-      const startPos = target.selectionStart || 0;
-      const endPos = target.selectionEnd || 0;
-      const tab = '    '; // set to 4 spaces
-
-      target.value =
-        value.substring(0, startPos) + tab + value.substring(endPos);
-
-      target.selectionStart = startPos + tab.length;
-      target.selectionEnd = startPos + tab.length;
-    }
-  };
-
-  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTypedCode(e.target.value);
+  const handleChange = (
+    value: string,
+    e: monaco.editor.IModelContentChangedEvent
+  ) => {
+    setTypedCode(value);
     socket.emit('typedCode', {
-      text: e.target.value,
+      text: value,
       socketId: socket.id,
       room: room,
     });
@@ -46,16 +52,37 @@ function CodeEditor(props: { socket: Socket; room: string }) {
   );
 
   return (
-    <Stack spacing={2} sx={{ flexGrow: '1' }}>
-      <TextField
-        inputProps={{ style: { fontFamily: 'Roboto Mono' } }}
-        placeholder={codeEditorPlaceholder}
+    <Stack spacing={2} sx={{ flexGrow: '1', padding: '1rem' }}>
+      <FormControl sx={{ width: '200px' }}>
+        <InputLabel>Language</InputLabel>
+        <Select
+          labelId='demo-simple-select-label'
+          id='demo-simple-select'
+          value={language}
+          label='Language'
+          onChange={(e: SelectChangeEvent) => setLanguage(e.target.value)}
+        >
+          {monaco.languages
+            .getLanguages()
+            .map((language: monaco.languages.ILanguageExtensionPoint, i) => (
+              <MenuItem value={language.id}>
+                {language.id
+                  .substring(0, 1)
+                  .toLocaleUpperCase()
+                  .concat(language.id.substring(1))}
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
+      <MonacoEditor
+        width='100%'
+        height='100%'
+        language={language}
+        theme='vs'
         value={typedCode}
+        options={MONACO_OPTIONS}
         onChange={handleChange}
-        multiline
-        rows={20}
-        onKeyDown={handleTyping}
-      ></TextField>
+      />
     </Stack>
   );
 }
