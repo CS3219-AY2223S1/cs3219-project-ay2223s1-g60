@@ -1,3 +1,7 @@
+/frontend/.env
+/user-service/.env
+/question-service/.env
+.env
 /*/.env
 .idea/
 node_modules
