@@ -176,7 +176,7 @@ def main():
             )
 
     # Sort by difficulty follwed by problem id in ascending order
-    links = sorted(links, key=lambda x: (x[1], x[2]))
+    links = sorted(links, key=lambda x: (x[1]), reverse=True)
 
     try:
         for i in range(completed_upto + 1, len(links)):
@@ -189,17 +189,19 @@ def main():
             ) = links[i]
             url = ALGORITHMS_BASE_URL + question__title_slug
             
+            print("Difficulty " + str(difficulty) + " type " + str(type(difficulty)))
             
             # TODO : Implement get question answer
-            download(i, frontend_question_id, url, question__title, difficulty, question__title_slug)
+            if difficulty == 3:
+                download(i, frontend_question_id, url, question__title, difficulty, question__title_slug)
 
             # Sleep for 20 secs for each problem and 2 minns after every 30 problems
             if i % 30 == 0:
-                print(f"Sleeping 120 secs\n")
-                time.sleep(120)
+                print(f"Sleeping 10 secs\n")
+                time.sleep(10)
             else:
-                print(f"Sleeping 20 secs\n")
-                time.sleep(5)
+                print(f"Sleeping 2 secs\n")
+                time.sleep(2)
 
     finally:
         # Close the browser after download
