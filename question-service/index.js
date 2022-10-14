@@ -18,4 +18,4 @@ app.use("/api/question", router).all((_, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 });
 
-app.listen(8000, () => console.log("question-service listening on port 8000"));
+app.listen(8004, () => console.log("question-service listening on port 8004"));
