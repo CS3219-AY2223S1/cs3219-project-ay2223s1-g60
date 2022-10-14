@@ -1,74 +1,118 @@
 import React, { useState } from 'react';
-import { useUser, useAuth } from '../context/UserContext';
-import axios from 'axios';
 import {
-  URL_USER_LOGOUT,
-  URL_USER_DELETE_USER,
-  LOCAL_STORAGE_TOKEN_KEY,
-  LOCAL_STORAGE_USERNAME_KEY,
-} from '../configs';
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+} from '@mui/material';
+import { SchoolSharp, SettingsSharp } from '@mui/icons-material';
+import ConfirmationDialog from './modal/ConfirmationDialog';
+import { useAuth } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 import ChangeUsernameDialog from './modal/ChangeUsernameDialog';
 import ChangePasswordDialog from './modal/ChangePasswordDialog';
-import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [changeUnameDialogOpen, setChangeUnameDialogOpen] = useState(false);
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
+    useState(false);
+
   const authClient = useAuth();
-  const user = useUser();
   const navigate = useNavigate();
 
-  const [usernameModalIsOpen, setUsernameModalIsOpen] =
-    useState<boolean>(false);
-  const [passwordModalIsOpen, setPasswordModalIsOpen] =
-    useState<boolean>(false);
-
-  const toggleOpenUsernameModal = () => {
-    setUsernameModalIsOpen(!usernameModalIsOpen);
+  const handleOpenSettingsMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const toggleOpenPasswordModal = () => {
-    setPasswordModalIsOpen(!passwordModalIsOpen);
+  const handleChangeUsername = () => {
+    setAnchorEl(null);
+    setChangeUnameDialogOpen(true);
   };
 
-  const handleLogout = async () => {
-    try {
-      await authClient.logout();
-      navigate('/login');
-    } catch (error) {
-      console.log(error);
-    }
+  const handleChangePassword = () => {
+    setAnchorEl(null);
+    setChangePasswordDialogOpen(true);
   };
 
-  const handleDeleteUser = async () => {
-    try {
-      await authClient.deleteUser();
-      navigate('/');
-    } catch (err) {
-      console.log(err);
-    }
+  const handleDeleteAccount = () => {
+    setAnchorEl(null);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleDeleteUser = () => {
+    authClient.deleteUser();
+  };
+
+  const handleLogout = () => {
+    authClient.logout();
   };
 
   return (
-    <div>
-      <button>
-        <a href='/'>PeerPrep</a>
-      </button>
-      {usernameModalIsOpen && (
-        <ChangeUsernameDialog isOpen={usernameModalIsOpen} />
-      )}
-      {passwordModalIsOpen && (
-        <ChangePasswordDialog isOpen={passwordModalIsOpen} />
-      )}
-      {user.username ? (
-        <>
-          <button onClick={toggleOpenUsernameModal}>Change username</button>
-          <button onClick={toggleOpenPasswordModal}>Change password</button>
-          <button onClick={handleDeleteUser}>Delete user</button>
-          <button onClick={handleLogout}>Logout</button>
-        </>
-      ) : (
-        <button onClick={() => navigate('/login')}>Login</button>
-      )}
-    </div>
+    <AppBar position={'relative'} sx={{ boxShadow: 'none' }}>
+      <Toolbar>
+        <IconButton
+          size='large'
+          edge='start'
+          color='inherit'
+          aria-label='menu'
+          onClick={() => navigate('/home')}
+        >
+          <SchoolSharp />
+        </IconButton>
+
+        <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+          PeerPrep
+        </Typography>
+
+        <IconButton onClick={handleOpenSettingsMenu} color='inherit'>
+          <SettingsSharp />
+        </IconButton>
+
+        <Menu
+          id='menu-appbar'
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+        >
+          <MenuItem onClick={handleChangeUsername}>Change username</MenuItem>
+          <MenuItem onClick={handleChangePassword}>Change password</MenuItem>
+          <MenuItem onClick={handleDeleteAccount} sx={{ color: 'red' }}>
+            Delete account
+          </MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
+      </Toolbar>
+
+      <ConfirmationDialog
+        dialogOpen={confirmDialogOpen}
+        setDialogOpen={setConfirmDialogOpen}
+        message={'Confirm the deletion of your account?'}
+        onConfirmAction={handleDeleteUser}
+      ></ConfirmationDialog>
+
+      <ChangeUsernameDialog
+        dialogOpen={changeUnameDialogOpen}
+        setDialogOpen={setChangeUnameDialogOpen}
+      />
+
+      <ChangePasswordDialog
+        dialogOpen={changePasswordDialogOpen}
+        setDialogOpen={setChangePasswordDialogOpen}
+      />
+    </AppBar>
   );
 }
 

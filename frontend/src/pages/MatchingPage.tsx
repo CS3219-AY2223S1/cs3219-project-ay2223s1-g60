@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
-import LoadingModal from './loading/LoadingModal';
+import LoadingModal from '../components/modal/LoadingModal';
 import { useUser } from '../context/UserContext';
 
 function MatchingPage() {

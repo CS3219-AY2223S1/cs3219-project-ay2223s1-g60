@@ -63,11 +63,13 @@ function RoomPage() {
   ) : (
     <Box>
       <TimerModal socket={timerSocket} seconds={30} room={room} />
-      <Stack direction={'row'} spacing={8} alignItems={'stretch'}>
-        <Stack flex={1}>
-          <CodingQuestion />
-          <CodeEditor socket={collabSocket} room={room} />
-        </Stack>
+      <Stack
+        direction={'row'}
+        spacing={2}
+        style={{ width: '100vw', height: '100vh' }}
+      >
+        <CodingQuestion />
+        <CodeEditor socket={collabSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>
     </Box>
