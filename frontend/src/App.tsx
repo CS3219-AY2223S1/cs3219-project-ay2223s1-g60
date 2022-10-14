@@ -42,8 +42,8 @@ function App() {
       <div className='App' style={{ minHeight: '100vh' }}>
         <Box>
           <Router>
-            {true && <Navbar />}
-            {true ? loggedInRoutes : guestRoutes}
+            {user.username && <Navbar />}
+            {user.username ? loggedInRoutes : guestRoutes}
           </Router>
         </Box>
       </div>
