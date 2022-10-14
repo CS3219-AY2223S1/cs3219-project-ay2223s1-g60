@@ -26,7 +26,6 @@ const useRoomSockets = (room: string) => {
 
   timerSocket.on('connect', () => {
     timerSocket.emit('join-room', { room: room });
-    timerSocket.emit('get-question', { room: room });
   });
 
   return {

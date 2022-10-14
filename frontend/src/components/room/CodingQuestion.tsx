@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Container, Divider, Stack, Typography } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { defaultQuestion, QuestionModel } from './QuestionModel.d';
@@ -22,10 +22,15 @@ function CodingQuestion(props: { timerSocket: Socket; room: string }) {
     axios
       .get(`${URI_ROOM_SVC}?roomId=${props.room}`)
       .then((roomObj) => {
+        console.log(roomObj.data.roomResp.question);
         setQuestion(roomObj.data.roomResp.question);
       })
       .catch((err) => console.log(err));
   };
+
+  useEffect(() => {
+    getQuestion();
+  }, []);
 
   const getNextQuestion = () => {
     props.timerSocket.emit('get-question', { room: props.room });
