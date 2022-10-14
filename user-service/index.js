@@ -20,7 +20,6 @@ import {
 } from "./controller/user-controller.js";
 import { verifyToken } from "./middlewares/authJwt.js";
 
-
 const router = express.Router();
 
 // Controller will contain all the User-defined Routes

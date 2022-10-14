@@ -1,14 +1,5 @@
 import { ormGetToken as _getToken } from "../model/user-orm.js";
-import jwt from "jsonwebtoken";
-
-const isValidRequest = (req) => {
-  return (
-    req.body.username &&
-    req.headers &&
-    req.headers.authorization &&
-    req.headers.authorization.split(" ")[0] === "Bearer"
-  );
-};
+import { decodeToken, isValidRequest } from "../../utils/token.js";
 
 const isMatchingCredential = (fromDb, fromUser) => {
   return (
@@ -16,20 +7,6 @@ const isMatchingCredential = (fromDb, fromUser) => {
     fromDb.hashedPassword === fromUser.hashedPassword &&
     fromDb._id === fromUser._id
   );
-};
-
-const decodeToken = (token) => {
-  const decodedToken = jwt.verify(
-    token,
-    process.env.JWT_PRIVATE_KEY,
-    function (err, decoded) {
-      if (err) {
-        throw err;
-      }
-      return decoded;
-    }
-  );
-  return decodedToken;
 };
 
 export async function verifyToken(req, res, next) {
@@ -41,8 +18,8 @@ export async function verifyToken(req, res, next) {
   const tokenFromDb = await _getToken(username);
   const tokenFromUser = req.headers.authorization.split(" ")[1];
   try {
-    const fromDb = decodeToken(tokenFromDb);
-    const fromUser = decodeToken(tokenFromUser);
+    const fromDb = decodeToken(tokenFromDb, process.env.JWT_PRIVATE_KEY);
+    const fromUser = decodeToken(tokenFromUser, process.env.JWT_PRIVATE_KEY);
 
     if (!isMatchingCredential(fromDb, fromUser)) {
       return res.status(401).json({ message: "Unauthorized access" });
