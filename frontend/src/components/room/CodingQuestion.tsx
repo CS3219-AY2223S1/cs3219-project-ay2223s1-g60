@@ -7,7 +7,7 @@ function CodingQuestion() {
       spacing={2}
       style={{
         width: '400px',
-        padding: '2rem',
+        padding: '1rem 2rem',
         justifyContent: 'space-between',
         maxHeight: '100%',
       }}

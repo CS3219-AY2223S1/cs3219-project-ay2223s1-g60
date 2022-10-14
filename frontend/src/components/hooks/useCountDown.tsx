@@ -10,7 +10,11 @@ const useCountDown = (seconds: number) => {
 
   const extendTime = (extendSec: number) => setCountDown(countDown + extendSec);
 
-  return { currTime: countDown < 0 ? 0 : countDown, extendTime };
+  return {
+    currTime: countDown < 0 ? 0 : countDown,
+    isTimeUp: countDown <= 0,
+    extendTime,
+  };
 };
 
 const formatTime = (seconds: number) => {

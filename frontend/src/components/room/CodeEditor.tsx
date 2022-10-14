@@ -6,7 +6,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  SelectChangeEvent,
 } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import * as monaco from 'monaco-editor';
@@ -71,10 +70,34 @@ function CodeEditor(props: {
     navigate('/match');
   };
 
+  const SelectLanguages = () => (
+    <FormControl sx={{ width: '200px' }} size='small'>
+      <InputLabel>Language</InputLabel>
+      <Select
+        value={language}
+        id='language'
+        name='language'
+        label='Language'
+        onChange={(e) => setLanguage(e.target.value)}
+      >
+        {monaco.languages.getLanguages().map((language, i) => (
+          <MenuItem value={language.id} key={i}>
+            {language.id.charAt(0).toUpperCase().concat(language.id.slice(1))}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+
   return (
     <Stack
       spacing={2}
-      sx={{ flexGrow: '1', padding: '1rem', maxHeight: '100%' }}
+      sx={{
+        flexGrow: '1',
+        padding: '1rem',
+        maxHeight: '100%',
+        position: 'relative',
+      }}
     >
       <Stack
         style={{
@@ -83,27 +106,7 @@ function CodeEditor(props: {
           justifyContent: 'space-between',
         }}
       >
-        <FormControl sx={{ width: '200px' }} size='small'>
-          <InputLabel>Language</InputLabel>
-          <Select
-            value={language}
-            labelId='language'
-            id='language'
-            label='Language'
-            onChange={(e: SelectChangeEvent) => setLanguage(e.target.value)}
-          >
-            {monaco.languages
-              .getLanguages()
-              .map((language: monaco.languages.ILanguageExtensionPoint, i) => (
-                <MenuItem value={language.id} key={i}>
-                  {language.id
-                    .substring(0, 1)
-                    .toLocaleUpperCase()
-                    .concat(language.id.substring(1))}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
+        <SelectLanguages />
         <TimerModal
           seconds={90}
           onTimeUp={() =>
@@ -113,7 +116,6 @@ function CodeEditor(props: {
       </Stack>
       <MonacoEditor
         language={language}
-        theme='vs'
         value={typedCode}
         options={editorOptions}
         onChange={handleChange}
