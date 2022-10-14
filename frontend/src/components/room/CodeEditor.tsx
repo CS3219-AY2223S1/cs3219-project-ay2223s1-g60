@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
+  Button,
   Stack,
   FormControl,
   InputLabel,
@@ -11,6 +12,7 @@ import { Socket } from 'socket.io-client';
 import * as monaco from 'monaco-editor';
 import MonacoEditor from 'react-monaco-editor';
 import TimerModal from '../modal/TimerModal';
+import { useNavigate } from 'react-router-dom';
 
 const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   autoIndent: 'full',
@@ -32,8 +34,12 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   scrollBeyondLastLine: false,
 };
 
-function CodeEditor(props: { socket: Socket; timer: Socket; room: string }) {
-  const { socket, timer, room } = props;
+function CodeEditor(props: {
+  socket: Socket;
+  roomSocket: Socket;
+  room: string;
+}) {
+  const { socket, roomSocket, room } = props;
   const [typedCode, setTypedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
@@ -57,6 +63,13 @@ function CodeEditor(props: { socket: Socket; timer: Socket; room: string }) {
       setTypedCode(data.text);
     }
   );
+
+  const navigate = useNavigate();
+  const leaveRoom = () => {
+    roomSocket.emit('delete-room', { room: room });
+    roomSocket.disconnect();
+    navigate('/match');
+  };
 
   return (
     <Stack
@@ -105,6 +118,13 @@ function CodeEditor(props: { socket: Socket; timer: Socket; room: string }) {
         options={editorOptions}
         onChange={handleChange}
       />
+      <Button
+        variant='outlined'
+        sx={{ width: 'max-content', alignSelf: 'flex-end' }}
+        onClick={leaveRoom}
+      >
+        Leave room
+      </Button>
     </Stack>
   );
 }

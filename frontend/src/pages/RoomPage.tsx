@@ -11,7 +11,7 @@ function RoomPage() {
 
   const room =
     React.useMemo(() => new URLSearchParams(search), [search]).get('id') || '0';
-  const { timerSocket, collabSocket, chatSocket } = useRoomSockets(room);
+  const { roomSocket, collabSocket, chatSocket } = useRoomSockets(room);
 
   return (
     <Box style={{ height: 'calc(100vh - 60px)' }}>
@@ -21,7 +21,7 @@ function RoomPage() {
         style={{ width: '100vw', maxHeight: '100%' }}
       >
         <CodingQuestion />
-        <CodeEditor socket={collabSocket} timer={timerSocket} room={room} />
+        <CodeEditor socket={collabSocket} roomSocket={roomSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>
     </Box>
