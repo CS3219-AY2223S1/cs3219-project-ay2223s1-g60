@@ -8,7 +8,8 @@ import TimerModal from '../components/modal/TimerModal';
 import useRoomSockets from '../components/hooks/useRoomSockets';
 import { getRoomToken, useUser } from '../context/UserContext';
 import { requests } from '../utils/api-request';
-import { URL_MATCHING_SVC, LOCAL_STORAGE_TOKEN_ROOM_KEY } from '../configs';
+import { URL_MATCHING_SVC } from '../configs';
+import { useSnackbar } from '../context/SnackbarContext';
 
 function RoomPage() {
   const { search } = useLocation();
@@ -16,6 +17,7 @@ function RoomPage() {
   const [verificationMsg, setVerificationMsg] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
+  const snackBar = useSnackbar();
 
   const room =
     React.useMemo(() => new URLSearchParams(search), [search]).get('id') || '0';
@@ -42,9 +44,10 @@ function RoomPage() {
     )
     .then(({ data: { message }, status }) => {
       if (status !== 201) {
+        snackBar.setError('Unauthorized access to this room.');
         navigate('/home');
       }
-      console.log(message);
+      snackBar.setSuccess(message, 2000);
     });
 
   const { timerSocket, collabSocket, chatSocket } = useRoomSockets(room);
