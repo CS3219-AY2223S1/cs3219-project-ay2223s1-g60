@@ -3,6 +3,7 @@ import { User } from '../@types/UserContext';
 import * as authClient from '../utils/auth-client';
 import {
   LOCAL_STORAGE_TOKEN_KEY,
+  LOCAL_STORAGE_TOKEN_ROOM_KEY,
   LOCAL_STORAGE_USERNAME_KEY,
 } from '../configs';
 import { UNAME_PASSWORD_MISSING } from '../constants';
@@ -17,11 +18,20 @@ export const saveTokens = (token: string, username: string) => {
   window.localStorage.setItem(LOCAL_STORAGE_USERNAME_KEY, username);
 };
 
+export const saveRoomToken = (roomToken: string) => {
+  window.localStorage.setItem(LOCAL_STORAGE_TOKEN_ROOM_KEY, roomToken);
+};
+
 export const getTokens = () => {
   const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
   const username = window.localStorage.getItem(LOCAL_STORAGE_USERNAME_KEY);
 
   return { token: token || '', username: username || '' };
+};
+
+export const getRoomToken = () => {
+  const roomToken = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_ROOM_KEY);
+  return roomToken;
 };
 
 export const removeTokens = () => {

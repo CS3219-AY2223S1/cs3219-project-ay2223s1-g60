@@ -6,7 +6,7 @@ import CodingQuestion from '../components/room/CodingQuestion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import TimerModal from '../components/modal/TimerModal';
 import useRoomSockets from '../components/hooks/useRoomSockets';
-import { useUser } from '../context/UserContext';
+import { getRoomToken, useUser } from '../context/UserContext';
 import { requests } from '../utils/api-request';
 import { URL_MATCHING_SVC, LOCAL_STORAGE_TOKEN_ROOM_KEY } from '../configs';
 
@@ -24,7 +24,7 @@ function RoomPage() {
     username: username,
     roomId: room,
   };
-  const token = window.localStorage.getItem(LOCAL_STORAGE_TOKEN_ROOM_KEY);
+  const token = getRoomToken();
   console.log('TOKENNNN : ' + token);
   const header = {
     // TODO: store room key in local storage

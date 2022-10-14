@@ -10,6 +10,7 @@ import {
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import { LOCAL_STORAGE_TOKEN_ROOM_KEY, URL_MATCHING_SVC } from '../../configs';
+import { saveRoomToken } from '../../context/UserContext';
 
 type LoadingModalProps = {
   open: boolean;
@@ -42,7 +43,7 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
 
       socket.on('join-room', ({ roomId, token }) => {
         console.log(roomId);
-        window.localStorage.setItem(LOCAL_STORAGE_TOKEN_ROOM_KEY, token);
+        saveRoomToken(token);
         clearTimeout(startCountDown());
         socket.disconnect();
         closeModal();
