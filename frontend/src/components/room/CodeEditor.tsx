@@ -9,23 +9,26 @@ import {
 } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import * as monaco from 'monaco-editor';
-import MonacoEditor from 'react-monaco-editor';
+import Editor from '@monaco-editor/react';
 import TimerModal from '../modal/TimerModal';
 import { useNavigate } from 'react-router-dom';
 
 const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   autoIndent: 'full',
-  quickSuggestions: true,
-  quickSuggestionsDelay: 100,
   hideCursorInOverviewRuler: true,
   matchBrackets: 'always',
   wordWrap: 'on',
   wordWrapColumn: 80,
-  codeLens: true,
+  codeLens: false,
   colorDecorators: true,
   minimap: {
     enabled: false,
   },
+  suggest: {
+    showFields: false,
+    showFunctions: false,
+  },
+  quickSuggestions: false,
   scrollbar: {
     useShadows: false,
     verticalScrollbarSize: 4,
@@ -44,9 +47,10 @@ function CodeEditor(props: {
   const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
 
   const handleChange = (
-    value: string,
+    value: string | undefined,
     e: monaco.editor.IModelContentChangedEvent
   ) => {
+    if (!value) return;
     setTypedCode(value);
     socket.emit('typedCode', {
       text: value,
@@ -114,7 +118,7 @@ function CodeEditor(props: {
           }
         />
       </Stack>
-      <MonacoEditor
+      <Editor
         language={language}
         value={typedCode}
         options={editorOptions}
