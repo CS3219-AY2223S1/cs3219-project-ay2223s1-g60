@@ -1,4 +1,3 @@
-import React from 'react';
 import { io } from 'socket.io-client';
 import {
   URL_COLLABORATION_SVC,
@@ -24,6 +23,11 @@ const useRoomSockets = (room: string) => {
   timerSocket.on('disconnect', () =>
     timerSocket.emit('delete-room', { room: room })
   );
+
+  timerSocket.on('connect', () => {
+    timerSocket.emit('join-room', { room: room });
+    timerSocket.emit('get-question', { room: room });
+  });
 
   return {
     timerSocket: timerSocket,

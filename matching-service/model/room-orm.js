@@ -1,4 +1,9 @@
-import { createRoomModel, deleteRoomModel } from './repository.js';
+import {
+  createRoomModel,
+  getRoomModel,
+  deleteRoomModel,
+  updateRoomModelQuestion,
+} from "./repository.js";
 
 export async function ormCreateRoom(user1, user2, difficulty) {
   try {
@@ -7,9 +12,27 @@ export async function ormCreateRoom(user1, user2, difficulty) {
 
     return {
       error: false,
-      message: 'Room creation successful!',
+      message: "Room creation successful!",
       roomId: newRoom._id,
     };
+  } catch (err) {
+    return { error: true, message: err };
+  }
+}
+
+export async function ormGetRoom(roomId) {
+  try {
+    const newRoom = await getRoomModel(roomId);
+    return newRoom;
+  } catch (err) {
+    return { error: true, message: err };
+  }
+}
+
+export async function ormUpdateRoomQuestion(roomId, question) {
+  try {
+    const updatedRoom = await updateRoomModelQuestion({ roomId, question });
+    return updatedRoom;
   } catch (err) {
     return { error: true, message: err };
   }
@@ -20,7 +43,7 @@ export async function ormDeleteRoom(roomId) {
     await deleteRoomModel(roomId);
     return {
       error: false,
-      message: 'Room deletion successful!',
+      message: "Room deletion successful!",
     };
   } catch (err) {
     return { error: true, message: err };

@@ -1,7 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Container, Divider, Stack, Typography } from '@mui/material';
+import { Socket } from 'socket.io-client';
+import { defaultQuestion, QuestionModel } from './QuestionModel.d';
+import axios from 'axios';
+import { URI_ROOM_SVC } from '../../configs';
 
-function CodingQuestion() {
+enum DifficultyEnum {
+  Easy,
+  Medium,
+  Hard,
+}
+
+function CodingQuestion(props: { timerSocket: Socket; room: string }) {
+  const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
+
+  props.timerSocket.on('question', (qn) => {
+    getQuestion();
+  });
+
+  const getQuestion = () => {
+    axios
+      .get(`${URI_ROOM_SVC}?roomId=${props.room}`)
+      .then((roomObj) => {
+        setQuestion(roomObj.data.roomResp.question);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getNextQuestion = () => {
+    props.timerSocket.emit('get-question', { room: props.room });
+  };
+
   return (
     <Stack
       spacing={2}
@@ -12,34 +41,22 @@ function CodingQuestion() {
       }}
     >
       <Stack spacing={2}>
-        <Typography variant='h4'>Question Title</Typography>
-        <Typography variant='subtitle1'>Difficulty</Typography>
+        <Typography variant='h4'>{question.question_title}</Typography>
+        <Typography variant='subtitle1'>
+          Difficulty : {DifficultyEnum[question.question_difficulty - 1]}
+        </Typography>
         <Divider />
         <Container
           style={{ flexGrow: '1', height: '480px', overflowY: 'scroll' }}
         >
           <Typography>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
-            voluptatibus officia cupiditate voluptatem nisi consectetur.
-            Assumenda optio quis non, ad distinctio sed porro similique ipsam
-            tempora ducimus deleniti atque. Deleniti? Lorem ipsum dolor sit amet
-            consectetur adipisicing elit. Quibusdam incidunt sunt quod ad velit
-            debitis a, quis, adipisci explicabo eveniet nostrum molestiae
-            recusandae nesciunt veniam consectetur nihil tenetur mollitia
-            beatae. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut
-            aliquam unde veniam quam eum accusantium facilis maiores, laborum,
-            voluptates magnam non atque, laudantium officia! Voluptatibus dolor
-            harum delectus voluptates ex. Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Officiis eos cum optio nemo officia ullam eaque
-            quisquam beatae unde ut, sint esse tempora incidunt laborum,
-            voluptatum id possimus ipsam excepturi. Lorem ipsum dolor sit amet
-            consectetur adipisicing elit. Esse excepturi optio consequuntur
-            numquam natus delectus laborum? Placeat omnis eos dignissimos quia
-            ducimus. Eius beatae quod sunt sit dolorem! Corrupti, cupiditate.
+            <div dangerouslySetInnerHTML={{ __html: question.question_text }} />
           </Typography>
         </Container>
       </Stack>
-      <Button variant='contained'>Next Question</Button>
+      <Button variant='contained' onClick={getNextQuestion}>
+        Next Question
+      </Button>
     </Stack>
   );
 }
