@@ -10,6 +10,7 @@ import {
 import { Socket } from 'socket.io-client';
 import * as monaco from 'monaco-editor';
 import MonacoEditor from 'react-monaco-editor';
+import TimerModal from '../modal/TimerModal';
 
 const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   autoIndent: 'full',
@@ -26,8 +27,8 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   },
 };
 
-function CodeEditor(props: { socket: Socket; room: string }) {
-  const { socket, room } = props;
+function CodeEditor(props: { socket: Socket; timer: Socket; room: string }) {
+  const { socket, timer, room } = props;
   const [typedCode, setTypedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
 
@@ -52,28 +53,40 @@ function CodeEditor(props: { socket: Socket; room: string }) {
   );
 
   return (
-    <Stack spacing={2} sx={{ flexGrow: '1', padding: '1rem' }}>
-      <FormControl sx={{ width: '200px' }}>
-        <InputLabel>Language</InputLabel>
-        <Select
-          labelId='demo-simple-select-label'
-          id='demo-simple-select'
-          value={language}
-          label='Language'
-          onChange={(e: SelectChangeEvent) => setLanguage(e.target.value)}
-        >
-          {monaco.languages
-            .getLanguages()
-            .map((language: monaco.languages.ILanguageExtensionPoint, i) => (
-              <MenuItem value={language.id}>
-                {language.id
-                  .substring(0, 1)
-                  .toLocaleUpperCase()
-                  .concat(language.id.substring(1))}
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
+    <Stack
+      spacing={2}
+      sx={{ flexGrow: '1', padding: '1rem', maxHeight: '100%' }}
+    >
+      <Stack
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <FormControl sx={{ width: '200px' }} size='small'>
+          <InputLabel>Language</InputLabel>
+          <Select
+            value={language}
+            labelId='language'
+            id='language'
+            label='Language'
+            onChange={(e: SelectChangeEvent) => setLanguage(e.target.value)}
+          >
+            {monaco.languages
+              .getLanguages()
+              .map((language: monaco.languages.ILanguageExtensionPoint, i) => (
+                <MenuItem value={language.id} key={i}>
+                  {language.id
+                    .substring(0, 1)
+                    .toLocaleUpperCase()
+                    .concat(language.id.substring(1))}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+        <TimerModal seconds={90} />
+      </Stack>
       <MonacoEditor
         width='100%'
         height='100%'
