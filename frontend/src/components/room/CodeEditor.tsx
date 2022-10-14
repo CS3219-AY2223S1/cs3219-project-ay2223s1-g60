@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Stack,
   FormControl,
@@ -25,12 +25,18 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   minimap: {
     enabled: false,
   },
+  scrollbar: {
+    useShadows: false,
+    verticalScrollbarSize: 4,
+  },
+  scrollBeyondLastLine: false,
 };
 
 function CodeEditor(props: { socket: Socket; timer: Socket; room: string }) {
   const { socket, timer, room } = props;
   const [typedCode, setTypedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
+  const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
 
   const handleChange = (
     value: string,
@@ -85,15 +91,18 @@ function CodeEditor(props: { socket: Socket; timer: Socket; room: string }) {
               ))}
           </Select>
         </FormControl>
-        <TimerModal seconds={90} />
+        <TimerModal
+          seconds={90}
+          onTimeUp={() =>
+            setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
+          }
+        />
       </Stack>
       <MonacoEditor
-        width='100%'
-        height='100%'
         language={language}
         theme='vs'
         value={typedCode}
-        options={MONACO_OPTIONS}
+        options={editorOptions}
         onChange={handleChange}
       />
     </Stack>
