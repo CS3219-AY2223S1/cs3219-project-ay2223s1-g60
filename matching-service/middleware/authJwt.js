@@ -1,4 +1,4 @@
-import { decodeToken, isValidRequest } from "../../utils/token";
+import { decodeToken, isValidRequest } from "../../utils/token.js";
 
 const isVerifiedUser = (decoded, username, roomId) => {
   return (

@@ -11,12 +11,9 @@ export const isValidRequest = (req) => {
 
 export const decodeToken = (token, privateKey) => {
   const verifiedToken = jwt.verify(token, privateKey, function (err, decoded) {
-    console.log("Decoded: " + JSON.stringify(decoded));
-    console.log("Error : " + JSON.stringify(err));
     if (err) {
       throw err;
     }
-
     return decoded;
   });
   return verifiedToken;

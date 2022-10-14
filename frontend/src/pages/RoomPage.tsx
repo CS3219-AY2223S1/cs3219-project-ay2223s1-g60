@@ -47,7 +47,7 @@ function RoomPage() {
         snackBar.setError('Unauthorized access to this room.');
         navigate('/home');
       }
-      snackBar.setSuccess(message, 2000);
+      // snackBar.setSuccess(message, 2000);
     });
 
   const { timerSocket, collabSocket, chatSocket } = useRoomSockets(room);
