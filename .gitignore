@@ -1,10 +1,5 @@
-/frontend/.env
-/user-service/.env
-/question-service/.env
-.env
-/*/.env
+**/.env
+**/node_modules
+**/package-lock.json
+**/dump.rdb
 .idea/
-node_modules
-package-lock.json
-/*/package-lock.json
-/user-service/dump.rdb

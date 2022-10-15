@@ -4,7 +4,6 @@ import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import TimerModal from '../components/modal/TimerModal';
 import useRoomSockets from '../components/hooks/useRoomSockets';
 import { getRoomToken, useUser } from '../context/UserContext';
 import { requests } from '../utils/api-request';
@@ -50,7 +49,7 @@ function RoomPage() {
       // snackBar.setSuccess(message, 2000);
     });
 
-  const { timerSocket, collabSocket, chatSocket } = useRoomSockets(room);
+  const { roomSocket, collabSocket, chatSocket } = useRoomSockets(room);
 
   return showAlert ? (
     <div>
@@ -65,14 +64,13 @@ function RoomPage() {
     </div>
   ) : (
     <Box>
-      <TimerModal socket={timerSocket} seconds={30} room={room} />
       <Stack
         direction={'row'}
         spacing={2}
-        style={{ width: '100vw', height: '100vh' }}
+        style={{ width: '100vw', maxHeight: '100%' }}
       >
-        <CodingQuestion />
-        <CodeEditor socket={collabSocket} room={room} />
+        <CodingQuestion socket={roomSocket} room={room} />
+        <CodeEditor socket={collabSocket} roomSocket={roomSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>
     </Box>

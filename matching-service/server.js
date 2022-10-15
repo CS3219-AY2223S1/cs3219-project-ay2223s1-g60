@@ -3,8 +3,9 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import createEventListeners from "./controller/socket-controller.js";
-import "dotenv";
+import { getRoom, updateRoomQuestion } from "./controller/room-controller.js";
 import { verifyRoomUser } from "./middleware/authJwt.js";
+import "dotenv";
 
 const app = express();
 const router = express.Router();
@@ -33,6 +34,14 @@ io.on("connection", (socket) => {
 router.post("/verify-user", verifyRoomUser);
 
 app.use("/api/matching", router).all((_, res) => {
+  res.setHeader("content-type", "application/json");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+});
+
+router.get("/", getRoom);
+router.put("/", updateRoomQuestion);
+
+app.use("/api/room", router).all((_, res) => {
   res.setHeader("content-type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
 });

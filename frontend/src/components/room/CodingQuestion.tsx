@@ -1,45 +1,66 @@
-import React from 'react';
-import { Button, Container, Divider, Stack, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, Divider, Stack, Typography } from '@mui/material';
+import { Socket } from 'socket.io-client';
+import { defaultQuestion, QuestionModel } from './QuestionModel.d';
+import axios from 'axios';
+import { URI_ROOM_SVC } from '../../configs';
 
-function CodingQuestion() {
-  return (
+enum DifficultyEnum {
+  Easy,
+  Medium,
+  Hard,
+}
+
+function CodingQuestion(props: { socket: Socket; room: string }) {
+  const { socket, room } = props;
+  const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
+  const [loading, setLoading] = useState(true);
+
+  const getQuestion = () => {
+    axios
+      .get(`${URI_ROOM_SVC}?roomId=${room}`)
+      .then(({ data }) => {
+        setQuestion(data.roomResp.question);
+        setLoading(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  socket.on('question', () => {
+    console.log('QUESTION AVAILABLE!');
+    setLoading(true);
+    getQuestion();
+  });
+
+  useEffect(getQuestion, [getQuestion]);
+
+  return loading ? (
+    <div>Loading...</div>
+  ) : (
     <Stack
       spacing={2}
       style={{
         width: '400px',
-        padding: '2rem',
+        padding: '1rem 2rem',
         justifyContent: 'space-between',
+        maxHeight: '100%',
       }}
     >
-      <Stack spacing={2}>
-        <Typography variant='h4'>Question Title</Typography>
-        <Typography variant='subtitle1'>Difficulty</Typography>
-        <Divider />
-        <Container
-          style={{ flexGrow: '1', height: '480px', overflowY: 'scroll' }}
-        >
-          <Typography>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
-            voluptatibus officia cupiditate voluptatem nisi consectetur.
-            Assumenda optio quis non, ad distinctio sed porro similique ipsam
-            tempora ducimus deleniti atque. Deleniti? Lorem ipsum dolor sit amet
-            consectetur adipisicing elit. Quibusdam incidunt sunt quod ad velit
-            debitis a, quis, adipisci explicabo eveniet nostrum molestiae
-            recusandae nesciunt veniam consectetur nihil tenetur mollitia
-            beatae. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut
-            aliquam unde veniam quam eum accusantium facilis maiores, laborum,
-            voluptates magnam non atque, laudantium officia! Voluptatibus dolor
-            harum delectus voluptates ex. Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Officiis eos cum optio nemo officia ullam eaque
-            quisquam beatae unde ut, sint esse tempora incidunt laborum,
-            voluptatum id possimus ipsam excepturi. Lorem ipsum dolor sit amet
-            consectetur adipisicing elit. Esse excepturi optio consequuntur
-            numquam natus delectus laborum? Placeat omnis eos dignissimos quia
-            ducimus. Eius beatae quod sunt sit dolorem! Corrupti, cupiditate.
-          </Typography>
-        </Container>
-      </Stack>
-      <Button variant='contained'>Next Question</Button>
+      <Typography variant='h4'>{question.question_title}</Typography>
+      <Typography variant='subtitle1'>
+        {DifficultyEnum[question.question_difficulty - 1]}
+      </Typography>
+      <Divider />
+      <div
+        dangerouslySetInnerHTML={{ __html: question.question_text }}
+        style={{ flex: 1, overflow: 'scroll', paddingRight: '1rem' }}
+      />
+      <Button
+        variant='contained'
+        onClick={() => socket.emit('get-question', { room })}
+      >
+        Next Question
+      </Button>
     </Stack>
   );
 }
