@@ -12,6 +12,7 @@ import * as monaco from 'monaco-editor';
 import Editor from '@monaco-editor/react';
 import TimerModal from '../modal/TimerModal';
 import { useNavigate } from 'react-router-dom';
+import MatchLeftDialog from '../modal/MatchLeftDialog';
 
 const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   autoIndent: 'full',
@@ -45,6 +46,16 @@ function CodeEditor(props: {
   const [typedCode, setTypedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  roomSocket.on('match-left', () => setOpenDialog(true));
+
+  const navigate = useNavigate();
+  const leaveRoom = () => {
+    roomSocket.emit('delete-room', { room: room });
+    roomSocket.disconnect();
+    navigate('/match');
+  };
 
   const handleChange = (
     value: string | undefined,
@@ -66,13 +77,6 @@ function CodeEditor(props: {
       setTypedCode(data.text);
     }
   );
-
-  const navigate = useNavigate();
-  const leaveRoom = () => {
-    roomSocket.emit('delete-room', { room: room });
-    roomSocket.disconnect();
-    navigate('/match');
-  };
 
   const SelectLanguages = () => (
     <FormControl sx={{ width: '200px' }} size='small'>
@@ -131,6 +135,7 @@ function CodeEditor(props: {
       >
         Leave room
       </Button>
+      <MatchLeftDialog open={openDialog} />
     </Stack>
   );
 }
