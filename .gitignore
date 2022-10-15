@@ -1,3 +1,5 @@
-/user-service/.env
+**/.env
+**/node_modules
+**/package-lock.json
+**/dump.rdb
 .idea/
-node_modules

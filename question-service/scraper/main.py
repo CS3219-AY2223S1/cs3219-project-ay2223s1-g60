@@ -47,6 +47,7 @@ colorama.init(autoreset=True)
 
 # Setup Selenium Webdriver
 CHROMEDRIVER_PATH = r"./driver/chromedriver.exe"
+
 options = Options()
 options.headless = True
 # Disable Warning, Error and Info logs
@@ -54,7 +55,16 @@ options.headless = True
 options.add_argument("--log-level=3")
 driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=options)
 
-def download(problem_num, frontend_question_id, url, title, difficulty, title_slug):
+# Get upto which problem it is already scraped from track.conf file
+completed_upto = read_tracker("track.conf")
+
+# Load chapters list that stores chapter info
+# Store chapter info
+with open("chapters.pickle", "rb") as f:
+    chapters = pickle.load(f)
+
+
+def download(problem_num, url, title, solution_slug):
     print(
         Fore.BLACK
         + Back.CYAN
@@ -172,12 +182,12 @@ def main():
 
     # Sort by difficulty follwed by problem id in ascending order
     links = sorted(links, key=lambda x: (x[1]), reverse=True)
-
     try:
         for i in range(completed_upto + 1, len(links)):
             (
                 question__title_slug,
                 difficulty,
+                _,
                 frontend_question_id,
                 question__title,
                 question__article__slug,
@@ -201,7 +211,6 @@ def main():
     finally:
         # Close the browser after download
         driver.quit()
-
 
 if __name__ == "__main__":
     main()
