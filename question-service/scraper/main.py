@@ -41,9 +41,7 @@ completed_upto = read_tracker()
 def update_tracker(num):
     with open(TRACKER_FILENAME, "w") as f:
         f.write(str(num))
-
-
-
+        
 # Initialize Colorama
 colorama.init(autoreset=True)
 
@@ -55,9 +53,6 @@ options.headless = True
 # Show only fatal errors
 options.add_argument("--log-level=3")
 driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=options)
-
-
-
 
 def download(problem_num, frontend_question_id, url, title, difficulty, title_slug):
     print(
