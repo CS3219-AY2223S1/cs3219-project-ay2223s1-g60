@@ -11,7 +11,7 @@ const useRoomSockets = (room: string) => {
   const user = useUser().username;
   const collabSocket = io(URL_COLLABORATION_SVC, { query: { room: room } });
   const chatSocket = io(URL_COMMUNICATION_SVC, { query: { room: room } });
-  const timerSocket = io(URL_MATCHING_SVC);
+  const roomSocket = io(URL_MATCHING_SVC);
 
   chatSocket.on('join-room', () =>
     chatSocket.emit('get-role', { room: room, username: user })
@@ -21,15 +21,11 @@ const useRoomSockets = (room: string) => {
     chatSocket.emit('delete-room', { room: room })
   );
 
-  timerSocket.on('disconnect', () =>
-    timerSocket.emit('delete-room', { room: room })
+  roomSocket.on('disconnect', () =>
+    roomSocket.emit('delete-room', { room: room })
   );
 
-  return {
-    timerSocket: timerSocket,
-    chatSocket: chatSocket,
-    collabSocket: collabSocket,
-  };
+  return { roomSocket, chatSocket, collabSocket };
 };
 
 export default useRoomSockets;

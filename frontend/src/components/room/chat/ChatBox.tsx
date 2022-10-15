@@ -12,7 +12,14 @@ function ChatBox(props: { socket: Socket; room: string }) {
   socket.on('assign-role', (roles: Roles) => setRoles(roles));
 
   return (
-    <Stack spacing={2} sx={{ width: '500px', justifyContent: 'space-between' }}>
+    <Stack
+      spacing={2}
+      sx={{
+        width: '500px',
+        justifyContent: 'space-between',
+        paddingTop: '1rem',
+      }}
+    >
       <Typography variant={'h6'} sx={{ textAlign: 'center' }}>
         Chat
       </Typography>
