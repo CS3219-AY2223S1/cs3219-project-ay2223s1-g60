@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Dialog, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogTitle } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const MatchLeftDialog = (props: { open: boolean }) => {
@@ -9,12 +9,14 @@ const MatchLeftDialog = (props: { open: boolean }) => {
   return (
     <Dialog open={open}>
       <DialogTitle>Match has Left!</DialogTitle>
-      <Button variant='contained' onClick={() => navigate('/match')}>
-        Find New Match
-      </Button>
-      <Button variant='text' onClick={() => navigate('/')}>
-        Return to Home
-      </Button>
+      <DialogActions sx={{ flexDirection: 'column' }}>
+        <Button variant='contained' onClick={() => navigate('/match')}>
+          Find New Match
+        </Button>
+        <Button variant='text' onClick={() => navigate('/')}>
+          Return to Home
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
