@@ -14,22 +14,29 @@ enum DifficultyEnum {
 function CodingQuestion(props: { socket: Socket; room: string }) {
   const { socket, room } = props;
   const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
+  const [loading, setLoading] = useState(true);
 
   const getQuestion = () => {
     axios
       .get(`${URI_ROOM_SVC}?roomId=${room}`)
       .then(({ data }) => {
-        console.log(data.roomResp.question);
         setQuestion(data.roomResp.question);
+        setLoading(false);
       })
       .catch((err) => console.log(err));
   };
 
-  socket.on('question', getQuestion);
+  socket.on('question', () => {
+    console.log('QUESTION AVAILABLE!');
+    setLoading(true);
+    getQuestion();
+  });
 
   useEffect(getQuestion, [getQuestion]);
 
-  return (
+  return loading ? (
+    <div>Loading...</div>
+  ) : (
     <Stack
       spacing={2}
       style={{

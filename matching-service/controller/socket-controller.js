@@ -1,12 +1,12 @@
 import {
   ormCreateRoom as createRoom,
   ormDeleteRoom as deleteRoom,
-} from "../model/room-orm.js";
-import axios from "axios";
+} from '../model/room-orm.js';
+import axios from 'axios';
 
 const waitingRoom = [];
-const ROOM_URL = "http://localhost:8001/api/room";
-const QUESTION_URL = "http://localhost:8004/api/question";
+const ROOM_URL = 'http://localhost:8001/api/room';
+const QUESTION_URL = 'http://localhost:8004/api/question';
 
 // Finds match from waiting room, returns -1 if unavailable
 const findMatch = (req) => {
@@ -35,36 +35,30 @@ const removeWaitingUser = (socketId) => {
   }
 };
 
-const onFindMatchEvent = async (req, io) => {
+const onFindMatchEvent = (req, io) => {
   let index = findMatch(req);
 
   if (index < 0) {
     addWaitingUser(req);
   } else {
-    io.to(waitingRoom[index].socketId).emit("found-match");
-    io.to(req.socketId).emit("found-match");
+    io.to(waitingRoom[index].socketId).emit('found-match');
+    io.to(req.socketId).emit('found-match');
 
     // create room using orm
-    await createRoom(waitingRoom[index].username, req.username, req.difficulty)
-      .then((res) => {
-        console.log("res: ");
-        console.log(res);
+    createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
+      (res) => {
         if (!res.err) {
-          io.to(waitingRoom[index].socketId).emit("join-room", res.roomId);
-          io.to(req.socketId).emit("join-room", res.roomId);
-
+          io.to(waitingRoom[index].socketId).emit('join-room', res.roomId);
+          io.to(req.socketId).emit('join-room', res.roomId);
           removeWaitingUser(waitingRoom[index].socketId);
+          onGetQuestionEvent(io, { room: res.roomId });
           return res;
         } else {
           console.log(res.message); // TODO: handle room creation error
         }
-      })
-      .then(async (res) => {
-        await onGetQuestionEvent(io, { room: res.roomId });
-      });
+      }
+    );
   }
-
-  console.log(waitingRoom);
 };
 
 const onDisconnectEvent = (socket) => {
@@ -74,34 +68,35 @@ const onDisconnectEvent = (socket) => {
 
 const onDeleteRoomEvent = (req) => {
   deleteRoom(req.room).then((res) =>
-    res.err ? console.log(res.message) : console.log("Delete room: ", req.room)
+    res.err ? console.log(res.message) : console.log('Delete room: ', req.room)
   );
 };
 
 const onGetQuestionEvent = async (io, { room }) => {
   try {
-    console.log("Room ID: " + room);
-    const roomObj = await axios.get(`${ROOM_URL}?roomId=${room}`);
+    const difficulty = await (
+      await axios.get(`${ROOM_URL}?roomId=${room}`)
+    ).data.roomResp.difficulty;
     const questionObj = await axios.get(
-      `${QUESTION_URL}?difficulty=${roomObj.data.roomResp.difficulty}`
+      `${QUESTION_URL}?difficulty=${difficulty}`
     );
-    io.to(room).emit("question", questionObj.data.resp);
+    io.to(room).emit('question', questionObj.data.resp);
     const updatedRoom = await axios.put(`${ROOM_URL}`, {
       roomId: room,
       question: questionObj.data.resp,
     });
     return updatedRoom;
   } catch (err) {
-    console.log("ERROR GET QUESTION: " + err);
+    console.log('ERROR GET QUESTION: ' + err);
   }
 };
 
 const createEventListeners = (socket, io) => {
-  socket.on("find-match", async (req) => onFindMatchEvent(req, io));
-  socket.on("disconnect", () => onDisconnectEvent(socket));
-  socket.on("delete-room", (req) => onDeleteRoomEvent(req));
-  socket.on("get-question", async (room) => onGetQuestionEvent(io, room));
-  socket.on("join-room", ({ room }) => socket.join(room));
+  socket.on('find-match', (req) => onFindMatchEvent(req, io));
+  socket.on('disconnect', () => onDisconnectEvent(socket));
+  socket.on('delete-room', (req) => onDeleteRoomEvent(req));
+  socket.on('get-question', async (room) => onGetQuestionEvent(io, room));
+  socket.on('join-room', ({ room }) => socket.join(room));
 };
 
 export default createEventListeners;
