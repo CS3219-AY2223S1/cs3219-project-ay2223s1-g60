@@ -4,25 +4,23 @@ import { useLocation } from 'react-router-dom';
 import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
-import TimerModal from '../components/modal/TimerModal';
 import useRoomSockets from '../components/hooks/useRoomSockets';
 
 function RoomPage() {
   const { search } = useLocation();
   const room =
     React.useMemo(() => new URLSearchParams(search), [search]).get('id') || '0';
-  const { timerSocket, collabSocket, chatSocket } = useRoomSockets(room);
+  const { roomSocket, collabSocket, chatSocket } = useRoomSockets(room);
 
   return (
-    <Box style={{ height: '100vh' }}>
-      <TimerModal socket={timerSocket} seconds={30} room={room} />
+    <Box style={{ height: 'calc(100vh - 60px)' }}>
       <Stack
         direction={'row'}
         spacing={2}
-        style={{ width: '100vw', height: '100vh' }}
+        style={{ width: '100vw', maxHeight: '100%' }}
       >
-        <CodingQuestion timerSocket={timerSocket} room={room} />
-        <CodeEditor socket={collabSocket} room={room} />
+        <CodingQuestion socket={roomSocket} room={room} />
+        <CodeEditor socket={collabSocket} roomSocket={roomSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>
     </Box>
