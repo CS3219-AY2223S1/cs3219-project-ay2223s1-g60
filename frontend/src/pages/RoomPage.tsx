@@ -8,7 +8,6 @@ import useRoomSockets from '../components/hooks/useRoomSockets';
 
 function RoomPage() {
   const { search } = useLocation();
-
   const room =
     React.useMemo(() => new URLSearchParams(search), [search]).get('id') || '0';
   const { roomSocket, collabSocket, chatSocket } = useRoomSockets(room);
@@ -20,7 +19,7 @@ function RoomPage() {
         spacing={2}
         style={{ width: '100vw', maxHeight: '100%' }}
       >
-        <CodingQuestion />
+        <CodingQuestion socket={roomSocket} room={room} />
         <CodeEditor socket={collabSocket} roomSocket={roomSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>

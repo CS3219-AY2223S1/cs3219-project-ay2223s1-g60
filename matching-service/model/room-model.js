@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 var Schema = mongoose.Schema;
 let RoomModelSchema = new Schema({
@@ -20,6 +20,10 @@ let RoomModelSchema = new Schema({
     type: Object,
     default: null,
   },
+  question: {
+    type: Object,
+    default: null,
+  },
 });
 
-export default mongoose.model('RoomModel', RoomModelSchema);
+export default mongoose.model("RoomModel", RoomModelSchema);

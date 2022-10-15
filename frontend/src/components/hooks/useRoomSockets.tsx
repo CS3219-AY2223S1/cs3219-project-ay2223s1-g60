@@ -1,4 +1,3 @@
-import React from 'react';
 import { io } from 'socket.io-client';
 import {
   URL_COLLABORATION_SVC,
@@ -24,6 +23,10 @@ const useRoomSockets = (room: string) => {
   roomSocket.on('disconnect', () =>
     roomSocket.emit('delete-room', { room: room })
   );
+
+  roomSocket.on('connect', () => {
+    roomSocket.emit('join-room', { room: room });
+  });
 
   return { roomSocket, chatSocket, collabSocket };
 };

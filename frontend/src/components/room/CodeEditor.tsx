@@ -111,12 +111,12 @@ function CodeEditor(props: {
         }}
       >
         <SelectLanguages />
-        <TimerModal
+        {/* <TimerModal
           seconds={90}
           onTimeUp={() =>
             setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
           }
-        />
+        /> */}
       </Stack>
       <Editor
         language={language}
