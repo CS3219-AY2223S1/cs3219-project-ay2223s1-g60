@@ -22,7 +22,7 @@ export async function verifyToken(req, res, next) {
     const fromUser = decodeToken(tokenFromUser, process.env.JWT_PRIVATE_KEY);
 
     if (!isMatchingCredential(fromDb, fromUser)) {
-      return res.status(401).json({ message: "Unauthorized access" });
+      return res.status(403).json({ message: "Unauthorized access" });
     }
     next();
   } catch (err) {
