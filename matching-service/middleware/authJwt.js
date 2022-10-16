@@ -16,7 +16,7 @@ export async function verifyRoomUser(req, res) {
   try {
     const decoded = decodeToken(tokenUser, process.env.JWT_ROOM_PRIVATE_KEY);
     if (!isVerifiedUser(decoded, username, roomId)) {
-      return res.status(401).json({ message: "Unauthorized access" });
+      return res.status(403).json({ message: "Unauthorized access" });
     }
     return res
       .status(201)
