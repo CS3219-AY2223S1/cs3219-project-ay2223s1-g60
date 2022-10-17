@@ -1,37 +1,59 @@
 import React, { useState } from 'react';
-import { Stack, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import { Socket } from 'socket.io-client';
+import * as monaco from 'monaco-editor';
+import Editor from '@monaco-editor/react';
+import TimerModal from '../modal/TimerModal';
+import { useNavigate } from 'react-router-dom';
 
-function CodeEditor(props: { socket: Socket; room: string }) {
-  const { socket, room } = props;
+const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
+  autoIndent: 'full',
+  hideCursorInOverviewRuler: true,
+  matchBrackets: 'always',
+  wordWrap: 'on',
+  wordWrapColumn: 80,
+  codeLens: false,
+  colorDecorators: true,
+  minimap: {
+    enabled: false,
+  },
+  suggest: {
+    showFields: false,
+    showFunctions: false,
+  },
+  quickSuggestions: false,
+  scrollbar: {
+    useShadows: false,
+    verticalScrollbarSize: 4,
+  },
+  scrollBeyondLastLine: false,
+};
+
+function CodeEditor(props: {
+  socket: Socket;
+  roomSocket: Socket;
+  room: string;
+}) {
+  const { socket, roomSocket, room } = props;
   const [typedCode, setTypedCode] = useState('');
+  const [language, setLanguage] = useState('javascript');
+  const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
 
-  const codeEditorPlaceholder = '/* Insert your code here */';
-
-  const handleTyping = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-
-      const target = e.target as HTMLInputElement;
-
-      const { value } = target;
-
-      const startPos = target.selectionStart || 0;
-      const endPos = target.selectionEnd || 0;
-      const tab = '    '; // set to 4 spaces
-
-      target.value =
-        value.substring(0, startPos) + tab + value.substring(endPos);
-
-      target.selectionStart = startPos + tab.length;
-      target.selectionEnd = startPos + tab.length;
-    }
-  };
-
-  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTypedCode(e.target.value);
+  const handleChange = (
+    value: string | undefined,
+    e: monaco.editor.IModelContentChangedEvent
+  ) => {
+    if (!value) return;
+    setTypedCode(value);
     socket.emit('typedCode', {
-      text: e.target.value,
+      text: value,
       socketId: socket.id,
       room: room,
     });
@@ -45,20 +67,70 @@ function CodeEditor(props: { socket: Socket; room: string }) {
     }
   );
 
+  const navigate = useNavigate();
+  const leaveRoom = () => {
+    roomSocket.emit('delete-room', { room: room });
+    roomSocket.disconnect();
+    navigate('/match');
+  };
+
+  const SelectLanguages = () => (
+    <FormControl sx={{ width: '200px' }} size='small'>
+      <InputLabel>Language</InputLabel>
+      <Select
+        value={language}
+        id='language'
+        name='language'
+        label='Language'
+        onChange={(e) => setLanguage(e.target.value)}
+      >
+        {monaco.languages.getLanguages().map((language, i) => (
+          <MenuItem value={language.id} key={i}>
+            {language.id.charAt(0).toUpperCase().concat(language.id.slice(1))}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+
   return (
-    <Stack spacing={2}>
-      <Typography variant={'h3'} marginBottom={'2rem'}>
-        Code Editor
-      </Typography>
-      <TextField
-        inputProps={{ style: { fontFamily: '"Roboto Mono"' } }}
-        placeholder={codeEditorPlaceholder}
+    <Stack
+      spacing={2}
+      sx={{
+        flexGrow: '1',
+        padding: '1rem',
+        maxHeight: '100%',
+        position: 'relative',
+      }}
+    >
+      <Stack
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <SelectLanguages />
+        {/* <TimerModal
+          seconds={90}
+          onTimeUp={() =>
+            setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
+          }
+        /> */}
+      </Stack>
+      <Editor
+        language={language}
         value={typedCode}
+        options={editorOptions}
         onChange={handleChange}
-        multiline
-        rows={20}
-        onKeyDown={handleTyping}
-      ></TextField>
+      />
+      <Button
+        variant='outlined'
+        sx={{ width: 'max-content', alignSelf: 'flex-end' }}
+        onClick={leaveRoom}
+      >
+        Leave room
+      </Button>
     </Stack>
   );
 }

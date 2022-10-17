@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button, Stack, TextField } from '@mui/material';
 import { Socket } from 'socket.io-client';
 import { useUser } from '../../../context/UserContext';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import { grey } from '@mui/material/colors';
 
 function ChatInput(props: { socket: Socket; room: string }) {
   const { socket, room } = props;
@@ -30,20 +32,30 @@ function ChatInput(props: { socket: Socket; room: string }) {
   };
 
   return (
-    <form onSubmit={handleSendMessage}>
-      <Stack direction={'row'} sx={{ position: 'absolute', bottom: 0 }}>
+    <Stack
+      direction={'row'}
+      sx={{ backgroundColor: grey[100], padding: '0.8rem 1rem' }}
+    >
+      <form onSubmit={handleSendMessage} style={{ width: '100%' }}>
         <TextField
           placeholder={chatPlaceholder}
           value={message}
           onChange={handleChange}
           onKeyDown={(e) => e.key === 'Enter'}
           fullWidth={true}
+          variant='standard'
+          InputProps={{
+            disableUnderline: true,
+            endAdornment: (
+              <Button variant='text' type='submit'>
+                <SendRoundedIcon sx={{ color: grey[400] }} />
+              </Button>
+            ),
+          }}
+          sx={{ input: { color: grey[600] } }}
         ></TextField>
-        <Button variant={'contained'} type='submit'>
-          Send
-        </Button>
-      </Stack>
-    </form>
+      </form>
+    </Stack>
   );
 }
 

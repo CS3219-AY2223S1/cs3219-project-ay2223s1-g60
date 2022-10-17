@@ -14,10 +14,15 @@ function ChatBox(props: { socket: Socket; room: string }) {
   return (
     <Stack
       spacing={2}
-      paddingBottom={'2rem'}
-      sx={{ position: 'sticky', width: '40%' }}
+      sx={{
+        width: '500px',
+        justifyContent: 'space-between',
+        paddingTop: '1rem',
+      }}
     >
-      <Typography variant={'h3'}>Chat</Typography>
+      <Typography variant={'h6'} sx={{ textAlign: 'center' }}>
+        Chat
+      </Typography>
       <ChatView socket={socket} role={roles} />
       <ChatInput socket={socket} room={room} />
     </Stack>

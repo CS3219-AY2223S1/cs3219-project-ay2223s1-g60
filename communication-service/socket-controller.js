@@ -4,7 +4,8 @@ const roles = {};
 const handleGetRole = ({ room, username }, io) => {
   if (roles[room] && roles[room].interviewer && roles[room].interviewee) {
     io.to(room).emit('assign-role', roles[room]);
-    return;
+    console.log(roles[room]);
+    return roles[room];
   }
 
   if (!roles[room]) {
@@ -16,7 +17,7 @@ const handleGetRole = ({ room, username }, io) => {
     return;
   }
 
-  roles[room].interviewee
+  roles[room].interviewee && roles[room].interviewee != username
     ? (roles[room].interviewer = username)
     : (roles[room].interviewee = username);
 };

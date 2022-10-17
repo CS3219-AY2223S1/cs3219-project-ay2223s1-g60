@@ -8,7 +8,20 @@ const useCountDown = (seconds: number) => {
     return () => clearInterval(interval);
   }, [countDown]);
 
-  return countDown;
+  const extendTime = (extendSec: number) => setCountDown(countDown + extendSec);
+
+  return {
+    currTime: countDown < 0 ? 0 : countDown,
+    isTimeUp: countDown <= 0,
+    extendTime,
+  };
 };
 
-export default useCountDown;
+const formatTime = (seconds: number) => {
+  const localeOpts = { minimumIntegerDigits: 2 };
+  return `${Math.floor(seconds / 60).toLocaleString('en-US', localeOpts)} : ${(
+    seconds % 60
+  ).toLocaleString('en-US', localeOpts)}`;
+};
+
+export { useCountDown, formatTime };
