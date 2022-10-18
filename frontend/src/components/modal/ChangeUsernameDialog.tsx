@@ -37,6 +37,11 @@ function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
       return;
     }
 
+    const headers = {
+      Authorization: `Bearer ${getTokens().token}`,
+      'Content-Type': 'application/json',
+    };
+
     const body = {
       username: username.toString(),
       password: password.toString(),
@@ -44,7 +49,7 @@ function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
     };
 
     setLoading(true);
-    AuthClient.changeUsername(body)
+    AuthClient.changeUsername(headers, body)
       .then((resp) => {
         if (resp.status !== 200) throw new Error(resp.data.message);
 
