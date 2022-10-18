@@ -12,7 +12,6 @@ import {
 import { Close } from '@mui/icons-material';
 import { AuthClient } from '../../utils/auth-client';
 import { useSnackbar } from '../../context/SnackbarContext';
-import { getTokens } from '../../context/UserContext';
 
 type ChangePasswordDialogProps = {
   dialogOpen: boolean;
@@ -36,11 +35,6 @@ function ChangePasswordDialog(props: ChangePasswordDialogProps) {
       return;
     }
 
-    const headers = {
-      Authorization: `Bearer ${getTokens().token}`,
-      'Content-Type': 'application/json',
-    };
-
     const body = {
       username: username.toString(),
       oldPassword: password.toString(),
@@ -48,7 +42,7 @@ function ChangePasswordDialog(props: ChangePasswordDialogProps) {
     };
 
     setLoading(true);
-    AuthClient.changePassword(headers, body)
+    AuthClient.changePassword(body)
       .then((resp) => {
         if (resp.status !== 200) throw new Error(resp.data.message);
 

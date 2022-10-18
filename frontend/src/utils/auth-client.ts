@@ -10,6 +10,7 @@ import {
   USER_SIGNUP,
 } from '../configs';
 import { requests, API } from './api-request';
+import { getTokens } from '../context/UserContext';
 
 export const AuthClient = {
   signUp: (body: {
@@ -49,27 +50,29 @@ export const AuthClient = {
     return requests.post(URL_USER_SVC, USER_LOGOUT, body);
   },
 
-  changeUsername: (
-    headers: { Authorization: string },
-    body: {
-      username: string;
-      newUsername: string;
-      password: string;
-    }
-  ): Promise<API.Response<{ message: string }>> => {
+  changeUsername: (body: {
+    username: string;
+    newUsername: string;
+    password: string;
+  }): Promise<API.Response<{ message: string }>> => {
+    const headers = {
+      Authorization: `Bearer ${getTokens().token}`,
+      'Content-Type': 'application/json',
+    };
     return requests.postWithHeaders(URL_USER_SVC, USER_CHANGE_USERNAME, body, {
       headers: headers,
     });
   },
 
-  changePassword: (
-    headers: { Authorization: string },
-    body: {
-      username: string;
-      oldPassword: string;
-      newPassword: string;
-    }
-  ): Promise<API.Response<{ message: string }>> => {
+  changePassword: (body: {
+    username: string;
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<API.Response<{ message: string }>> => {
+    const headers = {
+      Authorization: `Bearer ${getTokens().token}`,
+      'Content-Type': 'application/json',
+    };
     return requests.postWithHeaders(URL_USER_SVC, USER_CHANGE_PASSWORD, body, {
       headers: headers,
     });
