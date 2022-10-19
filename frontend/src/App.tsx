@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { Box, ThemeProvider } from '@mui/material';
+import { Box, CssBaseline } from '@mui/material';
 import React from 'react';
 import Navbar from './components/Navbar';
 import { useUser } from './context/UserContext';
@@ -13,7 +13,6 @@ import LoginPage from './pages/LoginPage';
 import MatchingPage from './pages/MatchingPage';
 import RoomPage from './pages/RoomPage';
 import SignupPage from './pages/SignupPage';
-import { theme } from './styles';
 
 function App() {
   const user = useUser();
@@ -38,16 +37,15 @@ function App() {
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className='App' style={{ minHeight: '100vh' }}>
-        <Box>
-          <Router>
-            {user.username && <Navbar />}
-            {user.username ? loggedInRoutes : guestRoutes}
-          </Router>
-        </Box>
-      </div>
-    </ThemeProvider>
+    <div className='App' style={{ minHeight: '100vh' }}>
+      <CssBaseline />
+      <Box>
+        <Router>
+          {user.username && <Navbar />}
+          {user.username ? loggedInRoutes : guestRoutes}
+        </Router>
+      </Box>
+    </div>
   );
 }
 

@@ -101,7 +101,7 @@ function Navbar() {
         setDialogOpen={setConfirmDialogOpen}
         message={'Confirm the deletion of your account?'}
         onConfirmAction={handleDeleteUser}
-      ></ConfirmationDialog>
+      />
 
       <ChangeUsernameDialog
         dialogOpen={changeUnameDialogOpen}
