@@ -6,6 +6,7 @@ import {
   Typography,
   Menu,
   MenuItem,
+  useTheme,
 } from '@mui/material';
 import { SchoolSharp, SettingsSharp } from '@mui/icons-material';
 import ConfirmationDialog from './modal/ConfirmationDialog';
@@ -23,6 +24,7 @@ function Navbar() {
 
   const authClient = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleOpenSettingsMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -52,7 +54,15 @@ function Navbar() {
   };
 
   return (
-    <AppBar position='relative' sx={{ boxShadow: 'none', height: '60px' }}>
+    <AppBar
+      position='relative'
+      sx={{
+        boxShadow: '8px 8px 35px #d7dbe3',
+        backgroundColor: '#f3f7fa',
+        color: 'black',
+        marginBottom: '30px',
+      }}
+    >
       <Toolbar>
         <IconButton
           size='large'
