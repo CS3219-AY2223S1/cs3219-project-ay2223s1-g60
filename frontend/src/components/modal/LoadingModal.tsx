@@ -9,7 +9,8 @@ import {
 } from '@mui/material';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
-import { URL_MATCHING_SVC } from '../../configs';
+import { LOCAL_STORAGE_TOKEN_ROOM_KEY, URL_MATCHING_SVC } from '../../configs';
+import { saveRoomToken } from '../../context/UserContext';
 
 type LoadingModalProps = {
   open: boolean;
@@ -40,8 +41,9 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
     socket.on('found-match', () => {
       console.log('found match!');
 
-      socket.on('join-room', (roomId) => {
+      socket.on('join-room', ({ roomId, token }) => {
         console.log(roomId);
+        saveRoomToken(token);
         clearTimeout(startCountDown());
         socket.disconnect();
         closeModal();

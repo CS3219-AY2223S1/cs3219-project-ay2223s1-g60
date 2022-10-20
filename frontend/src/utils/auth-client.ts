@@ -9,71 +9,22 @@ import {
   USER_LOGOUT,
   USER_SIGNUP,
 } from '../configs';
-
-declare namespace API {
-  type Response<T> = {
-    status: number;
-    statusText: string;
-    data: T;
-  };
-}
-
-const instance = axios.create({
-  baseURL: URL_USER_SVC,
-  timeout: 15000,
-});
-
-const responseBody = (response: AxiosResponse) => {
-  const res: API.Response<typeof response.data> = {
-    status: response.status,
-    statusText: response.statusText,
-    data: response.data,
-  };
-
-  return res;
-};
-
-const requests = {
-  get: (url: string) =>
-    instance
-      .get(url)
-      .then(responseBody)
-      .catch((err) => responseBody(err.response)),
-  post: (url: string, body: {}) =>
-    instance
-      .post(url, body)
-      .then(responseBody)
-      .catch((err) => responseBody(err.response)),
-  postWithHeaders: (url: string, body: {}, headers: {}) =>
-    instance
-      .post(url, body, headers)
-      .then(responseBody)
-      .catch((err) => responseBody(err.response)),
-  put: (url: string, body: {}) =>
-    instance
-      .put(url, body)
-      .then(responseBody)
-      .catch((err) => responseBody(err.response)),
-  delete: (url: string, body: {}) =>
-    instance
-      .delete(url, body)
-      .then(responseBody)
-      .catch((err) => responseBody(err.response)),
-};
+import { requests, API } from './api-request';
+import { getTokens } from '../context/UserContext';
 
 export const AuthClient = {
   signUp: (body: {
     username: string;
     password: string;
   }): Promise<API.Response<{ message: string }>> =>
-    requests.post(USER_SIGNUP, body),
+    requests.post(URL_USER_SVC, USER_SIGNUP, body),
 
   loginWithUname: (body: {
     username: string;
     password: string;
   }): Promise<
     API.Response<{ username: string; token: string; message: string }>
-  > => requests.post(USER_LOGIN, body),
+  > => requests.post(URL_USER_SVC, USER_LOGIN, body),
 
   loginWithToken: (
     token: string,
@@ -85,6 +36,7 @@ export const AuthClient = {
     };
 
     return requests.postWithHeaders(
+      URL_USER_SVC,
       USER_LOGIN_WITH_TOKEN,
       { username },
       { headers }
@@ -95,7 +47,7 @@ export const AuthClient = {
     token: string;
     username: string;
   }): Promise<API.Response<{ message: string }>> => {
-    return requests.post(USER_LOGOUT, body);
+    return requests.post(URL_USER_SVC, USER_LOGOUT, body);
   },
 
   changeUsername: (body: {
@@ -103,7 +55,13 @@ export const AuthClient = {
     newUsername: string;
     password: string;
   }): Promise<API.Response<{ message: string }>> => {
-    return requests.post(USER_CHANGE_USERNAME, body);
+    const headers = {
+      Authorization: `Bearer ${getTokens().token}`,
+      'Content-Type': 'application/json',
+    };
+    return requests.postWithHeaders(URL_USER_SVC, USER_CHANGE_USERNAME, body, {
+      headers: headers,
+    });
   },
 
   changePassword: (body: {
@@ -111,12 +69,18 @@ export const AuthClient = {
     oldPassword: string;
     newPassword: string;
   }): Promise<API.Response<{ message: string }>> => {
-    return requests.post(USER_CHANGE_PASSWORD, body);
+    const headers = {
+      Authorization: `Bearer ${getTokens().token}`,
+      'Content-Type': 'application/json',
+    };
+    return requests.postWithHeaders(URL_USER_SVC, USER_CHANGE_PASSWORD, body, {
+      headers: headers,
+    });
   },
 
   deleteUser: (data: {
     username: string;
   }): Promise<API.Response<{ message: string }>> => {
-    return requests.delete(USER_DELETE_USER, { data });
+    return requests.delete(URL_USER_SVC, USER_DELETE_USER, { data });
   },
 };

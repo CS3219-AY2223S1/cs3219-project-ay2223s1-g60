@@ -1,12 +1,13 @@
 import {
   ormCreateRoom as createRoom,
   ormDeleteRoom as deleteRoom,
-} from '../model/room-orm.js';
-import axios from 'axios';
+} from "../model/room-orm.js";
+import jwt from "jsonwebtoken";
+import axios from "axios";
 
 const waitingRoom = [];
-const ROOM_URL = 'http://localhost:8001/api/room';
-const QUESTION_URL = 'http://localhost:8004/api/question';
+const ROOM_URL = "http://localhost:8001/api/room";
+const QUESTION_URL = "http://localhost:8004/api/question";
 
 // Finds match from waiting room, returns -1 if unavailable
 const findMatch = (req) => {
@@ -41,15 +42,27 @@ const onFindMatchEvent = (req, io) => {
   if (index < 0) {
     addWaitingUser(req);
   } else {
-    io.to(waitingRoom[index].socketId).emit('found-match');
-    io.to(req.socketId).emit('found-match');
+    io.to(waitingRoom[index].socketId).emit("found-match");
+    io.to(req.socketId).emit("found-match");
 
     // create room using orm
     createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
       (res) => {
         if (!res.err) {
-          io.to(waitingRoom[index].socketId).emit('join-room', res.roomId);
-          io.to(req.socketId).emit('join-room', res.roomId);
+          const roomToken = generateRoomToken(
+            waitingRoom[index].username,
+            req.username,
+            res.roomId
+          );
+          io.to(waitingRoom[index].socketId).emit("join-room", {
+            roomId: res.roomId,
+            token: roomToken,
+          });
+          io.to(req.socketId).emit("join-room", {
+            roomId: res.roomId,
+            token: roomToken,
+          });
+
           removeWaitingUser(waitingRoom[index].socketId);
           onGetQuestionEvent(io, { room: res.roomId });
           return res;
@@ -59,6 +72,21 @@ const onFindMatchEvent = (req, io) => {
       }
     );
   }
+};
+
+const generateRoomToken = (username1, username2, roomId) => {
+  let privateRoomKey = process.env.JWT_ROOM_PRIVATE_KEY;
+  let token = jwt.sign(
+    {
+      username1: username1,
+      username2: username2,
+      roomId: roomId,
+    },
+    privateRoomKey,
+    { expiresIn: "2h" }
+  );
+  console.log("Room token: " + token);
+  return token;
 };
 
 const onDisconnectEvent = (socket) => {
@@ -81,14 +109,14 @@ const onGetQuestionEvent = async (io, { room }) => {
     const questionObj = await axios.get(
       `${QUESTION_URL}?difficulty=${difficulty}`
     );
-    io.to(room).emit('question', questionObj.data.resp);
+    io.to(room).emit("question", questionObj.data.resp);
     const updatedRoom = await axios.put(`${ROOM_URL}`, {
       roomId: room,
       question: questionObj.data.resp,
     });
     return updatedRoom;
   } catch (err) {
-    console.log('ERROR GET QUESTION: ' + err);
+    console.log("ERROR GET QUESTION: " + err);
   }
 };
 

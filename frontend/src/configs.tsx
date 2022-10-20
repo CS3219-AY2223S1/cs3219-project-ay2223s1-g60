@@ -21,6 +21,7 @@ export const URL_USER_LOGIN_WITH_TOKEN = URL_USER_SVC + USER_LOGIN_WITH_TOKEN;
 export const URL_USER_DELETE_USER = URL_USER_SVC + USER_DELETE_USER;
 
 export const LOCAL_STORAGE_TOKEN_KEY = 'token';
+export const LOCAL_STORAGE_TOKEN_ROOM_KEY = 'token-room';
 export const LOCAL_STORAGE_USERNAME_KEY = 'username';
 
 const URI_MATCHING_SVC =
