@@ -94,10 +94,11 @@ const onDisconnectEvent = (socket) => {
   console.log(`Disconnected with ${socket.id}`);
 };
 
-const onDeleteRoomEvent = (req) => {
-  deleteRoom(req.room).then((res) =>
-    res.err ? console.log(res.message) : console.log("Delete room: ", req.room)
+const onDeleteRoomEvent = ({ room }, io) => {
+  deleteRoom(room).then((res) =>
+    res.err ? console.log(res.message) : console.log('Delete room: ', room)
   );
+  io.to(room).emit('match-left');
 };
 
 const onGetQuestionEvent = async (io, { room }) => {
@@ -120,11 +121,11 @@ const onGetQuestionEvent = async (io, { room }) => {
 };
 
 const createEventListeners = (socket, io) => {
-  socket.on("find-match", (req) => onFindMatchEvent(req, io));
-  socket.on("disconnect", () => onDisconnectEvent(socket));
-  socket.on("delete-room", (req) => onDeleteRoomEvent(req));
-  socket.on("get-question", async (room) => onGetQuestionEvent(io, room));
-  socket.on("join-room", ({ room }) => socket.join(room));
+  socket.on('find-match', (req) => onFindMatchEvent(req, io));
+  socket.on('disconnect', () => onDisconnectEvent(socket));
+  socket.on('delete-room', (req) => onDeleteRoomEvent(req, io));
+  socket.on('get-question', async (room) => onGetQuestionEvent(io, room));
+  socket.on('join-room', ({ room }) => socket.join(room));
 };
 
 export default createEventListeners;

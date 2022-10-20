@@ -3,13 +3,14 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+  Stack,
   Typography,
   Menu,
   MenuItem,
 } from '@mui/material';
 import { SchoolSharp, SettingsSharp } from '@mui/icons-material';
 import ConfirmationDialog from './modal/ConfirmationDialog';
-import { useAuth } from '../context/UserContext';
+import { useAuth, useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import ChangeUsernameDialog from './modal/ChangeUsernameDialog';
 import ChangePasswordDialog from './modal/ChangePasswordDialog';
@@ -22,6 +23,7 @@ function Navbar() {
     useState(false);
 
   const authClient = useAuth();
+  const user = useUser();
   const navigate = useNavigate();
 
   const handleOpenSettingsMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -68,9 +70,12 @@ function Navbar() {
           PeerPrep
         </Typography>
 
-        <IconButton onClick={handleOpenSettingsMenu} color='inherit'>
-          <SettingsSharp />
-        </IconButton>
+        <Stack direction='row' spacing={2}>
+          <Typography variant='h6'>{user.username}</Typography>
+          <IconButton onClick={handleOpenSettingsMenu} color='inherit'>
+            <SettingsSharp />
+          </IconButton>
+        </Stack>
 
         <Menu
           id='menu-appbar'
