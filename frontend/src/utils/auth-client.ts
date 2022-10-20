@@ -10,6 +10,7 @@ import {
   USER_SIGNUP,
 } from '../configs';
 import { requests, API } from './api-request';
+import { getTokens } from '../context/UserContext';
 
 export const AuthClient = {
   signUp: (body: {
@@ -54,7 +55,13 @@ export const AuthClient = {
     newUsername: string;
     password: string;
   }): Promise<API.Response<{ message: string }>> => {
-    return requests.post(URL_USER_SVC, USER_CHANGE_USERNAME, body);
+    const headers = {
+      Authorization: `Bearer ${getTokens().token}`,
+      'Content-Type': 'application/json',
+    };
+    return requests.postWithHeaders(URL_USER_SVC, USER_CHANGE_USERNAME, body, {
+      headers: headers,
+    });
   },
 
   changePassword: (body: {
@@ -62,7 +69,13 @@ export const AuthClient = {
     oldPassword: string;
     newPassword: string;
   }): Promise<API.Response<{ message: string }>> => {
-    return requests.post(URL_USER_SVC, USER_CHANGE_PASSWORD, body);
+    const headers = {
+      Authorization: `Bearer ${getTokens().token}`,
+      'Content-Type': 'application/json',
+    };
+    return requests.postWithHeaders(URL_USER_SVC, USER_CHANGE_PASSWORD, body, {
+      headers: headers,
+    });
   },
 
   deleteUser: (data: {

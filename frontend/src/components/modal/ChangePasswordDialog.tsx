@@ -112,6 +112,7 @@ function ChangePasswordDialog(props: ChangePasswordDialogProps) {
               id='newPassword'
               label='New password'
               name='newPassword'
+              type='password'
               variant='standard'
             />
           </Grid>
