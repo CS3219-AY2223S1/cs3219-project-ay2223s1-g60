@@ -115,12 +115,16 @@ function CodeEditor(props: {
         }}
       >
         <SelectLanguages />
-        {/* <TimerModal
-          seconds={90}
+        <TimerModal
+          socket={roomSocket}
+          extendSec={300}
           onTimeUp={() =>
             setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
           }
-        /> */}
+          onExtend={() =>
+            roomSocket.emit('extend-time', { room, seconds: 300 })
+          }
+        />
       </Stack>
       <Editor
         language={language}

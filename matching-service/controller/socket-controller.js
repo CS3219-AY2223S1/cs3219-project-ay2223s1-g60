@@ -1,13 +1,13 @@
 import {
   ormCreateRoom as createRoom,
   ormDeleteRoom as deleteRoom,
-} from "../model/room-orm.js";
-import jwt from "jsonwebtoken";
-import axios from "axios";
+} from '../model/room-orm.js';
+import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 const waitingRoom = [];
-const ROOM_URL = "http://localhost:8001/api/room";
-const QUESTION_URL = "http://localhost:8004/api/question";
+const ROOM_URL = 'http://localhost:8001/api/room';
+const QUESTION_URL = 'http://localhost:8004/api/question';
 
 // Finds match from waiting room, returns -1 if unavailable
 const findMatch = (req) => {
@@ -42,8 +42,8 @@ const onFindMatchEvent = (req, io) => {
   if (index < 0) {
     addWaitingUser(req);
   } else {
-    io.to(waitingRoom[index].socketId).emit("found-match");
-    io.to(req.socketId).emit("found-match");
+    io.to(waitingRoom[index].socketId).emit('found-match');
+    io.to(req.socketId).emit('found-match');
 
     // create room using orm
     createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
@@ -54,11 +54,18 @@ const onFindMatchEvent = (req, io) => {
             req.username,
             res.roomId
           );
-          io.to(waitingRoom[index].socketId).emit("join-room", {
+
+          if (!res.roomId) {
+            console.log('User already in a room');
+            // TODO: handle this (delete existing room? prevent finding a new match?)
+            return;
+          }
+
+          io.to(waitingRoom[index].socketId).emit('join-room', {
             roomId: res.roomId,
             token: roomToken,
           });
-          io.to(req.socketId).emit("join-room", {
+          io.to(req.socketId).emit('join-room', {
             roomId: res.roomId,
             token: roomToken,
           });
@@ -83,22 +90,15 @@ const generateRoomToken = (username1, username2, roomId) => {
       roomId: roomId,
     },
     privateRoomKey,
-    { expiresIn: "2h" }
+    { expiresIn: '2h' }
   );
-  console.log("Room token: " + token);
+  console.log('Room token: ' + token);
   return token;
 };
 
 const onDisconnectEvent = (socket) => {
   removeWaitingUser(socket.id);
   console.log(`Disconnected with ${socket.id}`);
-};
-
-const onDeleteRoomEvent = ({ room }, io) => {
-  deleteRoom(room).then((res) =>
-    res.err ? console.log(res.message) : console.log('Delete room: ', room)
-  );
-  io.to(room).emit('match-left');
 };
 
 const onGetQuestionEvent = async (io, { room }) => {
@@ -109,15 +109,41 @@ const onGetQuestionEvent = async (io, { room }) => {
     const questionObj = await axios.get(
       `${QUESTION_URL}?difficulty=${difficulty}`
     );
-    io.to(room).emit("question", questionObj.data.resp);
+    io.to(room).emit('question', questionObj.data.resp);
     const updatedRoom = await axios.put(`${ROOM_URL}`, {
       roomId: room,
       question: questionObj.data.resp,
     });
     return updatedRoom;
   } catch (err) {
-    console.log("ERROR GET QUESTION: " + err);
+    console.log('Get Question Error: ', err);
   }
+};
+
+const timers = {};
+const handleTimer = (room, io) => {
+  if (timers[room]) return;
+  timers[room] = { time: 120, interval: null };
+  timers[room].interval = setInterval(
+    () => io.to(room).emit('timer', (timers[room].time -= 1)),
+    1000
+  );
+};
+
+const handleExtendTimer = ({ room, seconds }) => {
+  if (!timers[room]) return;
+  timers[room].time += seconds;
+};
+
+const onDeleteRoomEvent = ({ room }, io) => {
+  deleteRoom(room).then((res) =>
+    res.err ? console.log(res.message) : console.log('Delete room: ', room)
+  );
+  if (timers[room]) {
+    clearInterval(timers[room].interval);
+    timers[room] = null;
+  }
+  io.to(room).emit('match-left');
 };
 
 const createEventListeners = (socket, io) => {
@@ -125,7 +151,11 @@ const createEventListeners = (socket, io) => {
   socket.on('disconnect', () => onDisconnectEvent(socket));
   socket.on('delete-room', (req) => onDeleteRoomEvent(req, io));
   socket.on('get-question', async (room) => onGetQuestionEvent(io, room));
-  socket.on('join-room', ({ room }) => socket.join(room));
+  socket.on('join-room', ({ room }) => {
+    socket.join(room);
+    handleTimer(room, io);
+  });
+  socket.on('extend-time', (data) => handleExtendTimer(data));
 };
 
 export default createEventListeners;
