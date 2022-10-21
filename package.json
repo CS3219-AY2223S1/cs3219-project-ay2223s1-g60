@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "description": "This is a template repository for CS3219 project.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo 'Error: no test specified' && exit 1",
     "redis": "redis-server",
     "user-svc": "cd user-service && npm run dev",
     "match-svc": "cd matching-service && npm run dev",
     "comm-svc": "cd communication-service && npm run dev",
     "coll-svc": "cd collaboration-service && npm run dev",
     "qns-svc": "cd question-service && npm run dev",
-    "dev": "concurrently --kill-others \"npm run redis\" \"npm run user-svc\" \"npm run match-svc\" \"npm run comm-svc\" \"npm run coll-svc\" \"npm run qns-svc\""
+    "frontend": "cd frontend && npm run start",
+    "dev": "concurrently --kill-others 'npm run redis' 'npm run user-svc' 'npm run match-svc' 'npm run comm-svc' 'npm run coll-svc' 'npm run qns-svc' 'npm run frontend'"
   },
   "repository": {
     "type": "git",
