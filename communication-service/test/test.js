@@ -1,11 +1,8 @@
 import chai from 'chai';
-import chaiHttp from 'chai-http';
 import io from 'socket.io-client';
 import app from '../server.js';
 import { DEV_SERVER_URI } from '../constants.js';
 import { randomUUID } from 'crypto';
-
-chai.use(chaiHttp);
 
 const expect = chai.expect;
 
