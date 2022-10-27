@@ -12,6 +12,8 @@
     "qns-svc": "cd question-service && npm run dev",
     "frontend": "cd frontend && npm run start",
     "dev": "concurrently --kill-others 'npm run redis' 'npm run user-svc' 'npm run match-svc' 'npm run comm-svc' 'npm run coll-svc' 'npm run qns-svc' 'npm run frontend'"
+    "lint": "npx eslint .",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,12 @@
   },
   "homepage": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g60#readme",
   "devDependencies": {
-    "concurrently": "^7.4.0"
+    "concurrently": "^7.4.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "2.7.1"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }

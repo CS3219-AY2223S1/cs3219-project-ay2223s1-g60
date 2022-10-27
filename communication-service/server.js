@@ -27,9 +27,11 @@ io.on('connection', (socket) => {
   console.log(`Connected to ${socket.id}`);
   const room = socket.handshake.query.room;
   socket.join(room);
-  io.to(room).emit('join-room');
+  io.to(room).emit('join-room', { room: room, socketId: socket.id });
   createEventListeners(socket, io);
 });
 
 const port = process.env.PORT || 8002;
 httpServer.listen(port);
+
+export default app;
