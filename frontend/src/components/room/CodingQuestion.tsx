@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Divider, Stack, Typography } from '@mui/material';
 import { Socket } from 'socket.io-client';
-import { defaultQuestion, QuestionModel } from './QuestionModel.d';
-import axios from 'axios';
-import { URI_ROOM_SVC } from '../../configs';
+import { QuestionModel } from './QuestionModel.d';
 
 enum DifficultyEnum {
   Easy,
@@ -11,28 +9,9 @@ enum DifficultyEnum {
   Hard,
 }
 
-function CodingQuestion(props: { socket: Socket; room: string }) {
-  const { socket, room } = props;
-  const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
-  const [loading, setLoading] = useState(true);
-
-  const getQuestion = () => {
-    axios
-      .get(`${URI_ROOM_SVC}?roomId=${room}`)
-      .then(({ data }) => {
-        setQuestion(data.roomResp.question);
-        setLoading(false);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  socket.on('question', () => {
-    console.log('QUESTION AVAILABLE!');
-    setLoading(true);
-    getQuestion();
-  });
-
-  useEffect(getQuestion, [getQuestion]);
+function CodingQuestion(props: { question: QuestionModel, socket: Socket; room: string }) {
+  const { question, socket, room } = props;
+  const [loading, setLoading] = useState(false);
 
   return loading ? (
     <div>Loading...</div>
@@ -46,13 +25,13 @@ function CodingQuestion(props: { socket: Socket; room: string }) {
         maxHeight: '100%',
       }}
     >
-      <Typography variant='h4'>{question.question_title}</Typography>
+      <Typography variant='h4'>{question?.question_title}</Typography>
       <Typography variant='subtitle1'>
-        {DifficultyEnum[question.question_difficulty - 1]}
+        {DifficultyEnum[question?.question_difficulty - 1]}
       </Typography>
       <Divider />
       <div
-        dangerouslySetInnerHTML={{ __html: question.question_text }}
+        dangerouslySetInnerHTML={{ __html: question?.question_text }}
         style={{ flex: 1, overflow: 'scroll', paddingRight: '1rem' }}
       />
       <Button
