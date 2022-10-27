@@ -13,7 +13,8 @@ import {
   AlarmRounded,
   CloseRounded,
 } from '@mui/icons-material';
-import { useCountDown, formatTime } from '../hooks/useCountDown';
+import { formatTime } from '../hooks/useCountDown';
+import { Socket } from 'socket.io-client';
 
 const TimerAlert = (props: { show: boolean }) => {
   const [openAlert, setOpenAlert] = useState(true);
@@ -47,22 +48,9 @@ const TimerAlert = (props: { show: boolean }) => {
   );
 };
 
-function TimerModal(props: { seconds: number; onTimeUp: VoidFunction }) {
-  const extendSec = 300;
-  const warnSec = 30;
-
-  const { seconds, onTimeUp } = props;
-
-  const [warn, setWarn] = useState(false);
-  const [showTime, setShowTime] = useState(true);
-  const { currTime, isTimeUp, extendTime } = useCountDown(seconds);
-
-  useEffect(() => {
-    currTime <= warnSec ? setWarn(true) : setWarn(false);
-    isTimeUp && onTimeUp();
-  }, [currTime, isTimeUp, onTimeUp]);
-
-  const TimeView = () => (
+const TimeView = (props: { currTime: number; warn: boolean }) => {
+  const { warn, currTime } = props;
+  return (
     <Typography
       variant='h6'
       sx={{
@@ -76,16 +64,42 @@ function TimerModal(props: { seconds: number; onTimeUp: VoidFunction }) {
       {formatTime(currTime)}
     </Typography>
   );
+};
+
+function TimerModal(props: {
+  socket: Socket;
+  extendSec: number;
+  onTimeUp: VoidFunction;
+  onExtend: VoidFunction;
+}) {
+  const warnSec = 30;
+
+  const { socket, extendSec, onTimeUp, onExtend } = props;
+  const [currTime, setCurrTime] = useState(0);
+  const [warn, setWarn] = useState(false);
+  const [showTime, setShowTime] = useState(true);
+
+  socket.on('timer', (time) => {
+    console.log(time);
+    setCurrTime(time);
+  });
+
+  const isTimeUp = () => currTime <= 0;
+
+  useEffect(() => {
+    currTime <= warnSec ? setWarn(true) : setWarn(false);
+    isTimeUp() && onTimeUp();
+  }, [currTime, isTimeUp, onTimeUp]);
 
   return (
     <Stack spacing={1} direction='row-reverse' alignItems='center'>
       <TimerAlert show={warn} />
-      {!warn || isTimeUp ? (
+      {!warn || isTimeUp() ? (
         <Button
           onClick={() => setShowTime(!showTime)}
           sx={{
             paddingY: '1rem',
-            color: `${isTimeUp ? 'error.main' : 'primary.main'}`,
+            color: `${isTimeUp() ? 'error.main' : 'primary.main'}`,
           }}
         >
           <AlarmRounded />
@@ -93,7 +107,7 @@ function TimerModal(props: { seconds: number; onTimeUp: VoidFunction }) {
       ) : (
         <Button
           sx={{ color: 'error.main', flexDirection: 'column' }}
-          onClick={() => extendTime(extendSec)}
+          onClick={onExtend}
         >
           <AlarmAddRounded />
           <Typography sx={{ marginLeft: '4px', fontSize: 'small' }}>
@@ -101,7 +115,9 @@ function TimerModal(props: { seconds: number; onTimeUp: VoidFunction }) {
           </Typography>
         </Button>
       )}
-      {(showTime || (warn && !isTimeUp)) && <TimeView />}
+      {(showTime || (warn && !isTimeUp())) && (
+        <TimeView currTime={currTime} warn={warn} />
+      )}
     </Stack>
   );
 }

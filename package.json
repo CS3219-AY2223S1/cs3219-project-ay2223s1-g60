@@ -10,7 +10,8 @@
     "comm-svc": "cd communication-service && npm run dev",
     "coll-svc": "cd collaboration-service && npm run dev",
     "qns-svc": "cd question-service && npm run dev",
-    "dev": "concurrently --kill-others 'npm run redis' 'npm run user-svc' 'npm run match-svc' 'npm run comm-svc' 'npm run coll-svc' 'npm run qns-svc'",
+    "frontend": "cd frontend && npm run start",
+    "dev": "concurrently --kill-others 'npm run redis' 'npm run user-svc' 'npm run match-svc' 'npm run comm-svc' 'npm run coll-svc' 'npm run qns-svc' 'npm run frontend'",
     "lint": "npx eslint .",
     "prepare": "husky install"
   },
