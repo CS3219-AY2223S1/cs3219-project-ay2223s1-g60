@@ -73,7 +73,7 @@ export async function signIn(req, res) {
         .json({ message: "Username and/or Password are missing!" });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Could not find user" });
+    return res.status(500).json({ message: "Database failure when signing in!" });
   }
 }
 
@@ -103,7 +103,7 @@ export async function changePassword(req, res) {
         .json({ message: "Username and/or Passwords are missing!" });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Could not found user" });
+    return res.status(500).json({ message: "Database failure when changing password!" });
   }
 }
 
@@ -130,7 +130,7 @@ export async function changeUsername(req, res) {
         .json({ message: "Username and/or Password are missing!" });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Could not found user" });
+    return res.status(500).json({ message: "Database failure when changing username!" });
   }
 }
 
@@ -150,7 +150,7 @@ export async function deleteUser(req, res) {
       return res.status(400).json({ message: "Username is missing!" });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Could not found user" });
+    return res.status(500).json({ message: "Database failure when changing username!" });
   }
 }
 
@@ -216,8 +216,7 @@ export async function logout(req, res) {
         .json({ message: "Username and/or token are missing!" });
     }
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Error in logging out" });
+    return res.status(500).json({ message: "Database failure when logging out!" });
   }
 }
 
