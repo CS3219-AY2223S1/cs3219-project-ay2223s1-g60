@@ -4,6 +4,7 @@ import {
 } from '../model/room-orm.js';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
+import 'dotenv/config';
 
 const waitingRoom = [];
 const ROOM_URL = 'http://localhost:8001/api/room';
@@ -55,7 +56,8 @@ const onFindMatchEvent = async (req, io) => {
           return;
         }
 
-        await onGetQuestionEvent(io, { room: res.roomId });
+        process.env.ENV !== 'TEST' &&
+          (await onGetQuestionEvent(io, { room: res.roomId }));
 
         io.to(waitingRoom[index].socketId).to(req.socketId).emit('found-match');
         io.to(waitingRoom[index].socketId).to(req.socketId).emit('join-room', {
