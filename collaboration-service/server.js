@@ -24,9 +24,6 @@ const io = new Server(httpServer, {
 
 io.on('connection', (socket) => {
   console.log(`Connected to ${socket.id}`);
-  const room = socket.handshake.query.room;
-  socket.join(room);
-  console.log('Joined room ', room);
   createEventListeners(socket, io);
 });
 

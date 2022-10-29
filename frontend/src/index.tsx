@@ -5,13 +5,16 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './context/UserContext';
 import { SnackbarProvider } from './context/SnackbarContext';
+import { SocketProvider } from './context/SocketContext';
 
 // @ts-ignore
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <SnackbarProvider>
     <UserProvider>
-      <App />
+      <SocketProvider>
+        <App />
+      </SocketProvider>
     </UserProvider>
   </SnackbarProvider>
 );

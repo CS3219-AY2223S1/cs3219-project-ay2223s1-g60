@@ -23,6 +23,8 @@ const handleGetRole = ({ room, username }, io) => {
 };
 
 const createEventListeners = (socket, io) => {
+  socket.on('join-room', ({ room }) => socket.join(room));
+
   socket.on('message', (data) => {
     io.to(data.room).emit('messageResponse', data);
     io.to(data.room).emit('stop-typingMessage');

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Socket } from 'socket.io-client';
 import { Stack, Typography } from '@mui/material';
 import ChatInput from './ChatInput';
 import ChatView from './ChatView';
 import { defaultRole, Roles } from './ChatModel.d';
+import { useSockets } from '../../../context/SocketContext';
 
-function ChatBox(props: { socket: Socket; room: string }) {
-  const { socket, room } = props;
+function ChatBox(props: { room: string }) {
+  const { chatSocket: socket } = useSockets();
   const [roles, setRoles] = useState<Roles>(defaultRole);
 
   socket.on('assign-role', (roles: Roles) => setRoles(roles));
@@ -23,8 +23,8 @@ function ChatBox(props: { socket: Socket; room: string }) {
       <Typography variant={'h6'} sx={{ textAlign: 'center' }}>
         Chat
       </Typography>
-      <ChatView socket={socket} role={roles} />
-      <ChatInput socket={socket} room={room} />
+      <ChatView role={roles} />
+      <ChatInput room={props.room} />
     </Stack>
   );
 }

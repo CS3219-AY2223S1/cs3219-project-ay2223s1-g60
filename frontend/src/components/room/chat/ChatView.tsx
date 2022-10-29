@@ -1,16 +1,17 @@
 import React, { PropsWithChildren, useState } from 'react';
 import { Container, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { Socket } from 'socket.io-client';
 import { ChatModel, Roles } from './ChatModel.d';
 import ChatBubble from './ChatBubble';
+import { useSockets } from '../../../context/SocketContext';
 
 const TypographyPlaceholder = (props: PropsWithChildren) => (
   <Typography sx={{ color: grey[500] }}>{props.children}</Typography>
 );
 
-function ChatView(props: { socket: Socket; role: Roles }) {
-  const { socket, role } = props;
+function ChatView(props: { role: Roles }) {
+  const { chatSocket: socket } = useSockets();
+  const { role } = props;
   const [chats, setChats] = useState<ChatModel[]>([]);
   const [typingMessage, setTypingMessage] = useState('');
 

@@ -13,7 +13,7 @@ const QUESTION_URL = 'http://localhost:8004/api/question';
 // Finds match from waiting room, returns -1 if unavailable
 const findMatch = (req) => {
   return waitingRoom.findIndex((room) => {
-    return room.socketId !== req.socketId && room.difficulty === req.difficulty;
+    return room.username !== req.username && room.difficulty === req.difficulty;
   });
 };
 
@@ -24,15 +24,13 @@ const addWaitingUser = (req, io) => {
 };
 
 // Remove user from waiting room
-const removeWaitingUser = (socketId, io) => {
-  let index = waitingRoom.findIndex((room) => {
-    return room.socketId === socketId;
-  });
-
-  index > 0 && waitingRoom.splice(index, 1)[0];
+const removeWaitingUser = (username) => {
+  let index = waitingRoom.findIndex((room) => room.username === username);
+  if (index > 0) waitingRoom.splice(index, 1)[0];
 };
 
-const onFindMatchEvent = async (req, io) => {
+const onFindMatchEvent = (req, io) => {
+  console.log(waitingRoom);
   let index = findMatch(req);
 
   if (index < 0) {
@@ -66,7 +64,7 @@ const onFindMatchEvent = async (req, io) => {
           token: roomToken,
         });
 
-        removeWaitingUser(waitingRoom[index].socketId);
+        removeWaitingUser(waitingRoom[index].username);
 
         return res;
       }
@@ -78,21 +76,14 @@ const onFindMatchEvent = async (req, io) => {
 
 const generateRoomToken = (username1, username2, roomId) => {
   let privateRoomKey = process.env.JWT_ROOM_PRIVATE_KEY;
-  let token = jwt.sign(
-    {
-      username1: username1,
-      username2: username2,
-      roomId: roomId,
-    },
-    privateRoomKey,
-    { expiresIn: '2h' }
-  );
+  let token = jwt.sign({ username1, username2, roomId }, privateRoomKey, {
+    expiresIn: '2h',
+  });
   console.log('Room token: ' + token);
   return token;
 };
 
 const onDisconnectEvent = (socket) => {
-  removeWaitingUser(socket.id);
   console.log(`Disconnected with ${socket.id}`);
 };
 
@@ -116,11 +107,21 @@ const onGetQuestionEvent = async (io, { room }) => {
 };
 
 const timers = {};
+
+const countDown = (room) => {
+  timers[room].time -= 1;
+  if (timers[room].time <= 0) {
+    clearInterval(timers[room].interval);
+    timers[room].time = 0;
+  }
+  return timers[room].time;
+};
+
 const handleTimer = (room, io) => {
   if (timers[room]) return;
   timers[room] = { time: 120, interval: null };
   timers[room].interval = setInterval(
-    () => io.to(room).emit('timer', (timers[room].time -= 1)),
+    () => io.to(room).emit('timer', countDown(room)),
     1000
   );
 };
@@ -144,6 +145,7 @@ const onDeleteRoomEvent = ({ room }, io) => {
 const createEventListeners = (socket, io) => {
   socket.on('find-match', (req) => onFindMatchEvent(req, io));
   socket.on('disconnect', () => onDisconnectEvent(socket));
+  socket.on('cancel-req', ({ user }) => removeWaitingUser(user));
   socket.on('delete-room', (req) => onDeleteRoomEvent(req, io));
   socket.on('get-question', async (room) => onGetQuestionEvent(io, room));
   socket.on('join-room', ({ room }) => {
