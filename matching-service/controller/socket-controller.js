@@ -36,7 +36,7 @@ const removeWaitingUser = (socketId) => {
   }
 };
 
-const onFindMatchEvent = (req, io) => {
+const onFindMatchEvent = async (req, io) => {
   let index = findMatch(req);
 
   if (index < 0) {
@@ -47,19 +47,21 @@ const onFindMatchEvent = (req, io) => {
 
     // create room using orm
     createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
-      (res) => {
+      async (res) => {
         if (!res.err) {
           const roomToken = generateRoomToken(
             waitingRoom[index].username,
             req.username,
             res.roomId
           );
-
+          
           if (!res.roomId) {
             console.log('User already in a room');
             // TODO: handle this (delete existing room? prevent finding a new match?)
             return;
           }
+          
+          await onGetQuestionEvent(io, { room: res.roomId });
 
           io.to(waitingRoom[index].socketId).emit('join-room', {
             roomId: res.roomId,
@@ -71,7 +73,7 @@ const onFindMatchEvent = (req, io) => {
           });
 
           removeWaitingUser(waitingRoom[index].socketId);
-          onGetQuestionEvent(io, { room: res.roomId });
+
           return res;
         } else {
           console.log(res.message); // TODO: handle room creation error
