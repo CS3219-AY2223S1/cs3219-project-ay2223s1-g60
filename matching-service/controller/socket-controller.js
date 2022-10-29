@@ -40,6 +40,8 @@ const onFindMatchEvent = async (req, io) => {
     return;
   }
 
+  io.to(waitingRoom[index].socketId).to(req.socketId).emit('found-match');
+
   // create room using orm
   createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
     async (res) => {
@@ -59,7 +61,6 @@ const onFindMatchEvent = async (req, io) => {
         process.env.ENV !== 'TEST' &&
           (await onGetQuestionEvent(io, { room: res.roomId }));
 
-        io.to(waitingRoom[index].socketId).to(req.socketId).emit('found-match');
         io.to(waitingRoom[index].socketId).to(req.socketId).emit('join-room', {
           roomId: res.roomId,
           token: roomToken,
