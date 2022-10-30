@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { AuthClient } from '../utils/auth-client';
 
 enum RegisterStatus {
@@ -30,6 +32,11 @@ function SignUpPage() {
   );
   const [signUpFailMessage, setSignUpFailMessage] = useState<string>('');
   const [showAlert, setShowAlert] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(false);
+
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -115,20 +122,29 @@ function SignUpPage() {
 
             <Grid item xs={12}>
               <TextField
+                placeholder='Password'
+                required
+                fullWidth
+                id='password'
+                label='Password'
+                name='password'
+                type={passwordShown ? 'text' : 'password'}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
                       <ShieldOutlinedIcon />
                     </InputAdornment>
                   ),
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      {!passwordShown ? (
+                        <VisibilityIcon onClick={togglePassword} />
+                      ) : (
+                        <VisibilityOffIcon onClick={togglePassword} />
+                      )}
+                    </InputAdornment>
+                  ),
                 }}
-                placeholder={'Password'}
-                required
-                fullWidth
-                id='password'
-                label='Password'
-                name='password'
-                type='password'
               />
             </Grid>
           </Grid>
