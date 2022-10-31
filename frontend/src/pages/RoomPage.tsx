@@ -86,7 +86,11 @@ function RoomPage() {
       {/* </Alert> */}
     </div>
   ) : (
-    <Box>
+    <Box
+      sx={{
+        height: 'calc(100vh - 84px)',
+      }}
+    >
       <Stack
         direction={'row'}
         spacing={2}
