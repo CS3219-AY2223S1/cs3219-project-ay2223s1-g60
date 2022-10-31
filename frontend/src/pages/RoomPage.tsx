@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, AlertTitle, Box, Stack } from '@mui/material';
 import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
@@ -7,8 +7,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useRoomSockets from '../components/hooks/useRoomSockets';
 import { getRoomToken, useUser } from '../context/UserContext';
 import { requests } from '../utils/api-request';
-import { URL_MATCHING_SVC } from '../configs';
+import { URL_MATCHING_SVC, URI_ROOM_SVC } from '../configs';
 import { useSnackbar } from '../context/SnackbarContext';
+import {
+  defaultQuestion,
+  QuestionModel,
+} from '../components/room/QuestionModel.d';
+import axios from 'axios';
 
 function RoomPage() {
   const { search } = useLocation();
@@ -50,6 +55,24 @@ function RoomPage() {
     });
 
   const { roomSocket, collabSocket, chatSocket } = useRoomSockets(room);
+  const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
+
+  const getQuestion = () => {
+    axios
+      .get(`${URI_ROOM_SVC}?roomId=${room}`)
+      .then(({ data }) => {
+        setQuestion(data.roomResp.question);
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  roomSocket.on('question', () => {
+    console.log('QUESTION AVAILABLE!');
+    getQuestion();
+  });
+
+  useEffect(getQuestion, []);
 
   return showAlert ? (
     <div>
@@ -69,7 +92,7 @@ function RoomPage() {
         spacing={2}
         style={{ width: '100vw', maxHeight: '100%' }}
       >
-        <CodingQuestion socket={roomSocket} room={room} />
+        <CodingQuestion question={question} socket={roomSocket} room={room} />
         <CodeEditor socket={collabSocket} roomSocket={roomSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>
