@@ -8,6 +8,7 @@ import { Box, CssBaseline } from '@mui/material';
 import React from 'react';
 import Navbar from './components/Navbar';
 import { useUser } from './context/UserContext';
+import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import MatchingPage from './pages/MatchingPage';
 import RoomPage from './pages/RoomPage';
@@ -19,7 +20,8 @@ function App() {
   const loggedInRoutes = (
     <Routes>
       <Route path='/' element={<Navigate replace to='/home' />} />
-      <Route path='/home' element={<MatchingPage />} />
+      <Route path='/home' element={<HomePage />} />
+      <Route path='/match' element={<MatchingPage />} />
       <Route path='/room/*' element={<RoomPage />} />
       <Route path='*' element={<Navigate replace to='/home' />} />
     </Routes>

@@ -18,6 +18,11 @@
       "sizes": "512x512"
     },
     {
+      "src": "studying.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
       "src": "beginner.png",
       "type": "image/png",
       "sizes": "64x64"

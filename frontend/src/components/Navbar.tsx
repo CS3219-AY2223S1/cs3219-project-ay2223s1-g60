@@ -62,7 +62,7 @@ function Navbar() {
         boxShadow: '8px 8px 35px #d7dbe3',
         backgroundColor: '#f3f7fa',
         color: 'black',
-        marginBottom: '20px',
+        marginBottom: '30px',
       }}
     >
       <Toolbar>
@@ -80,11 +80,8 @@ function Navbar() {
           PeerPrep
         </Typography>
 
-        <Typography variant='h6' component='div'>
-          {user.username}
-        </Typography>
-
         <Stack direction='row' spacing={2}>
+          <Typography variant='h6'>{user.username}</Typography>
           <IconButton onClick={handleOpenSettingsMenu} color='inherit'>
             <SettingsSharp />
           </IconButton>
