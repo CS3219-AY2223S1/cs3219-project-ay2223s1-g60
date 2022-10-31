@@ -7,9 +7,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useRoomSockets from '../components/hooks/useRoomSockets';
 import { getRoomToken, useUser } from '../context/UserContext';
 import { requests } from '../utils/api-request';
-import { URL_MATCHING_SVC, URI_ROOM_SVC} from '../configs';
+import { URL_MATCHING_SVC, URI_ROOM_SVC } from '../configs';
 import { useSnackbar } from '../context/SnackbarContext';
-import { defaultQuestion, QuestionModel } from '../components/room/QuestionModel.d';
+import {
+  defaultQuestion,
+  QuestionModel,
+} from '../components/room/QuestionModel.d';
 import axios from 'axios';
 
 function RoomPage() {
@@ -50,7 +53,7 @@ function RoomPage() {
       }
       // snackBar.setSuccess(message, 2000);
     });
-  
+
   const { roomSocket, collabSocket, chatSocket } = useRoomSockets(room);
   const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
 
@@ -89,7 +92,7 @@ function RoomPage() {
         spacing={2}
         style={{ width: '100vw', maxHeight: '100%' }}
       >
-          <CodingQuestion question={question} socket={roomSocket} room={room} />
+        <CodingQuestion question={question} socket={roomSocket} room={room} />
         <CodeEditor socket={collabSocket} roomSocket={roomSocket} room={room} />
         <ChatBox socket={chatSocket} room={room} />
       </Stack>

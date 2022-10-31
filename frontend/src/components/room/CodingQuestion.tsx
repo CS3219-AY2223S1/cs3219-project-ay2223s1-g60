@@ -9,7 +9,11 @@ enum DifficultyEnum {
   Hard,
 }
 
-function CodingQuestion(props: { question: QuestionModel, socket: Socket; room: string }) {
+function CodingQuestion(props: {
+  question: QuestionModel;
+  socket: Socket;
+  room: string;
+}) {
   const { question, socket, room } = props;
   const [loading, setLoading] = useState(false);
 

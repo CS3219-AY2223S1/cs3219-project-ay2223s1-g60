@@ -4,6 +4,7 @@ import {
 } from '../model/room-orm.js';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
+import 'dotenv/config';
 
 const waitingRoom = [];
 const ROOM_URL = 'http://localhost:8001/api/room';
@@ -17,70 +18,62 @@ const findMatch = (req) => {
 };
 
 // Adds user to waiting room
-const addWaitingUser = (req) => {
-  waitingRoom.push({
-    username: req.username,
-    difficulty: req.difficulty,
-    socketId: req.socketId,
-  });
+const addWaitingUser = (req, io) => {
+  waitingRoom.push(req);
+  io.to(req.socketId).emit('update-waiting-room', waitingRoom);
 };
 
 // Remove user from waiting room
-const removeWaitingUser = (socketId) => {
+const removeWaitingUser = (socketId, io) => {
   let index = waitingRoom.findIndex((room) => {
     return room.socketId === socketId;
   });
 
-  if (index >= 0) {
-    waitingRoom.splice(index, 1);
-  }
+  index > 0 && waitingRoom.splice(index, 1)[0];
 };
 
 const onFindMatchEvent = async (req, io) => {
   let index = findMatch(req);
 
   if (index < 0) {
-    addWaitingUser(req);
-  } else {
-    io.to(waitingRoom[index].socketId).emit('found-match');
-    io.to(req.socketId).emit('found-match');
-
-    // create room using orm
-    createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
-      async (res) => {
-        if (!res.err) {
-          const roomToken = generateRoomToken(
-            waitingRoom[index].username,
-            req.username,
-            res.roomId
-          );
-          
-          if (!res.roomId) {
-            console.log('User already in a room');
-            // TODO: handle this (delete existing room? prevent finding a new match?)
-            return;
-          }
-          
-          await onGetQuestionEvent(io, { room: res.roomId });
-
-          io.to(waitingRoom[index].socketId).emit('join-room', {
-            roomId: res.roomId,
-            token: roomToken,
-          });
-          io.to(req.socketId).emit('join-room', {
-            roomId: res.roomId,
-            token: roomToken,
-          });
-
-          removeWaitingUser(waitingRoom[index].socketId);
-
-          return res;
-        } else {
-          console.log(res.message); // TODO: handle room creation error
-        }
-      }
-    );
+    addWaitingUser(req, io);
+    return;
   }
+
+  io.to(waitingRoom[index].socketId).to(req.socketId).emit('found-match');
+
+  // create room using orm
+  createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
+    async (res) => {
+      if (!res.err) {
+        const roomToken = generateRoomToken(
+          waitingRoom[index].username,
+          req.username,
+          res.roomId
+        );
+
+        if (!res.roomId) {
+          console.log('User already in a room');
+          // TODO: handle this (delete existing room? prevent finding a new match?)
+          return;
+        }
+
+        process.env.ENV !== 'TEST' &&
+          (await onGetQuestionEvent(io, { room: res.roomId }));
+
+        io.to(waitingRoom[index].socketId).to(req.socketId).emit('join-room', {
+          roomId: res.roomId,
+          token: roomToken,
+        });
+
+        removeWaitingUser(waitingRoom[index].socketId);
+
+        return res;
+      }
+
+      console.log(res.message); // TODO: handle room creation error
+    }
+  );
 };
 
 const generateRoomToken = (username1, username2, roomId) => {
@@ -118,7 +111,7 @@ const onGetQuestionEvent = async (io, { room }) => {
     });
     return updatedRoom;
   } catch (err) {
-    console.log('Get Question Error: ', err);
+    console.log('ERROR GET QUESTION: ' + err);
   }
 };
 

@@ -6,7 +6,7 @@ import {
   Button,
   CircularProgress,
   DialogTitle,
-  Typography
+  Typography,
 } from '@mui/material';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
@@ -72,27 +72,31 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
           justifyContent='space-around'
           alignItems='center'
         >
-              <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-          <CircularProgress variant='determinate' size={60} value={100-timer.currTime/30 * 100}/>
-          <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-        >{`${Math.round(timer.currTime)} s`}</Typography>
-      </Box>
-      </Box>
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <CircularProgress
+              variant='determinate'
+              size={60}
+              value={100 - (timer.currTime / 30) * 100}
+            />
+            <Box
+              sx={{
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                position: 'absolute',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Typography
+                variant='caption'
+                component='div'
+                color='text.secondary'
+              >{`${Math.round(timer.currTime)} s`}</Typography>
+            </Box>
+          </Box>
           <Button variant='contained' onClick={cleanUp}>
             Cancel
           </Button>
