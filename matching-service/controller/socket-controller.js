@@ -13,7 +13,7 @@ const QUESTION_URL = 'http://localhost:8004/api/question';
 // Finds match from waiting room, returns -1 if unavailable
 const findMatch = (req) => {
   return waitingRoom.findIndex((room) => {
-    return room.socketId !== req.socketId && room.difficulty === req.difficulty;
+    return room.username !== req.username && room.difficulty === req.difficulty;
   });
 };
 
