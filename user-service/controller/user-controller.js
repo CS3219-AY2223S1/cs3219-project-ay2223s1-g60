@@ -55,6 +55,11 @@ export async function signIn(req, res) {
     const { username, password } = req.body;
     if (username && password) {
       const user = await _getUser(username, password);
+
+      if (!user) {
+        return res.status(400).json({ message: "Wrong username and/or password!" });
+      }
+
       if (user.err) {
         return res.status(400).json({ message: "Could not sign in!" });
       } else {
