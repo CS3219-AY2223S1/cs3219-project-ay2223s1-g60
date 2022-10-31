@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g60#readme",
   "devDependencies": {
-    "concurrently": "^7.4.0",
+    "concurrently": "^7.5.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1"
