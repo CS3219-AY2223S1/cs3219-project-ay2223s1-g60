@@ -46,14 +46,6 @@ describe('Socket connection', function () {
 describe('[Event] Find Match', function () {
   let matchReq1, matchReq2, matchReq3;
 
-  before(async function () {
-    return new Promise(function (resolve) {
-      mongoose.connection.collections['roommodels'].drop().then(function () {
-        resolve();
-      });
-    });
-  });
-
   describe('first match request', function () {
     it('should put users in waiting room', function (done) {
       matchReq1 = { username: 'user1', difficulty: 1, socketId: user1.id };
