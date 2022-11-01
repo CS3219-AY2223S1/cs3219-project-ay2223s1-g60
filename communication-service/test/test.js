@@ -107,8 +107,9 @@ describe('[Event] Assign Role', () => {
   ];
 
   beforeEach(() => {
-    user1.emit('get-role', { room: room, username: 'user1' });
-    user2.emit('get-role', { room: room, username: 'user2' });
+    user1.emit('get-role', { room, username: 'user1' });
+    user2.emit('get-role', { room, username: 'user2' });
+    setTimeout(() => user1.emit('get-roles', { room }), 5);
   });
 
   it('should assign different roles to users', (done) => {

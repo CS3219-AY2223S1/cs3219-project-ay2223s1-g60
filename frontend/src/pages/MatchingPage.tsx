@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import LoadingModal from '../components/modal/LoadingModal';
 import { useUser } from '../context/UserContext';
+import { useSockets } from '../context/SocketContext';
 
 function MatchingPage() {
   const username = useUser().username || '';
+  const { roomSocket: socket } = useSockets();
   const [loading, setLoading] = useState(false);
   const [difficulty, setDifficulty] = useState(0);
 
@@ -35,7 +37,17 @@ function MatchingPage() {
           <SelectButton name={'easy'} id={1} />
           <SelectButton name={'medium'} id={2} />
           <SelectButton name={'hard'} id={3} />
-          <Button variant={'contained'} onClick={() => setLoading(true)}>
+          <Button
+            variant={'contained'}
+            onClick={() => {
+              setLoading(true);
+              socket.emit('find-match', {
+                username,
+                socketId: socket.id,
+                difficulty,
+              });
+            }}
+          >
             Find Match
           </Button>
         </Stack>

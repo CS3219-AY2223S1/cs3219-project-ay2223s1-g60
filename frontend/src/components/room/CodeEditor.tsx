@@ -7,12 +7,12 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import { Socket } from 'socket.io-client';
 import * as monaco from 'monaco-editor';
 import Editor from '@monaco-editor/react';
 import TimerModal from '../modal/TimerModal';
 import { useNavigate } from 'react-router-dom';
 import MatchLeftDialog from '../modal/MatchLeftDialog';
+import { useSockets } from '../../context/SocketContext';
 
 const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   autoIndent: 'full',
@@ -35,14 +35,13 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
     verticalScrollbarSize: 4,
   },
   scrollBeyondLastLine: false,
+  readOnly: false,
 };
 
-function CodeEditor(props: {
-  socket: Socket;
-  roomSocket: Socket;
-  room: string;
-}) {
-  const { socket, roomSocket, room } = props;
+function CodeEditor(props: { room: string }) {
+  const { collabSocket: socket, roomSocket } = useSockets();
+  const { room } = props;
+
   const [typedCode, setTypedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
@@ -53,7 +52,6 @@ function CodeEditor(props: {
   const navigate = useNavigate();
   const leaveRoom = () => {
     roomSocket.emit('delete-room', { room: room });
-    roomSocket.disconnect();
     navigate('/match');
   };
 
@@ -116,7 +114,6 @@ function CodeEditor(props: {
       >
         <SelectLanguages />
         <TimerModal
-          socket={roomSocket}
           extendSec={300}
           onTimeUp={() =>
             setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
