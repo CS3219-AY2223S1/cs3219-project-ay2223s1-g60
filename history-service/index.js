@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
+const PORT = 8005;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -28,4 +29,4 @@ app.use("/api/history", router).all((_, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 });
 
-app.listen(8005, () => console.log("history-service listening on port 8000"));
+app.listen(POST, () => console.log(`history-service listening on port ${PORT}`));
