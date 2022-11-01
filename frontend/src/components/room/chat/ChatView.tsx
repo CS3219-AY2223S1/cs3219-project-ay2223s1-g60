@@ -9,7 +9,7 @@ const TypographyPlaceholder = (props: PropsWithChildren) => (
   <Typography sx={{ color: grey[500] }}>{props.children}</Typography>
 );
 
-function ChatView(props: { role: Roles }) {
+function ChatView(props: { role?: Roles }) {
   const { chatSocket: socket } = useSockets();
   const { role } = props;
   const [chats, setChats] = useState<ChatModel[]>([]);
@@ -25,12 +25,16 @@ function ChatView(props: { role: Roles }) {
 
   return (
     <Container sx={{ flexGrow: '1' }}>
-      <TypographyPlaceholder>
-        {role.interviewer} as Interviewer
-      </TypographyPlaceholder>
-      <TypographyPlaceholder>
-        {role.interviewee} as Interviewee
-      </TypographyPlaceholder>
+      {role && (
+        <>
+          <TypographyPlaceholder>
+            {role.interviewer} as Interviewer
+          </TypographyPlaceholder>
+          <TypographyPlaceholder>
+            {role.interviewee} as Interviewee
+          </TypographyPlaceholder>
+        </>
+      )}
       <Stack spacing={1} sx={{ mt: '1rem' }}>
         {chats.map((chat, i) => (
           <ChatBubble

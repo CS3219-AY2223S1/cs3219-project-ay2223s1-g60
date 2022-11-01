@@ -15,7 +15,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     chatSocket.emit('join-room', { room });
 
     chatSocket.on('joined-room', () => {
-      chatSocket.emit('fetch-messages', { room });
       chatSocket.emit('get-role', { room, username: user });
     });
 

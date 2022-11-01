@@ -26,7 +26,7 @@ const addWaitingUser = (req, io) => {
 // Remove user from waiting room
 const removeWaitingUser = (username) => {
   let index = waitingRoom.findIndex((room) => room.username === username);
-  if (index > 0) waitingRoom.splice(index, 1)[0];
+  if (index > 0) return waitingRoom.splice(index, 1)[0];
 };
 
 const onFindMatchEvent = (req, io) => {
@@ -38,14 +38,15 @@ const onFindMatchEvent = (req, io) => {
     return;
   }
 
-  io.to(waitingRoom[index].socketId).to(req.socketId).emit('found-match');
+  const waitingUser = waitingRoom[index];
+  removeWaitingUser(waitingRoom[index].username);
 
   // create room using orm
-  createRoom(waitingRoom[index].username, req.username, req.difficulty).then(
+  createRoom(waitingUser.username, req.username, req.difficulty).then(
     async (res) => {
       if (!res.err) {
         const roomToken = generateRoomToken(
-          waitingRoom[index].username,
+          waitingUser.username,
           req.username,
           res.roomId
         );
@@ -59,12 +60,11 @@ const onFindMatchEvent = (req, io) => {
         process.env.ENV !== 'TEST' &&
           (await onGetQuestionEvent(io, { room: res.roomId }));
 
-        io.to(waitingRoom[index].socketId).to(req.socketId).emit('join-room', {
+        io.to(waitingUser.socketId).to(req.socketId).emit('found-match');
+        io.to(waitingUser.socketId).to(req.socketId).emit('join-room', {
           roomId: res.roomId,
           token: roomToken,
         });
-
-        removeWaitingUser(waitingRoom[index].username);
 
         return res;
       }

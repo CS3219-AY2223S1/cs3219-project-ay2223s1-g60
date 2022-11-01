@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
+import { CasinoRounded } from '@mui/icons-material';
 import ChatInput from './ChatInput';
 import ChatView from './ChatView';
-import { defaultRole, Roles } from './ChatModel.d';
+import { Roles } from './ChatModel.d';
 import { useSockets } from '../../../context/SocketContext';
 
 function ChatBox(props: { room: string }) {
+  const { room } = props;
   const { chatSocket: socket } = useSockets();
-  const [roles, setRoles] = useState<Roles>(defaultRole);
+  const [roles, setRoles] = useState<Roles | undefined>();
 
   socket.on('assign-role', (roles: Roles) => setRoles(roles));
 
@@ -23,8 +25,17 @@ function ChatBox(props: { room: string }) {
       <Typography variant={'h6'} sx={{ textAlign: 'center' }}>
         Chat
       </Typography>
+      <Button
+        fullWidth
+        variant='outlined'
+        endIcon={<CasinoRounded />}
+        disabled={roles ? true : false}
+        onClick={() => socket.emit('get-roles', { room })}
+      >
+        Assign Roles
+      </Button>
       <ChatView role={roles} />
-      <ChatInput room={props.room} />
+      <ChatInput room={room} />
     </Stack>
   );
 }
