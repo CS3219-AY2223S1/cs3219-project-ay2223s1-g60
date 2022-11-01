@@ -1,55 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Alert,
-  Collapse,
-  Fade,
-  IconButton,
-  Stack,
-  Button,
-  Typography,
-} from '@mui/material';
-import {
-  AlarmAddRounded,
-  AlarmRounded,
-  CloseRounded,
-} from '@mui/icons-material';
+import { Stack, Button, Typography } from '@mui/material';
+import { AlarmAddRounded, AlarmRounded } from '@mui/icons-material';
 import { formatTime } from '../hooks/useCountDown';
-import { Socket } from 'socket.io-client';
-
-const TimerAlert = (props: { show: boolean }) => {
-  const [openAlert, setOpenAlert] = useState(true);
-
-  return (
-    <Collapse in={openAlert}>
-      <Fade in={props.show}>
-        <Alert
-          severity='info'
-          sx={{
-            position: 'absolute',
-            bottom: '0',
-            left: '0',
-            mb: '1rem',
-            zIndex: '10',
-          }}
-          action={
-            <IconButton
-              aria-label='close'
-              size='small'
-              onClick={() => setOpenAlert(false)}
-            >
-              <CloseRounded />
-            </IconButton>
-          }
-        >
-          Time's almost up!
-        </Alert>
-      </Fade>
-    </Collapse>
-  );
-};
+import { useSockets } from '../../context/SocketContext';
+import { useSnackbar } from '../../context/SnackbarContext';
 
 const TimeView = (props: { currTime: number; warn: boolean }) => {
   const { warn, currTime } = props;
+
   return (
     <Typography
       variant='h6'
@@ -67,33 +25,41 @@ const TimeView = (props: { currTime: number; warn: boolean }) => {
 };
 
 function TimerModal(props: {
-  socket: Socket;
   extendSec: number;
   onTimeUp: VoidFunction;
   onExtend: VoidFunction;
 }) {
   const warnSec = 30;
 
-  const { socket, extendSec, onTimeUp, onExtend } = props;
-  const [currTime, setCurrTime] = useState(0);
+  const socket = useSockets().roomSocket;
+  const snackbar = useSnackbar();
+
+  const { extendSec, onTimeUp, onExtend } = props;
+  const [currTime, setCurrTime] = useState(Infinity);
   const [warn, setWarn] = useState(false);
   const [showTime, setShowTime] = useState(true);
 
-  socket.on('timer', (time) => {
-    console.log(time);
-    setCurrTime(time);
-  });
+  useEffect(() => {
+    socket.on('timer', (time: number) => setCurrTime(time));
+  }, []);
 
   const isTimeUp = () => currTime <= 0;
 
   useEffect(() => {
-    currTime <= warnSec ? setWarn(true) : setWarn(false);
-    isTimeUp() && onTimeUp();
-  }, [currTime, isTimeUp, onTimeUp]);
+    if (currTime <= warnSec) {
+      setWarn(true);
+      snackbar.setError("Time's almost up");
+    } else {
+      setWarn(false);
+    }
+
+    if (currTime <= 0) {
+      onTimeUp();
+    }
+  }, [currTime, onTimeUp]);
 
   return (
     <Stack spacing={1} direction='row-reverse' alignItems='center'>
-      <TimerAlert show={warn} />
       {!warn || isTimeUp() ? (
         <Button
           onClick={() => setShowTime(!showTime)}

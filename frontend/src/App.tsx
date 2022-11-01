@@ -14,9 +14,11 @@ import MatchingPage from './pages/MatchingPage';
 import RoomPage from './pages/RoomPage';
 import SignupPage from './pages/SignupPage';
 import { theme } from './styles';
+import { useSockets } from './context/SocketContext';
 
 function App() {
   const user = useUser();
+  const { roomSocket } = useSockets();
 
   const loggedInRoutes = (
     <Routes>
