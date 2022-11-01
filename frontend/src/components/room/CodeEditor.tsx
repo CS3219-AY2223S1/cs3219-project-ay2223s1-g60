@@ -13,6 +13,7 @@ import TimerModal from '../modal/TimerModal';
 import { useNavigate } from 'react-router-dom';
 import MatchLeftDialog from '../modal/MatchLeftDialog';
 import { useSockets } from '../../context/SocketContext';
+import { useRoom } from '../../context/RoomContext';
 
 const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   autoIndent: 'full',
@@ -38,21 +39,20 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   readOnly: false,
 };
 
-function CodeEditor(props: { room: string }) {
+function CodeEditor() {
   const { collabSocket: socket, roomSocket } = useSockets();
-  const { room } = props;
+  const { room: { roomId, language, code }, setCode, setLanguage, saveHistory} = useRoom();
 
-  const [typedCode, setTypedCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
+  // const [typedCode, setTypedCode] = useState('');
+  // const [language, setLanguage] = useState('javascript');
   const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
   const [openDialog, setOpenDialog] = useState(false);
 
   roomSocket.on('match-left', () => setOpenDialog(true));
 
   const navigate = useNavigate();
-  const leaveRoom = () => {
-    roomSocket.emit('delete-room', { room: room });
-    navigate('/match');
+  const leaveRoom = async () => {
+    await saveHistory();
   };
 
   const handleChange = (
@@ -60,11 +60,11 @@ function CodeEditor(props: { room: string }) {
     e: monaco.editor.IModelContentChangedEvent
   ) => {
     if (!value) return;
-    setTypedCode(value);
+    setCode(value);
     socket.emit('typedCode', {
       text: value,
       socketId: socket.id,
-      room: room,
+      room: roomId,
     });
   };
 
@@ -72,7 +72,7 @@ function CodeEditor(props: { room: string }) {
     'typedCode',
     (data: { text: string; socketId: string; room: string }) => {
       if (data.socketId === socket.id) return;
-      setTypedCode(data.text);
+      setCode(data.text);
     }
   );
 
@@ -119,13 +119,13 @@ function CodeEditor(props: { room: string }) {
             setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
           }
           onExtend={() =>
-            roomSocket.emit('extend-time', { room, seconds: 300 })
+            roomSocket.emit('extend-time', { room: roomId, seconds: 300 })
           }
         />
       </Stack>
       <Editor
         language={language}
-        value={typedCode}
+        value={code}
         options={editorOptions}
         onChange={handleChange}
       />

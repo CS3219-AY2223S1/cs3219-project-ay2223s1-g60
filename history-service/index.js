@@ -17,16 +17,15 @@ import { verifyToken } from "./middleware/authJwt.js";
 
 const router = express.Router();
 
-app.get("/", (_, res) => res.send("Hello World from history-service"));
-
 // Controller will contain all the User-defined Routes
 router.get("/historyList/:username", verifyToken, getHistoryList);
 router.get("/:username/:roomId", verifyToken, getHistory);
 router.post("/:username", verifyToken, createHistory);
 
 app.use("/api/history", router).all((_, res) => {
-  res.setHeader("content-type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("content-type", "application/json");
+  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
 });
 
-app.listen(POST, () => console.log(`history-service listening on port ${PORT}`));
+app.listen(8005, () => console.log(`history-service listening on port ${PORT}`));

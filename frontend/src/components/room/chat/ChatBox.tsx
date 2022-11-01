@@ -5,11 +5,12 @@ import ChatInput from './ChatInput';
 import ChatView from './ChatView';
 import { Roles } from './ChatModel.d';
 import { useSockets } from '../../../context/SocketContext';
+import { useRoom } from '../../../context/RoomContext';
 
-function ChatBox(props: { room: string }) {
-  const { room } = props;
+function ChatBox() {
   const { chatSocket: socket } = useSockets();
   const [roles, setRoles] = useState<Roles | undefined>();
+  const { room: { roomId } } = useRoom();
 
   socket.on('assign-role', (roles: Roles) => setRoles(roles));
 
@@ -30,12 +31,12 @@ function ChatBox(props: { room: string }) {
         variant='outlined'
         endIcon={<CasinoRounded />}
         disabled={roles ? true : false}
-        onClick={() => socket.emit('get-roles', { room })}
+        onClick={() => socket.emit('get-roles', { room: roomId })}
       >
         Assign Roles
       </Button>
       <ChatView role={roles} />
-      <ChatInput room={room} />
+      <ChatInput />
     </Stack>
   );
 }

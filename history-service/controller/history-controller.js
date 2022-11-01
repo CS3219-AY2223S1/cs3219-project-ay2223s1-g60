@@ -7,6 +7,7 @@ import {
 export async function createHistory(req, res) {
     try {
         const { username1, username2, question, chats, code, roomId } = req.body;
+        console.log("BODY: ", req.body);
         if ( username1, username2, question, chats, code, roomId ) {
 
             const historyBody = {
@@ -20,6 +21,7 @@ export async function createHistory(req, res) {
 
             const history = await _createHistory(historyBody);
             if (history.err) {
+                console.log(history.err);
                 return res.status(400).json({ message: "Could not insert history!" });
             } else {
                 return res.status(201).json({ message: "Successfully added history entry!" });

@@ -2,10 +2,11 @@ import React from 'react';
 import { Button, Divider, Stack, Typography } from '@mui/material';
 import { DifficultyEnum, QuestionModel } from './QuestionModel.d';
 import { useSockets } from '../../context/SocketContext';
+import { useRoom } from '../../context/RoomContext';
 
-function CodingQuestion(props: { question: QuestionModel; room: string }) {
+function CodingQuestion() {
   const { roomSocket: socket } = useSockets();
-  const { question, room } = props;
+  const { room: { question, roomId } } = useRoom();
 
   return (
     <Stack
@@ -28,7 +29,7 @@ function CodingQuestion(props: { question: QuestionModel; room: string }) {
       />
       <Button
         variant='contained'
-        onClick={() => socket.emit('get-question', { room })}
+        onClick={() => socket.emit('get-question', { room: roomId })}
       >
         Next Question
       </Button>
