@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from 'axios';
 import {
+  URL_MATCHING_SVC,
   URL_USER_SVC,
   USER_CHANGE_PASSWORD,
   USER_CHANGE_USERNAME,
@@ -82,5 +82,27 @@ export const AuthClient = {
     username: string;
   }): Promise<API.Response<{ message: string }>> => {
     return requests.delete(URL_USER_SVC, USER_DELETE_USER, { data });
+  },
+
+  authRoom: (data: {
+    username: string;
+    room: string;
+    token: string;
+  }): Promise<API.Response<{ message: string }>> => {
+    const { username, room, token } = data;
+    const body = { username, roomId: room };
+    const headers = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    return requests.postWithHeaders(
+      URL_MATCHING_SVC,
+      '/api/matching/verify-user',
+      body,
+      headers
+    );
   },
 };

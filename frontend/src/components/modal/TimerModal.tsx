@@ -40,7 +40,7 @@ function TimerModal(props: {
   const [showTime, setShowTime] = useState(true);
 
   useEffect(() => {
-    socket.on('timer', (time) => setCurrTime(time));
+    socket.on('timer', (time: number) => setCurrTime(time));
   }, []);
 
   const isTimeUp = () => currTime <= 0;
