@@ -26,7 +26,12 @@ const addWaitingUser = (req, io) => {
 // Remove user from waiting room
 const removeWaitingUser = (username) => {
   let index = waitingRoom.findIndex((room) => room.username === username);
-  if (index > 0) return waitingRoom.splice(index, 1)[0];
+  if (index >= 0) waitingRoom.splice(index, 1)[0];
+};
+
+const removeWaitingSocket = (socketId) => {
+  let index = waitingRoom.findIndex((room) => room.socketId === socketId);
+  if (index >= 0) waitingRoom.splice(index, 1)[0];
 };
 
 const onFindMatchEvent = (req, io) => {
@@ -84,21 +89,25 @@ const generateRoomToken = (username1, username2, roomId) => {
 };
 
 const onDisconnectEvent = (socket) => {
+  removeWaitingSocket(socket.id);
+  console.log(waitingRoom);
   console.log(`Disconnected with ${socket.id}`);
 };
 
 const onGetQuestionEvent = async (io, { room }) => {
   try {
-    const difficulty = await (
-      await axios.get(`${ROOM_URL}?roomId=${room}`)
-    ).data.roomResp.difficulty;
-    const questionObj = await axios.get(
-      `${QUESTION_URL}?difficulty=${difficulty}`
-    );
-    io.to(room).emit('question', questionObj.data.resp);
+    const difficulty = await axios
+      .get(`${ROOM_URL}?roomId=${room}`)
+      .then(({ data: { difficulty } }) => difficulty);
+    const question = await axios
+      .get(`${QUESTION_URL}?difficulty=${difficulty}`)
+      .then(({ data: { resp } }) => resp);
+
+    io.to(room).emit('question', question);
+
     const updatedRoom = await axios.put(`${ROOM_URL}`, {
       roomId: room,
-      question: questionObj.data.resp,
+      question,
     });
     return updatedRoom;
   } catch (err) {

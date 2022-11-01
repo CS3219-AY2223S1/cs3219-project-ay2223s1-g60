@@ -1,4 +1,5 @@
 import {
+  URI_ROOM_SVC,
   URL_MATCHING_SVC,
   URL_USER_SVC,
   USER_CHANGE_PASSWORD,
@@ -11,6 +12,7 @@ import {
 } from '../configs';
 import { requests, API } from './api-request';
 import { getTokens } from '../context/UserContext';
+import { QuestionModel } from '../components/room/QuestionModel';
 
 export const AuthClient = {
   signUp: (body: {
@@ -104,5 +106,11 @@ export const AuthClient = {
       body,
       headers
     );
+  },
+
+  getQuestion: (data: {
+    room: string;
+  }): Promise<API.Response<{ question: QuestionModel }>> => {
+    return requests.get(URI_ROOM_SVC, `?roomId=${data.room}`);
   },
 };

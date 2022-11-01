@@ -4,13 +4,12 @@ import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { URI_ROOM_SVC } from '../configs';
 import {
   defaultQuestion,
   QuestionModel,
 } from '../components/room/QuestionModel.d';
-import axios from 'axios';
 import { useSockets } from '../context/SocketContext';
+import { AuthClient } from '../utils/auth-client';
 
 function RoomPage() {
   const { search } = useLocation();
@@ -23,10 +22,13 @@ function RoomPage() {
   const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
 
   const getQuestion = () => {
-    axios
-      .get(`${URI_ROOM_SVC}?roomId=${room}`)
-      .then(({ data }) => setQuestion(data.roomResp.question))
-      .catch((err) => console.log(err));
+    room &&
+      AuthClient.getQuestion({ room })
+        .then(({ data: { question } }) => {
+          console.log(question);
+          setQuestion(question);
+        })
+        .catch((err) => console.log(err));
   };
 
   sockets.roomSocket.on('question', getQuestion);
