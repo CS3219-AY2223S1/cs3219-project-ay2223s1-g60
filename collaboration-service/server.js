@@ -29,3 +29,5 @@ io.on('connection', (socket) => {
 
 const port = process.env.PORT || 8003;
 httpServer.listen(port);
+
+export default app;

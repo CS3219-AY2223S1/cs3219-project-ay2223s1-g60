@@ -8,11 +8,15 @@ import {
   Grid,
   IconButton,
   TextField,
+  InputAdornment,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { AuthClient } from '../../utils/auth-client';
 import { getTokens, saveTokens, useAuth } from '../../context/UserContext';
 import { useSnackbar } from '../../context/SnackbarContext';
+import { useUser } from '../../context/UserContext';
 
 type ChangeUsernameDialogProps = {
   dialogOpen: boolean;
@@ -22,14 +26,20 @@ type ChangeUsernameDialogProps = {
 function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
   const { dialogOpen, setDialogOpen } = props;
   const [loading, setLoading] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(false);
 
   const authClient = useAuth();
   const snackBar = useSnackbar();
+  const user = useUser();
+
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const username = data.get('username');
+    const username = user.username;
     const password = data.get('password');
     const newUsername = data.get('newUsername');
 
@@ -87,26 +97,24 @@ function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
         <Grid container spacing={4}>
           <Grid item xs={12}>
             <TextField
-              placeholder='Username'
-              required
-              fullWidth
-              id='username'
-              label='Username'
-              name='username'
-              variant='standard'
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
               placeholder='Password'
               required
               fullWidth
               id='password'
               label='Password'
               name='password'
-              type='password'
-              variant='standard'
+              type={passwordShown ? 'text' : 'password'}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    {!passwordShown ? (
+                      <VisibilityIcon onClick={togglePassword} />
+                    ) : (
+                      <VisibilityOffIcon onClick={togglePassword} />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
             />
           </Grid>
 
@@ -118,7 +126,6 @@ function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
               id='newUsername'
               label='New Username'
               name='newUsername'
-              variant='standard'
             />
           </Grid>
 

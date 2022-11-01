@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import { AuthClient } from '../utils/auth-client';
 import { saveTokens, useAuth } from '../context/UserContext';
@@ -23,8 +25,13 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [loginFailMessage, setLoginFailMessage] = useState<string>('');
   const [showAlert, setShowAlert] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(false);
   const navigate = useNavigate();
   const authClient = useAuth();
+
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
 
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -111,20 +118,29 @@ function LoginPage() {
 
             <Grid item xs={12}>
               <TextField
+                placeholder='Password'
+                required
+                fullWidth
+                id='password'
+                label='Password'
+                name='password'
+                type={passwordShown ? 'text' : 'password'}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
                       <ShieldOutlinedIcon />
                     </InputAdornment>
                   ),
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      {!passwordShown ? (
+                        <VisibilityIcon onClick={togglePassword} />
+                      ) : (
+                        <VisibilityOffIcon onClick={togglePassword} />
+                      )}
+                    </InputAdornment>
+                  ),
                 }}
-                placeholder={'Password'}
-                required
-                fullWidth
-                id='password'
-                label='Password'
-                name='password'
-                type='password'
               />
             </Grid>
           </Grid>
