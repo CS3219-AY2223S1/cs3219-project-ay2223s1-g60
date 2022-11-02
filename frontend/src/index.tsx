@@ -5,8 +5,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './context/UserContext';
 import { SnackbarProvider } from './context/SnackbarContext';
+
 import { theme } from './styles';
 import { ThemeProvider } from '@mui/material';
+import { SocketProvider } from './context/SocketContext';
 
 // @ts-ignore
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -14,7 +16,9 @@ root.render(
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <UserProvider>
-        <App />
+        <SocketProvider>
+          <App />
+        </SocketProvider>{' '}
       </UserProvider>
     </ThemeProvider>
   </SnackbarProvider>

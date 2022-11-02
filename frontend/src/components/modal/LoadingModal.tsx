@@ -8,11 +8,10 @@ import {
   DialogTitle,
   Typography,
 } from '@mui/material';
-import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
-import { LOCAL_STORAGE_TOKEN_ROOM_KEY, URL_MATCHING_SVC } from '../../configs';
 import { saveRoomToken } from '../../context/UserContext';
 import { useCountDown } from '../hooks/useCountDown';
+import { useSockets } from '../../context/SocketContext';
 
 type LoadingModalProps = {
   open: boolean;
@@ -23,44 +22,34 @@ type LoadingModalProps = {
 
 const LoadingModal: React.FC<LoadingModalProps> = (props) => {
   const { open, closeModal, difficulty, username } = props;
-  const socket = io(URL_MATCHING_SVC);
+  const socket = useSockets().roomSocket;
   const navigate = useNavigate();
 
+  console.log(socket);
+
   // timeout
-  const startCountDown = () =>
-    setTimeout(() => {
-      socket.disconnect();
-      closeModal();
-    }, 30000);
-
+  const startCountDown = () => setTimeout(closeModal, 30000);
   const timer = useCountDown(30);
-
-  socket.on('connect', () => {
-    console.log(`${socket.id} is trying to connect`);
-
-    socket.emit('find-match', { username, socketId: socket.id, difficulty });
-    startCountDown();
-
-    // Server notifies client that a match is found
-    socket.on('found-match', () => {
-      console.log('found match!');
-
-      socket.on('join-room', ({ roomId, token }) => {
-        console.log(roomId);
-        saveRoomToken(token);
-        clearTimeout(startCountDown());
-        socket.disconnect();
-        closeModal();
-        navigate(`/room?id=${roomId}`);
-      });
-    });
-  });
 
   const cleanUp = () => {
     clearTimeout(startCountDown());
-    socket.disconnect();
+    socket.emit('cancel-req', { user: username });
     closeModal();
   };
+
+  startCountDown();
+
+  // Server notifies client that a match is found
+  socket.on('found-match', () => {
+    console.log('found match!');
+
+    socket.on('join-room', ({ roomId, token }) => {
+      saveRoomToken(token);
+      clearTimeout(startCountDown());
+      closeModal();
+      navigate(`/room?id=${roomId}`);
+    });
+  });
 
   return (
     <Dialog open={open}>

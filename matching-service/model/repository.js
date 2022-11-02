@@ -14,6 +14,7 @@ mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => console.log('Successfully connected to MongoDB'));
+db.collections['roommodels'].drop().then(() => console.log('Reset Room DB'));
 
 export async function createRoomModel(params) {
   return new RoomModel(params);

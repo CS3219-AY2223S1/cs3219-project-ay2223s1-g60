@@ -9,9 +9,11 @@ import {
 } from '@mui/material';
 import LoadingModal from '../components/modal/LoadingModal';
 import { useUser } from '../context/UserContext';
+import { useSockets } from '../context/SocketContext';
 
 function MatchingPage() {
   const username = useUser().username || '';
+  const { roomSocket: socket } = useSockets();
   const [loading, setLoading] = useState(false);
   const [difficulty, setDifficulty] = useState(0);
 
@@ -41,6 +43,11 @@ function MatchingPage() {
   const SelectDifficultyAndFindMatch = (difficulty: number) => {
     setDifficulty(difficulty);
     setLoading(true);
+    socket.emit('find-match', {
+      username,
+      socketId: socket.id,
+      difficulty,
+    });
   };
 
   return (

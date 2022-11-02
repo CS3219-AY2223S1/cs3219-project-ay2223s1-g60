@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Stack, TextField } from '@mui/material';
-import { Socket } from 'socket.io-client';
 import { useUser } from '../../../context/UserContext';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { grey } from '@mui/material/colors';
+import { useSockets } from '../../../context/SocketContext';
 
-function ChatInput(props: { socket: Socket; room: string }) {
-  const { socket, room } = props;
+function ChatInput(props: { room: string }) {
+  const { chatSocket: socket } = useSockets();
+  const { room } = props;
   const username = useUser().username;
 
   const [message, setMessage] = useState('');
