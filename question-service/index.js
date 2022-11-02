@@ -19,3 +19,4 @@ app.use('/api/question', router).all((_, res) => {
 });
 
 app.listen(8004, () => console.log('question-service listening on port 8004'));
+export default app;
