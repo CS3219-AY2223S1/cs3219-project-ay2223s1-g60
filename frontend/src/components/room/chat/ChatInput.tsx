@@ -4,17 +4,18 @@ import { useUser } from '../../../context/UserContext';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { grey } from '@mui/material/colors';
 import { useSockets } from '../../../context/SocketContext';
+import { useRoom } from '../../../context/RoomContext';
 
-function ChatInput(props: { room: string }) {
+function ChatInput() {
   const { chatSocket: socket } = useSockets();
-  const { room } = props;
   const username = useUser().username;
+  const { room: { roomId } } = useRoom();
 
   const [message, setMessage] = useState('');
   const chatPlaceholder = 'Type your message here';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const data = { socketId: socket.id, name: username, room: room };
+    const data = { socketId: socket.id, name: username, room: roomId };
     setMessage(e.target.value);
     e.target.value.length !== 0
       ? socket.emit('typing', data)
@@ -27,7 +28,7 @@ function ChatInput(props: { room: string }) {
       text: message,
       name: username,
       socketId: socket.id,
-      room: room,
+      room: roomId,
     });
     setMessage('');
   };

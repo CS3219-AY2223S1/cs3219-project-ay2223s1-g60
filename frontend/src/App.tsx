@@ -15,6 +15,7 @@ import RoomPage from './pages/RoomPage';
 import SignupPage from './pages/SignupPage';
 import { theme } from './styles';
 import { useSockets } from './context/SocketContext';
+import { RoomProvider } from './context/RoomContext';
 
 function App() {
   const user = useUser();
@@ -25,7 +26,7 @@ function App() {
       <Route path='/' element={<Navigate replace to='/home' />} />
       <Route path='/home' element={<HomePage />} />
       <Route path='/match' element={<MatchingPage />} />
-      <Route path='/room/*' element={<RoomPage />} />
+      <Route path='/room/*' element={<RoomProvider><RoomPage /></RoomProvider>} />
       <Route path='*' element={<Navigate replace to='/home' />} />
     </Routes>
   );

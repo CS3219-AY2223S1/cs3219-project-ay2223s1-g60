@@ -39,10 +39,9 @@ export async function getRoom(req, res) {
       return res.status(400).json({ message: 'Missing room ID' });
     }
     const room = await _getRoom(roomId);
-    if (room.err) {
+    if (!room) {
       return res.status(400).json({ message: 'Could not get room!' });
     }
-
     return res.status(201).json(room);
   } catch (err) {
     console.log('Error room: ' + err);

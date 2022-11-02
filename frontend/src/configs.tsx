@@ -48,3 +48,10 @@ const URI_QUESTION_SVC =
   process.env.URI_QUESTION_SVC || 'http://localhost:8004';
 const PREFIX_QUESTION_SVC = '/api/question';
 export const URL_QUESTION_SVC = URI_QUESTION_SVC + PREFIX_QUESTION_SVC;
+
+const URI_HISTORY_SVC =
+  process.env.URI_HISTORY_SVC || 'http://localhost:8005';
+const PREFIX_HISTORY_SVC = '/api/history';
+export const URL_HISTORY_SVC = URI_HISTORY_SVC + PREFIX_HISTORY_SVC;
+
+export const ALL_USER_HISTORY = "/historyList/";
