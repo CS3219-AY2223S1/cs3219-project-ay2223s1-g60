@@ -58,11 +58,16 @@ export async function signIn(req, res) {
   try {
     const { username, password } = req.body;
     if (username && password) {
-      const user = await _getUser(username, password);
+      const user = await _getUser(username);
       if (user.err) {
         return res.status(400).json({ message: "Could not sign in!" });
       } else {
-        console.log(`Signed in user ${username} successfully!`);
+
+        const isPasswordCorrect = user.comparePassword(password);
+
+        if (!isPasswordCorrect) {
+          return res.status(400).json( { message: "Wrong username and/or password"} );
+        }
 
         let token = await generateToken(user);
 
