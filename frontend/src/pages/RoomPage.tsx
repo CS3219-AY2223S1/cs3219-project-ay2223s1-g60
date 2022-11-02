@@ -40,7 +40,7 @@ function RoomPage() {
   }, [room]);
 
   return room ? (
-    <Box>
+    <Box sx={{ height: 'calc(100vh - 94px)' }}>
       <Stack
         direction={'row'}
         spacing={2}
