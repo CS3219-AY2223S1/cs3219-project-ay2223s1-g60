@@ -19,6 +19,18 @@ declare module '@mui/material/Typography' {
 }
 
 export const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#3a54aa',
+    },
+    secondary: {
+      main: '#bb9047',
+    },
+    background: {
+      default: '#e7ecf4',
+    },
+  },
+
   typography: {
     fontFamily: 'Lato, sans-serif',
     h1: { fontWeight: 700 },
