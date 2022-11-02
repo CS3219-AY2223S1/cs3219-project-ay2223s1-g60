@@ -171,7 +171,7 @@ export async function generateToken(user) {
       _id: user._id,
     },
     privateKey,
-    { expiresIn: "1h" }
+    { expiresIn: "2h" }
   );
   console.log(token);
   return token;
