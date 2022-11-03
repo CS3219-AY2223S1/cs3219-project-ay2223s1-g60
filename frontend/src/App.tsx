@@ -13,9 +13,6 @@ import LoginPage from './pages/LoginPage';
 import MatchingPage from './pages/MatchingPage';
 import RoomPage from './pages/RoomPage';
 import SignupPage from './pages/SignupPage';
-import { theme } from './styles';
-import { useSockets } from './context/SocketContext';
-import { RoomProvider } from './context/RoomContext';
 
 function App() {
   const user = useUser();

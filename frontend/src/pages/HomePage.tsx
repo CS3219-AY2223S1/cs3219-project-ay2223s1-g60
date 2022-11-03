@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { getTokens, useUser } from '../context/UserContext';
+import React from 'react';
+import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import { URL_HISTORY_SVC } from '../configs';
-import { requests } from '../utils/api-request';
 import {
   Box,
   Button,
@@ -11,40 +9,13 @@ import {
   Stack,
   Typography,
   useTheme,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
 } from '@mui/material';
-import { HistoryModel } from '../components/room/HistoryModel';
+import HistoryTable from '../components/HistoryTable';
 
 function HomePage() {
   const user = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
-
-  const [histories, setHistories] = useState<HistoryModel[]>([]);
-
-  useEffect(() => {
-    let headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getTokens().token}`,
-    };
-
-    requests
-      .get(URL_HISTORY_SVC, `/historyList/${user.username}`, { headers })
-      .then((resp) => {
-        console.log(resp.data.histories);
-        if (resp.status !== 201) throw new Error(resp.statusText);
-        setHistories(resp.data.histories);
-      })
-      .catch((err) => {
-        console.log(err);
-        // snackbar.setError(err.toString());
-      });
-  }, []);
 
   return (
     <Container
@@ -60,6 +31,7 @@ function HomePage() {
         sx={{
           borderRadius: '15px',
           padding: '0 40px 20px 40px',
+          margin: '1rem',
           boxShadow: '8px 8px 35px #d7dbe3',
           backgroundColor: '#f3f7fa',
           textAlign: 'center',
@@ -108,44 +80,18 @@ function HomePage() {
               Select Difficulty
             </Typography>
           </Button>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Match's Username</TableCell>
-                  <TableCell align='right'>Room ID</TableCell>
-                  <TableCell align='right'>Question Title</TableCell>
-                  <TableCell align='right'>History Details</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {histories?.map((history) => (
-                  <div>
-                    <TableRow
-                      key={history.roomId}
-                      sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                      }}
-                    >
-                      <TableCell component='th' scope='row'>
-                        {history.username1 == user.username
-                          ? history.username2
-                          : history.username1}
-                      </TableCell>
-                      <TableCell align='right'>{history.roomId}</TableCell>
-                      <TableCell align='right'>
-                        {history.question.question_title}
-                      </TableCell>
-                      <TableCell align='right'>
-                        <Button>View History</Button>
-                      </TableCell>
-                    </TableRow>
-                  </div>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
         </Stack>
+      </Paper>
+      <Paper
+        sx={{
+          borderRadius: '15px',
+          boxShadow: '8px 8px 35px #d7dbe3',
+          backgroundColor: '#f3f7fa',
+          textAlign: 'center',
+          color: 'black',
+        }}
+      >
+        <HistoryTable />
       </Paper>
     </Container>
   );
