@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { AuthClient } from '../utils/auth-client';
+import APIRoom from '../utils/api-room';
 import { useSnackbar } from './SnackbarContext';
 import sockets from './Sockets';
 import { getRoomToken, useUser } from './UserContext';
@@ -17,7 +17,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     const token = getRoomToken();
 
     return username && token
-      ? AuthClient.authRoom({ username, room, token }).then(
+      ? APIRoom.authRoom({ username, room, token }).then(
           ({ status }) => status === 201
         )
       : new Promise<boolean>(() => false);

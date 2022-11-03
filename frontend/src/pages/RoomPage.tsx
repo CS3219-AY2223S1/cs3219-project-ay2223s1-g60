@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  defaultQuestion,
-  QuestionModel,
-} from '../components/room/QuestionModel.d';
 import { useSockets } from '../context/SocketContext';
-import { AuthClient } from '../utils/auth-client';
-import { ChatModel } from '../components/room/chat/ChatModel';
 import { useRoom } from '../context/RoomContext';
+import APIRoom from '../utils/api-room';
 
 function RoomPage() {
   const { search } = useLocation();
@@ -26,7 +21,7 @@ function RoomPage() {
 
   const getQuestion = () => {
     room &&
-      AuthClient.getQuestion({ room })
+      APIRoom.getQuestion({ room })
         .then(({ data: { question } }) => {
           console.log(question);
           setQuestion(question);

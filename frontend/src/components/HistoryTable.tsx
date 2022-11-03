@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getTokens, useUser } from '../context/UserContext';
-import { URL_HISTORY_SVC } from '../configs';
-import { requests } from '../utils/api-request';
+import { useUser } from '../context/UserContext';
 import {
   Button,
   Container,
@@ -15,6 +13,7 @@ import {
 } from '@mui/material';
 import { HistoryModel } from '../components/room/HistoryModel';
 import { DifficultyEnum } from './room/QuestionModel.d';
+import APIHistory from '../utils/api-history';
 
 const TableHeader = () => (
   <TableHead sx={{ padding: '0 40px 20px 40px' }}>
@@ -50,9 +49,7 @@ const HistoryRow = (props: { history: HistoryModel; match: string }) => {
   return (
     <TableRow
       key={roomId}
-      sx={{
-        '&:last-child td, &:last-child th': { border: 0 },
-      }}
+      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
     >
       <TableCell component='th' scope='row'>
         {match}
@@ -60,7 +57,7 @@ const HistoryRow = (props: { history: HistoryModel; match: string }) => {
       <TableCell align='left'>{title}</TableCell>
       <TableCell align='center'>{DifficultyEnum[difficulty - 1]}</TableCell>
       <TableCell align='right'>
-        <Button>View Attempt</Button>
+        <Button onClick={() => {}}>View Attempt</Button>
       </TableCell>
     </TableRow>
   );
@@ -70,14 +67,11 @@ function HistoryTable() {
   const user = useUser();
   const [histories, setHistories] = useState<HistoryModel[]>([]);
 
-  useEffect(() => {
-    let headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getTokens().token}`,
-    };
+  const getMatch = (username1: string, username2: string) =>
+    username1 === user.username ? username2 : username1;
 
-    requests
-      .get(URL_HISTORY_SVC, `/historyList/${user.username}`, { headers })
+  useEffect(() => {
+    APIHistory.getHistories()
       .then(({ status, statusText, data: { histories } }) => {
         console.log(histories);
         if (status !== 201) throw new Error(statusText);
@@ -87,7 +81,7 @@ function HistoryTable() {
         console.log(err);
         // snackbar.setError(err.toString());
       });
-  }, [user.username]);
+  }, []);
 
   return (
     <TableContainer
@@ -104,11 +98,7 @@ function HistoryTable() {
           {histories.map((history) => (
             <HistoryRow
               history={history}
-              match={
-                history.username1 === user.username
-                  ? history.username2
-                  : history.username1
-              }
+              match={getMatch(history.username1, history.username2)}
             />
           ))}
         </TableBody>
