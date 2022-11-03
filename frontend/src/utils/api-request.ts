@@ -25,9 +25,9 @@ const responseBody = (response: AxiosResponse) => {
 };
 
 export const requests = {
-  get: (base_url: string, url: string) =>
+  get: (base_url: string, url: string, headers = {}) =>
     instance(base_url)
-      .get(url)
+      .get(url, headers)
       .then(responseBody)
       .catch((err) => responseBody(err.response)),
   post: (base_url: string, url: string, body: {}) =>
