@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 var Schema = mongoose.Schema;
 let HistoryModelSchema = new Schema({
@@ -13,20 +13,24 @@ let HistoryModelSchema = new Schema({
   roomId: {
     type: String,
     required: true,
-    unique:true
+    unique: true,
   },
   chats: {
-    type: [{type: Object}],
-    required: true
+    type: [{ type: Object }],
+    required: true,
   },
   question: {
     type: Object,
-    required: true
+    required: true,
   },
   code: {
-    type: Object,
-    required: true
-  }
+    type: String,
+    required: true,
+  },
+  language: {
+    type: String,
+    required: true,
+  },
 });
 
-export default mongoose.model("HistoryModel", HistoryModelSchema);
+export default mongoose.model('HistoryModel', HistoryModelSchema);
