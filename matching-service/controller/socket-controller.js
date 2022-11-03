@@ -64,13 +64,12 @@ const onFindMatchEvent = (req, io) => {
             res.roomId
           );
           await onGetQuestionEvent(io, { room: res.roomId });
-          
+
           io.to(waitingUser.socketId).to(req.socketId).emit('join-room', {
             roomId: res.roomId,
             token: roomToken,
           });
         }
-
 
         return res;
       }

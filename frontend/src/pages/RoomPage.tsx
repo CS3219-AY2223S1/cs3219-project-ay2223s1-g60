@@ -11,13 +11,13 @@ import {
 import { useSockets } from '../context/SocketContext';
 import { AuthClient } from '../utils/auth-client';
 import { ChatModel } from '../components/room/chat/ChatModel';
-import { useRoom } from "../context/RoomContext";
+import { useRoom } from '../context/RoomContext';
 
 function RoomPage() {
   const { search } = useLocation();
   const navigate = useNavigate();
   const sockets = useSockets();
-  const {setRoomId, setQuestion} = useRoom();
+  const { setRoomId, setQuestion } = useRoom();
   const room = React.useMemo(() => new URLSearchParams(search), [search]).get(
     'id'
   );
@@ -45,7 +45,7 @@ function RoomPage() {
   }, [room]);
 
   return room ? (
-    <Box>
+    <Box sx={{ height: 'calc(100vh - 94px)' }}>
       <Stack
         direction={'row'}
         spacing={2}
@@ -53,7 +53,7 @@ function RoomPage() {
       >
         <CodingQuestion />
         <CodeEditor />
-        <ChatBox/>
+        <ChatBox />
       </Stack>
     </Box>
   ) : (

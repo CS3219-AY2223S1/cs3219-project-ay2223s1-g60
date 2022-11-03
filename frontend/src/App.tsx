@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { Box, ThemeProvider } from '@mui/material';
+import { Box, CssBaseline } from '@mui/material';
 import React from 'react';
 import Navbar from './components/Navbar';
 import { useUser } from './context/UserContext';
@@ -19,14 +19,13 @@ import { RoomProvider } from './context/RoomContext';
 
 function App() {
   const user = useUser();
-  const { roomSocket } = useSockets();
 
   const loggedInRoutes = (
     <Routes>
       <Route path='/' element={<Navigate replace to='/home' />} />
       <Route path='/home' element={<HomePage />} />
       <Route path='/match' element={<MatchingPage />} />
-      <Route path='/room/*' element={<RoomProvider><RoomPage /></RoomProvider>} />
+      <Route path='/room/*' element={<RoomPage />} />
       <Route path='*' element={<Navigate replace to='/home' />} />
     </Routes>
   );
@@ -41,16 +40,15 @@ function App() {
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className='App' style={{ minHeight: '100vh' }}>
-        <Box>
-          <Router>
-            {user.username && <Navbar />}
-            {user.username ? loggedInRoutes : guestRoutes}
-          </Router>
-        </Box>
-      </div>
-    </ThemeProvider>
+    <div className='App'>
+      <CssBaseline />
+      <Box>
+        <Router>
+          {user.username && <Navbar />}
+          {user.username ? loggedInRoutes : guestRoutes}
+        </Router>
+      </Box>
+    </div>
   );
 }
 
