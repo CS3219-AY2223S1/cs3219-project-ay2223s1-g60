@@ -18,8 +18,8 @@ db.once('open', () => console.log('Successfully connected to MongoDB'));
 // CREATE FUNCTION
 export async function createHistory(params) {
   return await HistoryModel.create({
-    username1: params.username1,
-    username2: params.username2,
+    user1: params.user1,
+    user2: params.user2,
     roomId: params.roomId,
     question: params.question,
     chats: params.chats,
@@ -29,21 +29,22 @@ export async function createHistory(params) {
 }
 
 // READ FUNCTION
-export async function getAllHistories(username) {
+export async function getAllHistories(user_id) {
   const histories = await HistoryModel.find(
     {
-      $or: [{ username1: username }, { username2: username }],
+      $or: [{ 'user1.user_id': user_id }, { 'user2.user_id': user_id }],
     },
-    'username1 username2 roomId question'
+    'user1 user2 roomId question'
   );
-
   return histories;
 }
 
-export async function getHistory(username, roomId) {
+export async function getHistory(user_id, roomId) {
   const history = await HistoryModel.findOne({
     $and: [
-      { $or: [{ username1: username }, { username2: username }] },
+      {
+        $or: [{ 'user1.user_id': user_id }, { 'user2.user_id': user_id }],
+      },
       { roomId: roomId },
     ],
   });

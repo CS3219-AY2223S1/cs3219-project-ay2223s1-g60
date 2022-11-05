@@ -1,8 +1,8 @@
 import { ChatModel } from './chat/ChatModel';
 
 export interface HistoryModel {
-  username1: string;
-  username2: string;
+  user1: UserSimpleModel;
+  user2: UserSimpleModel;
   roomId: string;
   chats: ChatModel[];
   question: QuestionModel;
@@ -12,4 +12,9 @@ export interface HistoryModel {
 export interface CodeModel {
   code: string;
   language: string;
+}
+
+export interface UserSimpleModel {
+  user_id: string | null;
+  username: string;
 }

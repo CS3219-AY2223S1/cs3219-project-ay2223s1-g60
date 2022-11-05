@@ -1,4 +1,5 @@
 import { ChatModel } from '../components/room/chat/ChatModel';
+import { UserSimpleModel } from '../components/room/HistoryModel';
 import { QuestionModel } from '../components/room/QuestionModel';
 
 export interface Room {
@@ -11,8 +12,8 @@ export interface Room {
 }
 
 export interface RoomModel {
-  user1: string;
-  user2: string;
+  user1: UserSimpleModel;
+  user2: UserSimpleModel;
   difficulty: string;
   sessionInfo: Object;
   question: Object;

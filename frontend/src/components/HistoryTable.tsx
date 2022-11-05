@@ -11,7 +11,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { HistoryModel } from '../components/room/HistoryModel';
+import { HistoryModel, UserSimpleModel } from '../components/room/HistoryModel';
 import { DifficultyEnum } from './room/QuestionModel.d';
 import APIHistory from '../utils/api-history';
 import { useNavigate } from 'react-router-dom';
@@ -71,20 +71,18 @@ function HistoryTable() {
   const user = useUser();
   const [histories, setHistories] = useState<HistoryModel[]>([]);
 
-  const getMatch = (username1: string, username2: string) =>
-    username1 === user.username ? username2 : username1;
-
+  const getMatch = (user1: UserSimpleModel, user2: UserSimpleModel) => {
+    return user1.user_id === user.user_id ? user2.username : user1.username;
+  };
   useEffect(() => {
-    if (!user.username) return;
-    APIHistory.getHistories()
+    if (!user.user_id) return;
+    APIHistory.getHistories(user.user_id)
       .then(({ status, statusText, data: { histories } }) => {
-        console.log(histories);
         if (status !== 201) throw new Error(statusText);
         setHistories(histories);
       })
       .catch((err) => {
         console.log(err);
-        // snackbar.setError(err.toString());
       });
   }, []);
 
@@ -103,7 +101,7 @@ function HistoryTable() {
           {histories.map((history) => (
             <HistoryRow
               history={history}
-              match={getMatch(history.username1, history.username2)}
+              match={getMatch(history.user1, history.user2)}
             />
           ))}
         </TableBody>

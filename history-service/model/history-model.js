@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 var Schema = mongoose.Schema;
 let HistoryModelSchema = new Schema({
-  username1: {
-    type: String,
+  user1: {
+    type: { user_id: { type: String }, username: { type: String } },
     required: true,
   },
-  username2: {
-    type: String,
+  user2: {
+    type: { user_id: { type: String }, username: { type: String } },
     required: true,
   },
   roomId: {

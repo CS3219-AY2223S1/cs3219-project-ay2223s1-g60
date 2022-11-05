@@ -22,8 +22,8 @@ export const defaultRoom: Room = {
 };
 
 export const defaultRoomModel: RoomModel = {
-  user1: '',
-  user2: '',
+  user1: { user_id: '', username: '' },
+  user2: { user_id: '', username: '' },
   difficulty: '',
   sessionInfo: {},
   question: {},
@@ -62,17 +62,17 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
 
         const room = resp.data;
 
-        if (!user.username) return;
+        if (!user.user_id || !user.username) return;
         const history = {
-          username1: user.username,
-          username2: room.user1 == user.username ? room.user2 : room.user1,
+          user1: { user_id: user.user_id, username: user.username },
+          user2: room.user1.user_id == user.user_id ? room.user2 : room.user1,
           code: { code, language },
           question: question,
           roomId: roomId,
           chats: chats,
         };
 
-        APIHistory.createHistory(history).then((resp) => {
+        APIHistory.createHistory(history, user.user_id).then((resp) => {
           if (resp.status !== 201) throw new Error(resp.statusText);
           snackbar.setSuccess('History saved!');
           roomSocket.emit('delete-room', { room: roomId });
