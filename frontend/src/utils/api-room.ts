@@ -1,3 +1,4 @@
+import { RoomModel } from '../@types/RoomContext';
 import { QuestionModel } from '../components/room/QuestionModel';
 import { URI_ROOM_SVC, URL_MATCHING_SVC } from '../configs';
 import { API, requests } from './api-request';
@@ -29,6 +30,10 @@ const APIRoom = {
     room: string;
   }): Promise<API.Response<{ question: QuestionModel }>> => {
     return requests.get(URI_ROOM_SVC, `?roomId=${data.room}`);
+  },
+
+  getRoom: (roomId: string): Promise<API.Response<RoomModel>> => {
+    return requests.get(URI_ROOM_SVC, `/?roomId=${roomId}`);
   },
 };
 

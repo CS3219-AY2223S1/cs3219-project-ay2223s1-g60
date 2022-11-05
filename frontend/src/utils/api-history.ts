@@ -1,3 +1,4 @@
+import { RoomModel } from '../@types/RoomContext';
 import { HistoryModel } from '../components/room/HistoryModel';
 import { URL_HISTORY_SVC } from '../configs';
 import { getTokens } from '../context/UserContext';
@@ -25,6 +26,22 @@ const APIHistory = {
     };
 
     return requests.get(URL_HISTORY_SVC, `/${user}/${roomId}`, { headers });
+  },
+
+  createHistory: (
+    history: HistoryModel,
+    username: string
+  ): Promise<API.Response<{ message: string }>> => {
+    const token = getTokens();
+
+    let headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    return requests.postWithHeaders(URL_HISTORY_SVC, `/${username}`, history, {
+      headers,
+    });
   },
 };
 

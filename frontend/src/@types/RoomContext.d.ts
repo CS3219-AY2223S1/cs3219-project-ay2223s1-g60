@@ -11,9 +11,9 @@ export interface Room {
 }
 
 export interface RoomModel {
-  user1: String;
-  user2: String;
-  difficulty: String;
+  user1: string;
+  user2: string;
+  difficulty: string;
   sessionInfo: Object;
   question: Object;
 }
