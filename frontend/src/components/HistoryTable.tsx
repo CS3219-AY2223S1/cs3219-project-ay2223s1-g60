@@ -14,6 +14,7 @@ import {
 import { HistoryModel } from '../components/room/HistoryModel';
 import { DifficultyEnum } from './room/QuestionModel.d';
 import APIHistory from '../utils/api-history';
+import { useNavigate } from 'react-router-dom';
 
 const TableHeader = () => (
   <TableHead sx={{ padding: '0 40px 20px 40px' }}>
@@ -40,6 +41,7 @@ const NoAttempt = () => (
 );
 
 const HistoryRow = (props: { history: HistoryModel; match: string }) => {
+  const navigate = useNavigate();
   const { match, history } = props;
   const {
     roomId,
@@ -57,7 +59,9 @@ const HistoryRow = (props: { history: HistoryModel; match: string }) => {
       <TableCell align='left'>{title}</TableCell>
       <TableCell align='center'>{DifficultyEnum[difficulty - 1]}</TableCell>
       <TableCell align='right'>
-        <Button onClick={() => {}}>View Attempt</Button>
+        <Button onClick={() => navigate(`/history/${roomId}`)}>
+          View Attempt
+        </Button>
       </TableCell>
     </TableRow>
   );

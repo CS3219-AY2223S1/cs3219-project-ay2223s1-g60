@@ -1,20 +1,21 @@
-import { ChatModel } from "../components/room/chat/ChatModel";
-import { QuestionModel } from "../components/room/QuestionModel";
+import { ChatModel } from '../components/room/chat/ChatModel';
+import { QuestionModel } from '../components/room/QuestionModel';
 
 export interface Room {
-  code: string | undefined,
-  language: string | undefined,
-  chats: ChatModel[],
-  question: QuestionModel,
-  roomId: string | null,
+  readOnly: boolean;
+  code: string | undefined;
+  language: string | undefined;
+  chats: ChatModel[];
+  question: QuestionModel;
+  roomId: string | null;
 }
 
 export interface RoomModel {
-  user1: String,
-  user2: String,
-  difficulty: String,
-  sessionInfo: Object,
-  question: Object
+  user1: String;
+  user2: String;
+  difficulty: String;
+  sessionInfo: Object;
+  question: Object;
 }
 
 export interface RoomContextInterface {

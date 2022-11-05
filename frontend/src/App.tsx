@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage';
 import MatchingPage from './pages/MatchingPage';
 import RoomPage from './pages/RoomPage';
 import SignupPage from './pages/SignupPage';
+import { RoomProvider } from './context/RoomContext';
 
 function App() {
   const user = useUser();
@@ -22,7 +23,22 @@ function App() {
       <Route path='/' element={<Navigate replace to='/home' />} />
       <Route path='/home' element={<HomePage />} />
       <Route path='/match' element={<MatchingPage />} />
-      <Route path='/room/*' element={<RoomPage />} />
+      <Route
+        path='/room/:id'
+        element={
+          <RoomProvider>
+            <RoomPage />
+          </RoomProvider>
+        }
+      />
+      <Route
+        path='/history/:id'
+        element={
+          <RoomProvider>
+            <RoomPage readOnly={true} />
+          </RoomProvider>
+        }
+      />
       <Route path='*' element={<Navigate replace to='/home' />} />
     </Routes>
   );

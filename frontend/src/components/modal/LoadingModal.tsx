@@ -25,8 +25,6 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
   const socket = useSockets().roomSocket;
   const navigate = useNavigate();
 
-  console.log(socket);
-
   // timeout
   const startCountDown = () => setTimeout(closeModal, 30000);
   const timer = useCountDown(30);
@@ -47,7 +45,7 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
       saveRoomToken(token);
       clearTimeout(startCountDown());
       closeModal();
-      navigate(`/room?id=${roomId}`);
+      navigate(`/room/${roomId}`);
     });
   });
 

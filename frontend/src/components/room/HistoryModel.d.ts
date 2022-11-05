@@ -6,5 +6,10 @@ export interface HistoryModel {
   roomId: number;
   chats: ChatModel[];
   question: QuestionModel;
-  code: Object;
+  code: CodeModel;
+}
+
+export interface CodeModel {
+  code: string;
+  language: string;
 }

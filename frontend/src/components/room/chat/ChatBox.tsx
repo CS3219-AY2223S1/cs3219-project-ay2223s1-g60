@@ -10,7 +10,9 @@ import { useRoom } from '../../../context/RoomContext';
 function ChatBox() {
   const { chatSocket: socket } = useSockets();
   const [roles, setRoles] = useState<Roles | undefined>();
-  const { room: { roomId } } = useRoom();
+  const {
+    room: { roomId, readOnly },
+  } = useRoom();
 
   socket.on('assign-role', (roles: Roles) => setRoles(roles));
 
@@ -26,17 +28,19 @@ function ChatBox() {
       <Typography variant={'h6'} sx={{ textAlign: 'center' }}>
         Chat
       </Typography>
-      <Button
-        fullWidth
-        variant='outlined'
-        endIcon={<CasinoRounded />}
-        disabled={roles ? true : false}
-        onClick={() => socket.emit('get-roles', { room: roomId })}
-      >
-        Assign Roles
-      </Button>
+      {!readOnly && (
+        <Button
+          fullWidth
+          variant='outlined'
+          endIcon={<CasinoRounded />}
+          disabled={roles ? true : false}
+          onClick={() => socket.emit('get-roles', { room: roomId })}
+        >
+          Assign Roles
+        </Button>
+      )}
       <ChatView role={roles} />
-      <ChatInput />
+      {!readOnly && <ChatInput />}
     </Stack>
   );
 }

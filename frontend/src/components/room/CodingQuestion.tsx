@@ -6,7 +6,9 @@ import { useRoom } from '../../context/RoomContext';
 
 function CodingQuestion() {
   const { roomSocket: socket } = useSockets();
-  const { room: { question, roomId } } = useRoom();
+  const {
+    room: { question, roomId, readOnly },
+  } = useRoom();
 
   return (
     <Stack
@@ -27,12 +29,14 @@ function CodingQuestion() {
         dangerouslySetInnerHTML={{ __html: question.question_text }}
         style={{ flex: 1, overflow: 'scroll', paddingRight: '1rem' }}
       />
-      <Button
-        variant='contained'
-        onClick={() => socket.emit('get-question', { room: roomId })}
-      >
-        Next Question
-      </Button>
+      {!readOnly && (
+        <Button
+          variant='contained'
+          onClick={() => socket.emit('get-question', { room: roomId })}
+        >
+          Next Question
+        </Button>
+      )}
     </Stack>
   );
 }

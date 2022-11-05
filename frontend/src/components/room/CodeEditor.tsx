@@ -41,13 +41,15 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
 function CodeEditor() {
   const { collabSocket: socket, roomSocket } = useSockets();
   const {
-    room: { roomId, language, code },
+    room: { roomId, language, code, readOnly },
     setCode,
     setLanguage,
     saveHistory,
   } = useRoom();
 
-  const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
+  const [editorOptions, setEditorOptions] = useState({
+    ...MONACO_OPTIONS,
+  });
   const [openDialog, setOpenDialog] = useState(false);
 
   roomSocket.on('match-left', () => setOpenDialog(true));
@@ -87,6 +89,7 @@ function CodeEditor() {
         id='language'
         name='language'
         label='Language'
+        disabled={readOnly}
         onChange={(e) =>
           socket.emit('set-language', {
             language: e.target.value,
@@ -121,29 +124,34 @@ function CodeEditor() {
         }}
       >
         <SelectLanguages />
-        <TimerModal
-          extendSec={300}
-          onTimeUp={() =>
-            setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
-          }
-          onExtend={() =>
-            roomSocket.emit('extend-time', { room: roomId, seconds: 300 })
-          }
-        />
+        {!readOnly && (
+          <TimerModal
+            extendSec={300}
+            onTimeUp={() =>
+              setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
+            }
+            onExtend={() =>
+              roomSocket.emit('extend-time', { room: roomId, seconds: 300 })
+            }
+          />
+        )}
       </Stack>
       <Editor
         language={language}
         value={code}
-        options={editorOptions}
+        options={{ ...editorOptions, readOnly: readOnly }}
         onChange={handleChange}
       />
-      <Button
-        variant='outlined'
-        sx={{ width: 'max-content', alignSelf: 'flex-end' }}
-        onClick={leaveRoom}
-      >
-        Leave room
-      </Button>
+      {!readOnly && (
+        <Button
+          variant='outlined'
+          sx={{ width: 'max-content', alignSelf: 'flex-end' }}
+          onClick={leaveRoom}
+        >
+          Leave room
+        </Button>
+      )}
+
       <MatchLeftDialog open={openDialog} />
     </Stack>
   );

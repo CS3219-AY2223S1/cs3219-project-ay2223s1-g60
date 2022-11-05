@@ -14,6 +14,18 @@ const APIHistory = {
 
     return requests.get(URL_HISTORY_SVC, `/historyList/${user}`, { headers });
   },
+
+  getHistory: (
+    user: string,
+    roomId: string
+  ): Promise<API.Response<{ history: HistoryModel }>> => {
+    let headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${getTokens().token}`,
+    };
+
+    return requests.get(URL_HISTORY_SVC, `/${user}/${roomId}`, { headers });
+  },
 };
 
 export default APIHistory;

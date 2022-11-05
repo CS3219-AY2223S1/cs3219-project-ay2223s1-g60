@@ -5,6 +5,7 @@ import { ChatModel, Roles } from './ChatModel.d';
 import ChatBubble from './ChatBubble';
 import { useSockets } from '../../../context/SocketContext';
 import { useRoom } from '../../../context/RoomContext';
+import { useUser } from '../../../context/UserContext';
 
 const TypographyPlaceholder = (props: PropsWithChildren) => (
   <Typography sx={{ color: grey[500] }}>{props.children}</Typography>
@@ -13,11 +14,14 @@ const TypographyPlaceholder = (props: PropsWithChildren) => (
 function ChatView(props: { role?: Roles }) {
   const { chatSocket: socket } = useSockets();
   const { role } = props;
-  const { room: { chats }, setChats } = useRoom();
-  // const [chats, setChats] = useState<ChatModel[]>([]);
+  const {
+    room: { chats },
+    appendChat,
+  } = useRoom();
+  const user = useUser();
   const [typingMessage, setTypingMessage] = useState('');
 
-  socket.on('messageResponse', (data: ChatModel) => setChats(data));
+  socket.on('messageResponse', (data: ChatModel) => appendChat(data));
   socket.on('typingMessage', (data: { socketId: string; name: string }) => {
     if (socket.id !== data.socketId) {
       setTypingMessage(`${data.name} is typing`);
@@ -41,7 +45,7 @@ function ChatView(props: { role?: Roles }) {
         {chats.map((chat, i) => (
           <ChatBubble
             chat={chat}
-            isSelf={chat.socketId === socket.id}
+            isSelf={chat.name === user.username}
             key={i}
           />
         ))}
