@@ -1,5 +1,5 @@
-import { ormGetToken as _getToken } from "../model/user-orm.js";
-import { decodeToken, isValidRequest } from "../../utils/token.js";
+import { ormGetToken as _getToken } from '../model/user-orm.js';
+import { decodeToken, isValidRequest } from '../../utils/token.js';
 
 const isMatchingCredential = (fromDb, fromUser) => {
   return (
@@ -11,21 +11,22 @@ const isMatchingCredential = (fromDb, fromUser) => {
 
 export async function verifyToken(req, res, next) {
   if (!isValidRequest(req)) {
-    return res.status(401).json({ message: "Missing JWT token!" });
+    return res.status(401).json({ message: 'Missing JWT token!' });
   }
 
   const username = req.body.username;
   const tokenFromDb = await _getToken(username);
-  const tokenFromUser = req.headers.authorization.split(" ")[1];
+  const tokenFromUser = req.headers.authorization.split(' ')[1];
   try {
     const fromDb = decodeToken(tokenFromDb, process.env.JWT_PRIVATE_KEY);
     const fromUser = decodeToken(tokenFromUser, process.env.JWT_PRIVATE_KEY);
 
     if (!isMatchingCredential(fromDb, fromUser)) {
-      return res.status(403).json({ message: "Unauthorized access" });
+      return res.status(403).json({ message: 'Unauthorized access' });
     }
+    req.user_id = fromUser._id;
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid JWT token!" });
+    return res.status(401).json({ message: 'Invalid JWT token!' });
   }
 }

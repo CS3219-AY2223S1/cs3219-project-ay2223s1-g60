@@ -208,6 +208,7 @@ export async function loginWithToken(req, res) {
     return res.status(201).json({
       message: `Successfully log ${req.body.username} in with token!`,
       username: req.body.username,
+      user_id: req.user_id,
     });
   } catch (err) {
     return res.status(500).json({

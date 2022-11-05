@@ -22,13 +22,20 @@ export const AuthClient = {
     username: string;
     password: string;
   }): Promise<
-    API.Response<{ username: string; token: string; message: string }>
+    API.Response<{
+      username: string;
+      token: string;
+      user_id: string;
+      message: string;
+    }>
   > => requests.post(URL_USER_SVC, USER_LOGIN, body),
 
   loginWithToken: (
     token: string,
     username: string
-  ): Promise<API.Response<{ message: string; username: string }>> => {
+  ): Promise<
+    API.Response<{ message: string; username: string; user_id: string }>
+  > => {
     let headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
