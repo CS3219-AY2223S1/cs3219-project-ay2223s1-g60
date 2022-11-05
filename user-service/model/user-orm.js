@@ -7,9 +7,9 @@ import {
   changePassword,
   changeUsername,
   deleteUser,
-} from "./repository.js";
-import "dotenv/config";
-import mongooseErrorHandler from "mongoose-validation-error-message-handler";
+} from './repository.js';
+import 'dotenv/config';
+import mongooseErrorHandler from 'mongoose-validation-error-message-handler';
 
 //need to separate orm functions from repository to decouple business logic from persistence
 
@@ -34,9 +34,9 @@ export async function ormGetToken(username, token) {
   }
 }
 
-export async function ormGetUser(username, password) {
+export async function ormGetUser(username) {
   try {
-    const user = await getUser({ username, password });
+    const user = await getUser(username);
     return user;
   } catch (err) {
     console.log(

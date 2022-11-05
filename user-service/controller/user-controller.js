@@ -22,6 +22,8 @@ export async function createUser(req, res) {
     if (username && password) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       const resp = await _createUser(username, hashedPassword);
+      console.log('response controller: ');
+      console.log(resp);
       if (resp.err) {
         if (
           resp.err.name &&
@@ -36,6 +38,7 @@ export async function createUser(req, res) {
           .status(400)
           .json({ message: 'Could not create a new user!' });
       } else {
+        console.log(`Created new user ${username} successfully!`);
         return res
           .status(201)
           .json({ message: `Created new user ${username} successfully!` });
@@ -46,6 +49,7 @@ export async function createUser(req, res) {
         .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
+    console.log('Here error ', err);
     return res
       .status(500)
       .json({ message: 'Database failure when creating new user!' });
@@ -56,17 +60,18 @@ export async function signIn(req, res) {
   try {
     const { username, password } = req.body;
     if (username && password) {
-      const user = await _getUser(username, password);
-
-      if (!user) {
-        return res
-          .status(400)
-          .json({ message: 'Wrong username and/or password!' });
-      }
-
+      const user = await _getUser(username);
       if (user.err) {
         return res.status(400).json({ message: 'Could not sign in!' });
       } else {
+        const isPasswordCorrect = user.comparePassword(password);
+
+        if (!isPasswordCorrect) {
+          return res
+            .status(400)
+            .json({ message: 'Wrong username and/or password' });
+        }
+
         let token = await generateToken(user);
 
         const updated = await _addToken(username, token);
@@ -127,7 +132,6 @@ export async function changeUsername(req, res) {
     const { username, newUsername, password } = req.body;
     if (username && newUsername && password) {
       const updated = await _changeUsername(username, newUsername, password);
-      console.log('Controller: ' + JSON.stringify(updated));
       if (updated.err) {
         return res
           .status(400)
@@ -156,6 +160,7 @@ export async function deleteUser(req, res) {
     const { username } = req.body;
     if (username) {
       const isDeleted = await _deleteUser(username);
+      console.log('Controller: ' + JSON.stringify(isDeleted));
       if (!isDeleted) {
         return res.status(400).json({ message: 'User does not exist!' });
       } else if (isDeleted) {
@@ -183,6 +188,7 @@ export async function generateToken(user) {
     privateKey,
     { expiresIn: '2h' }
   );
+  console.log(token);
   return token;
 }
 
