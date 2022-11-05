@@ -1,4 +1,4 @@
-import { getRandomQuestion } from "./repository.js";
+import { getRandomQuestion } from './repository.js';
 
 export async function ormGetRandomQuestion(
   question_difficulty,

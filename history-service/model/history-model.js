@@ -24,11 +24,7 @@ let HistoryModelSchema = new Schema({
     required: true,
   },
   code: {
-    type: String,
-    required: true,
-  },
-  language: {
-    type: String,
+    type: Object,
     required: true,
   },
 });
