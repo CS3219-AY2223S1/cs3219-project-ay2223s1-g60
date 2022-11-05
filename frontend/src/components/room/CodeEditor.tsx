@@ -10,7 +10,6 @@ import {
 import * as monaco from 'monaco-editor';
 import Editor from '@monaco-editor/react';
 import TimerModal from '../modal/TimerModal';
-import { useNavigate } from 'react-router-dom';
 import MatchLeftDialog from '../modal/MatchLeftDialog';
 import { useSockets } from '../../context/SocketContext';
 import { useRoom } from '../../context/RoomContext';
@@ -41,16 +40,18 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
 
 function CodeEditor() {
   const { collabSocket: socket, roomSocket } = useSockets();
-  const { room: { roomId, language, code }, setCode, setLanguage, saveHistory} = useRoom();
+  const {
+    room: { roomId, language, code },
+    setCode,
+    setLanguage,
+    saveHistory,
+  } = useRoom();
 
-  // const [typedCode, setTypedCode] = useState('');
-  // const [language, setLanguage] = useState('javascript');
   const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
   const [openDialog, setOpenDialog] = useState(false);
 
   roomSocket.on('match-left', () => setOpenDialog(true));
 
-  const navigate = useNavigate();
   const leaveRoom = async () => {
     await saveHistory();
   };
@@ -76,6 +77,8 @@ function CodeEditor() {
     }
   );
 
+  socket.on('set-language', ({ language }) => setLanguage(language));
+
   const SelectLanguages = () => (
     <FormControl sx={{ width: '200px' }} size='small'>
       <InputLabel>Language</InputLabel>
@@ -84,7 +87,12 @@ function CodeEditor() {
         id='language'
         name='language'
         label='Language'
-        onChange={(e) => setLanguage(e.target.value)}
+        onChange={(e) =>
+          socket.emit('set-language', {
+            language: e.target.value,
+            room: roomId,
+          })
+        }
       >
         {monaco.languages.getLanguages().map((language, i) => (
           <MenuItem value={language.id} key={i}>
