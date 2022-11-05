@@ -26,11 +26,9 @@ export async function createUser(params) {
 }
 
 // READ FUNCTION
-export async function getUser(params) {
-  const user = await UserModel.findOne({ username: params.username });
-  if (user && user.comparePassword(params.password)) {
-    return user;
-  }
+export async function getUser(username) {
+  const user = await UserModel.findOne({ username: username });
+  return user;
 }
 
 export async function getToken(username) {

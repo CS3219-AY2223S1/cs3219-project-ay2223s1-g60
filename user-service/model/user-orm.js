@@ -34,9 +34,9 @@ export async function ormGetToken(username, token) {
   }
 }
 
-export async function ormGetUser(username, password) {
+export async function ormGetUser(username) {
   try {
-    const user = await getUser({ username, password });
+    const user = await getUser(username);
     return user;
   } catch (err) {
     console.log(

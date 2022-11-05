@@ -7,10 +7,10 @@ import {
   ormChangePassword as _changePassword,
   ormChangeUsername as _changeUsername,
   ormDeleteUser as _deleteUser,
-} from "../model/user-orm.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { createClient } from "redis";
+} from '../model/user-orm.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { createClient } from 'redis';
 
 const redisClient = createClient();
 
@@ -22,18 +22,21 @@ export async function createUser(req, res) {
     if (username && password) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       const resp = await _createUser(username, hashedPassword);
+      console.log('response controller: ');
+      console.log(resp);
       if (resp.err) {
         if (
           resp.err.name &&
-          resp.err.name === "MongoServerError" &&
+          resp.err.name === 'MongoServerError' &&
           resp.err.code === 11000
         ) {
-          return res.status(409).json({ message: `User ${username} already exists!` });
+          return res.status(409).json({ message: 'Duplicate user!' });
         }
         return res
           .status(400)
-          .json({ message: "Could not create a new user!" });
+          .json({ message: 'Could not create a new user!' });
       } else {
+        console.log(`Created new user ${username} successfully!`);
         return res
           .status(201)
           .json({ message: `Created new user ${username} successfully!` });
@@ -41,12 +44,13 @@ export async function createUser(req, res) {
     } else {
       return res
         .status(400)
-        .json({ message: "Username and/or Password are missing!" });
+        .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
+    console.log('Here error ', err);
     return res
       .status(500)
-      .json({ message: "Database failure when creating new user!" });
+      .json({ message: 'Database failure when creating new user!' });
   }
 }
 
@@ -54,15 +58,18 @@ export async function signIn(req, res) {
   try {
     const { username, password } = req.body;
     if (username && password) {
-      const user = await _getUser(username, password);
-
-      if (!user) {
-        return res.status(400).json({ message: "Wrong username and/or password!" });
-      }
-
+      const user = await _getUser(username);
       if (user.err) {
-        return res.status(400).json({ message: "Could not sign in!" });
+        return res.status(400).json({ message: 'Could not sign in!' });
       } else {
+        const isPasswordCorrect = user.comparePassword(password);
+
+        if (!isPasswordCorrect) {
+          return res
+            .status(400)
+            .json({ message: 'Wrong username and/or password' });
+        }
+
         let token = await generateToken(user);
 
         const updated = await _addToken(username, token);
@@ -75,10 +82,10 @@ export async function signIn(req, res) {
     } else {
       return res
         .status(400)
-        .json({ message: "Username and/or Password are missing!" });
+        .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Database failure when signing in!" });
+    return res.status(500).json({ message: 'Could not found user' });
   }
 }
 
@@ -96,19 +103,19 @@ export async function changePassword(req, res) {
       if (updated) {
         return res
           .status(200)
-          .json({ message: "Successfully changed password." });
+          .json({ message: 'Successfully changed password.' });
       } else {
         return res
           .status(400)
-          .json({ message: "Wrong username and/or password!" });
+          .json({ message: 'Wrong username and/or password!' });
       }
     } else {
       return res
         .status(400)
-        .json({ message: "Username and/or Passwords are missing!" });
+        .json({ message: 'Username and/or Passwords are missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Database failure when changing password!" });
+    return res.status(500).json({ message: 'Could not found user' });
   }
 }
 
@@ -119,23 +126,23 @@ export async function changeUsername(req, res) {
     const { username, newUsername, password } = req.body;
     if (username && newUsername && password) {
       const updated = await _changeUsername(username, newUsername, password);
-      console.log("Controller: " + JSON.stringify(updated));
+      console.log('Controller: ' + JSON.stringify(updated));
       if (updated.err) {
         return res
           .status(400)
-          .json({ message: "Wrong username and/or password!" });
+          .json({ message: 'Wrong username and/or password!' });
       } else if (updated) {
         return res
           .status(200)
-          .json({ message: "Successfully changed username." });
+          .json({ message: 'Successfully changed username.' });
       }
     } else {
       return res
         .status(400)
-        .json({ message: "Username and/or Password are missing!" });
+        .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Database failure when changing username!" });
+    return res.status(500).json({ message: 'Could not found user' });
   }
 }
 
@@ -146,16 +153,17 @@ export async function deleteUser(req, res) {
     const { username } = req.body;
     if (username) {
       const isDeleted = await _deleteUser(username);
+      console.log('Controller: ' + JSON.stringify(isDeleted));
       if (!isDeleted) {
-        return res.status(400).json({ message: "User does not exist!" });
+        return res.status(400).json({ message: 'User does not exist!' });
       } else if (isDeleted) {
-        return res.status(200).json({ message: "Successfully deleted user." });
+        return res.status(200).json({ message: 'Successfully deleted user.' });
       }
     } else {
-      return res.status(400).json({ message: "Username is missing!" });
+      return res.status(400).json({ message: 'Username is missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Database failure when changing username!" });
+    return res.status(500).json({ message: 'Could not found user' });
   }
 }
 
@@ -169,17 +177,18 @@ export async function generateToken(user) {
       _id: user._id,
     },
     privateKey,
-    { expiresIn: "2h" }
+    { expiresIn: '2h' }
   );
+  console.log(token);
   return token;
 }
 
 export async function connectToRedis() {
-  redisClient.on("error", (error) => {
-    console.log("Redis client error " + error);
+  redisClient.on('error', (error) => {
+    console.log('Redis client error ' + error);
   });
-  redisClient.on("connect", () => {
-    console.log("Redis connected!");
+  redisClient.on('connect', () => {
+    console.log('Redis connected!');
   });
 
   await redisClient.connect();
@@ -218,10 +227,11 @@ export async function logout(req, res) {
     } else {
       return res
         .status(400)
-        .json({ message: "Username and/or token are missing!" });
+        .json({ message: 'Username and/or token are missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: "Database failure when logging out!" });
+    console.log(err);
+    return res.status(500).json({ message: 'Error in logging out' });
   }
 }
 
