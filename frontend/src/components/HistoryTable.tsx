@@ -71,7 +71,8 @@ function HistoryTable() {
     username1 === user.username ? username2 : username1;
 
   useEffect(() => {
-    APIHistory.getHistories()
+    if (!user.username) return;
+    APIHistory.getHistories(user.username)
       .then(({ status, statusText, data: { histories } }) => {
         console.log(histories);
         if (status !== 201) throw new Error(statusText);
