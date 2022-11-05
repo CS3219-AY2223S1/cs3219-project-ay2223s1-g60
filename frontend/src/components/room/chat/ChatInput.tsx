@@ -9,7 +9,9 @@ import { useRoom } from '../../../context/RoomContext';
 function ChatInput() {
   const { chatSocket: socket } = useSockets();
   const username = useUser().username;
-  const { room: { roomId } } = useRoom();
+  const {
+    room: { roomId },
+  } = useRoom();
 
   const [message, setMessage] = useState('');
   const chatPlaceholder = 'Type your message here';
@@ -24,6 +26,7 @@ function ChatInput() {
 
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (message.length === 0) return;
     socket.emit('message', {
       text: message,
       name: username,
