@@ -5,34 +5,34 @@ import { getTokens } from '../context/UserContext';
 import { API, requests } from './api-request';
 
 const APIHistory = {
-  getHistories: (
-    user: string
-  ): Promise<API.Response<{ histories: HistoryModel[] }>> => {
+  getHistories: (): Promise<API.Response<{ histories: HistoryModel[] }>> => {
+    const { token, username } = getTokens();
     let headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${getTokens().token}`,
+      Authorization: `Bearer ${token}`,
     };
 
-    return requests.get(URL_HISTORY_SVC, `/historyList/${user}`, { headers });
+    return requests.get(URL_HISTORY_SVC, `/historyList/${username}`, {
+      headers,
+    });
   },
 
   getHistory: (
-    user: string,
     roomId: string
   ): Promise<API.Response<{ history: HistoryModel }>> => {
+    const { token, username } = getTokens();
     let headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${getTokens().token}`,
+      Authorization: `Bearer ${token}`,
     };
 
-    return requests.get(URL_HISTORY_SVC, `/${user}/${roomId}`, { headers });
+    return requests.get(URL_HISTORY_SVC, `/${username}/${roomId}`, { headers });
   },
 
   createHistory: (
-    history: HistoryModel,
-    username: string
+    history: HistoryModel
   ): Promise<API.Response<{ message: string }>> => {
-    const token = getTokens();
+    const { token, username } = getTokens();
 
     let headers = {
       'Content-Type': 'application/json',

@@ -3,15 +3,14 @@ import { Box, Stack, Typography } from '@mui/material';
 import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSockets } from '../context/SocketContext';
-import { defaultRoom, useRoom } from '../context/RoomContext';
+import { useRoom } from '../context/RoomContext';
 import APIRoom from '../utils/api-room';
 import APIHistory from '../utils/api-history';
 import { useUser } from '../context/UserContext';
 
 function RoomPage(props: { readOnly?: boolean }) {
-  const { search } = useLocation();
   const navigate = useNavigate();
   const sockets = useSockets();
   const {
@@ -47,7 +46,7 @@ function RoomPage(props: { readOnly?: boolean }) {
     } else {
       user.username &&
         roomId &&
-        APIHistory.getHistory(user.username, roomId)
+        APIHistory.getHistory(roomId)
           .then(({ data: { history } }) => {
             console.log(history);
             setQuestion(history.question);

@@ -1,8 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { Room, RoomModel } from '../@types/RoomContext';
-import { URI_ROOM_SVC } from '../configs';
 import { useSnackbar } from './SnackbarContext';
-import { requests } from '../utils/api-request';
 import { useUser } from './UserContext';
 import { ChatModel } from '../components/room/chat/ChatModel';
 import {
@@ -56,7 +54,7 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const { roomSocket } = useSockets();
 
-  const saveHistory = async () => {
+  const saveHistory = () => {
     return APIRoom.getRoom(roomId)
       .then((resp) => {
         if (resp.status !== 201)
@@ -74,7 +72,7 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
           chats: chats,
         };
 
-        APIHistory.createHistory(history, user.username).then((resp) => {
+        APIHistory.createHistory(history).then((resp) => {
           if (resp.status !== 201) throw new Error(resp.statusText);
           snackbar.setSuccess('History saved!');
           roomSocket.emit('delete-room', { room: roomId });
