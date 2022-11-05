@@ -44,9 +44,9 @@ function RoomPage(props: { readOnly?: boolean }) {
       getQuestion();
       sockets.joinRoom(roomId, () => navigate('/home'));
     } else {
-      user.username &&
+      user.user_id &&
         roomId &&
-        APIHistory.getHistory(roomId)
+        APIHistory.getHistory(roomId, user.user_id)
           .then(({ data: { history } }) => {
             console.log(history);
             setQuestion(history.question);
