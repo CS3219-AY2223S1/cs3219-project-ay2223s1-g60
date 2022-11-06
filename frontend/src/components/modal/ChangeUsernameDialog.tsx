@@ -61,7 +61,10 @@ function ChangeUsernameDialog(props: ChangeUsernameDialogProps) {
         // success
         const { token } = getTokens();
         saveTokens(token, newUsername.toString()); // save in browser
-        authClient.setUser({ username: newUsername.toString() }); // save in context
+        authClient.setUser({
+          username: newUsername.toString(),
+          user_id: user.user_id,
+        }); // save in context
 
         setDialogOpen(false);
         snackBar.setSuccess('Change username success', 2000);

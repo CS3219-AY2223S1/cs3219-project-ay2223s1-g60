@@ -1,31 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import ChatBox from '../components/room/chat/ChatBox';
 import CodeEditor from '../components/room/CodeEditor';
 import CodingQuestion from '../components/room/CodingQuestion';
-import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  defaultQuestion,
-  QuestionModel,
-} from '../components/room/QuestionModel.d';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSockets } from '../context/SocketContext';
-import { AuthClient } from '../utils/auth-client';
+import { useRoom } from '../context/RoomContext';
+import APIRoom from '../utils/api-room';
+import APIHistory from '../utils/api-history';
+import { useUser } from '../context/UserContext';
 
-function RoomPage() {
-  const { search } = useLocation();
+function RoomPage(props: { readOnly?: boolean }) {
   const navigate = useNavigate();
   const sockets = useSockets();
-  const room = React.useMemo(() => new URLSearchParams(search), [search]).get(
-    'id'
-  );
-
-  const [question, setQuestion] = useState<QuestionModel>(defaultQuestion);
+  const {
+    setRoomId,
+    setQuestion,
+    setReadOnly,
+    setChats,
+    setLanguage,
+    setCode,
+  } = useRoom();
+  const user = useUser();
+  const { id } = useParams();
+  const roomId = id;
 
   const getQuestion = () => {
-    room &&
-      AuthClient.getQuestion({ room })
+    roomId &&
+      APIRoom.getQuestion({ room: roomId })
         .then(({ data: { question } }) => {
-          console.log(question);
           setQuestion(question);
         })
         .catch((err) => console.log(err));
@@ -33,22 +36,40 @@ function RoomPage() {
 
   sockets.roomSocket.on('question', getQuestion);
   useEffect(() => {
-    if (room) {
-      getQuestion();
-      sockets.joinRoom(room, () => navigate('/home'));
+    if (props.readOnly) {
+      setReadOnly(props.readOnly);
     }
-  }, [room]);
+    if (roomId && !props.readOnly) {
+      setRoomId(roomId);
+      getQuestion();
+      sockets.joinRoom(roomId, () => navigate('/home'));
+    } else {
+      user.user_id &&
+        roomId &&
+        APIHistory.getHistory(roomId, user.user_id)
+          .then(({ data: { history } }) => {
+            console.log(history);
+            setQuestion(history.question);
+            setCode(history.code.code);
+            setLanguage(history.code.language);
+            setChats(history.chats);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    }
+  }, [roomId]);
 
-  return room ? (
+  return roomId ? (
     <Box sx={{ height: 'calc(100vh - 94px)' }}>
       <Stack
         direction={'row'}
         spacing={2}
         style={{ width: '100vw', maxHeight: '100%' }}
       >
-        <CodingQuestion question={question} room={room} />
-        <CodeEditor room={room} />
-        <ChatBox room={room} />
+        <CodingQuestion />
+        <CodeEditor />
+        <ChatBox />
       </Stack>
     </Box>
   ) : (

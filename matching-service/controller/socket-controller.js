@@ -13,7 +13,10 @@ const QUESTION_URL = 'http://localhost:8004/api/question';
 // Finds match from waiting room, returns -1 if unavailable
 const findMatch = (req) => {
   return waitingRoom.findIndex((room) => {
-    return room.username !== req.username && room.difficulty === req.difficulty;
+    return (
+      room.user.user_id !== req.user.user_id &&
+      room.difficulty === req.difficulty
+    );
   });
 };
 
@@ -48,35 +51,33 @@ const onFindMatchEvent = (req, io) => {
   io.to(waitingUser.socketId).to(req.socketId).emit('found-match');
 
   // create room using orm
-  createRoom(waitingUser.username, req.username, req.difficulty).then(
-    async (res) => {
-      if (!res.err) {
-        if (!res.roomId) {
-          console.log('User already in a room');
-          // TODO: handle this (delete existing room? prevent finding a new match?)
-          return;
-        }
-
-        if (process.env.ENV !== 'TEST') {
-          const roomToken = generateRoomToken(
-            waitingUser.username,
-            req.username,
-            res.roomId
-          );
-          await onGetQuestionEvent(io, { room: res.roomId });
-
-          io.to(waitingUser.socketId).to(req.socketId).emit('join-room', {
-            roomId: res.roomId,
-            token: roomToken,
-          });
-        }
-
-        return res;
+  createRoom(waitingUser.user, req.user, req.difficulty).then(async (res) => {
+    if (!res.err) {
+      if (!res.roomId) {
+        console.log('User already in a room');
+        // TODO: handle this (delete existing room? prevent finding a new match?)
+        return;
       }
 
-      console.log(res.message); // TODO: handle room creation error
+      if (process.env.ENV !== 'TEST') {
+        const roomToken = generateRoomToken(
+          waitingUser.user.username,
+          req.user.username,
+          res.roomId
+        );
+        await onGetQuestionEvent(io, { room: res.roomId });
+
+        io.to(waitingUser.socketId).to(req.socketId).emit('join-room', {
+          roomId: res.roomId,
+          token: roomToken,
+        });
+      }
+
+      return res;
     }
-  );
+
+    console.log(res.message); // TODO: handle room creation error
+  });
 };
 
 const generateRoomToken = (username1, username2, roomId) => {
@@ -84,7 +85,6 @@ const generateRoomToken = (username1, username2, roomId) => {
   let token = jwt.sign({ username1, username2, roomId }, privateRoomKey, {
     expiresIn: '2h',
   });
-  console.log('Room token: ' + token);
   return token;
 };
 

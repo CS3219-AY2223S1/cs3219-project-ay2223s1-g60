@@ -9,6 +9,10 @@ const createEventListeners = (socket, io) => {
     io.to(data.room).emit('typedCode', data);
   });
 
+  socket.on('set-language', (data) => {
+    io.to(data.room).emit('set-language', data);
+  });
+
   socket.on('disconnect', () => {
     console.log(`Disconnected with ${socket.id}`);
   });

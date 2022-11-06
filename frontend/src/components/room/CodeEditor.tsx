@@ -10,9 +10,9 @@ import {
 import * as monaco from 'monaco-editor';
 import Editor from '@monaco-editor/react';
 import TimerModal from '../modal/TimerModal';
-import { useNavigate } from 'react-router-dom';
 import MatchLeftDialog from '../modal/MatchLeftDialog';
 import { useSockets } from '../../context/SocketContext';
+import { useRoom } from '../../context/RoomContext';
 
 const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   autoIndent: 'full',
@@ -38,21 +38,24 @@ const MONACO_OPTIONS: monaco.editor.IEditorConstructionOptions = {
   readOnly: false,
 };
 
-function CodeEditor(props: { room: string }) {
+function CodeEditor() {
   const { collabSocket: socket, roomSocket } = useSockets();
-  const { room } = props;
+  const {
+    room: { roomId, language, code, readOnly },
+    setCode,
+    setLanguage,
+    saveHistory,
+  } = useRoom();
 
-  const [typedCode, setTypedCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
-  const [editorOptions, setEditorOptions] = useState(MONACO_OPTIONS);
+  const [editorOptions, setEditorOptions] = useState({
+    ...MONACO_OPTIONS,
+  });
   const [openDialog, setOpenDialog] = useState(false);
 
   roomSocket.on('match-left', () => setOpenDialog(true));
 
-  const navigate = useNavigate();
-  const leaveRoom = () => {
-    roomSocket.emit('delete-room', { room: room });
-    navigate('/match');
+  const leaveRoom = async () => {
+    await saveHistory();
   };
 
   const handleChange = (
@@ -60,11 +63,11 @@ function CodeEditor(props: { room: string }) {
     e: monaco.editor.IModelContentChangedEvent
   ) => {
     if (!value) return;
-    setTypedCode(value);
+    setCode(value);
     socket.emit('typedCode', {
       text: value,
       socketId: socket.id,
-      room: room,
+      room: roomId,
     });
   };
 
@@ -72,9 +75,11 @@ function CodeEditor(props: { room: string }) {
     'typedCode',
     (data: { text: string; socketId: string; room: string }) => {
       if (data.socketId === socket.id) return;
-      setTypedCode(data.text);
+      setCode(data.text);
     }
   );
+
+  socket.on('set-language', ({ language }) => setLanguage(language));
 
   const SelectLanguages = () => (
     <FormControl sx={{ width: '200px' }} size='small'>
@@ -84,7 +89,13 @@ function CodeEditor(props: { room: string }) {
         id='language'
         name='language'
         label='Language'
-        onChange={(e) => setLanguage(e.target.value)}
+        disabled={readOnly}
+        onChange={(e) =>
+          socket.emit('set-language', {
+            language: e.target.value,
+            room: roomId,
+          })
+        }
       >
         {monaco.languages.getLanguages().map((language, i) => (
           <MenuItem value={language.id} key={i}>
@@ -113,29 +124,34 @@ function CodeEditor(props: { room: string }) {
         }}
       >
         <SelectLanguages />
-        <TimerModal
-          extendSec={300}
-          onTimeUp={() =>
-            setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
-          }
-          onExtend={() =>
-            roomSocket.emit('extend-time', { room, seconds: 300 })
-          }
-        />
+        {!readOnly && (
+          <TimerModal
+            extendSec={300}
+            onTimeUp={() =>
+              setEditorOptions({ ...MONACO_OPTIONS, readOnly: true })
+            }
+            onExtend={() =>
+              roomSocket.emit('extend-time', { room: roomId, seconds: 300 })
+            }
+          />
+        )}
       </Stack>
       <Editor
         language={language}
-        value={typedCode}
-        options={editorOptions}
+        value={code}
+        options={{ ...editorOptions, readOnly: readOnly }}
         onChange={handleChange}
       />
-      <Button
-        variant='outlined'
-        sx={{ width: 'max-content', alignSelf: 'flex-end' }}
-        onClick={leaveRoom}
-      >
-        Leave room
-      </Button>
+      {!readOnly && (
+        <Button
+          variant='outlined'
+          sx={{ width: 'max-content', alignSelf: 'flex-end' }}
+          onClick={leaveRoom}
+        >
+          Leave room
+        </Button>
+      )}
+
       <MatchLeftDialog open={openDialog} />
     </Stack>
   );

@@ -1,20 +1,20 @@
-import UserModel from "./user-model.js";
-import "dotenv/config";
+import UserModel from './user-model.js';
+import 'dotenv/config';
 
 //Set up mongoose connection
-import mongoose from "mongoose";
-import userModel from "./user-model.js";
+import mongoose from 'mongoose';
+import userModel from './user-model.js';
 
 let mongoDB =
-  process.env.ENV == "PROD"
+  process.env.ENV == 'PROD'
     ? process.env.DB_CLOUD_URI
     : process.env.DB_LOCAL_URI;
 
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
 let db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-db.once("open", () => console.log("Successfully connected to MongoDB"));
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => console.log('Successfully connected to MongoDB'));
 
 // CREATE FUNCTION
 export async function createUser(params) {
@@ -32,7 +32,7 @@ export async function getUser(username) {
 }
 
 export async function getToken(username) {
-  const user = await UserModel.findOne({ username: username }, "token");
+  const user = await UserModel.findOne({ username: username }, 'token');
   return user.token;
 }
 
@@ -80,8 +80,8 @@ export async function deleteUser(username) {
 }
 
 export async function deleteToken(username, token) {
-  console.log("Username : ", username);
-  console.log("Token : ", token);
+  console.log('Username : ', username);
+  console.log('Token : ', token);
   const user = await UserModel.findOne({ username: username });
-  return await user.updateOne({ $unset: { token: "" } });
+  return await user.updateOne({ $unset: { token: '' } });
 }

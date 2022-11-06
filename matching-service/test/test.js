@@ -48,7 +48,11 @@ describe('[Event] Find Match', function () {
 
   describe('first match request', function () {
     it('should put users in waiting room', function (done) {
-      matchReq1 = { username: 'user1', difficulty: 1, socketId: user1.id };
+      matchReq1 = {
+        user: { username: 'user1', user_id: 'user_1' },
+        difficulty: 1,
+        socketId: user1.id,
+      };
       user1.emit('find-match', matchReq1);
       user1.on('update-waiting-room', (waitingRoom) => {
         expect(waitingRoom).to.eql([matchReq1]);
@@ -59,7 +63,11 @@ describe('[Event] Find Match', function () {
 
   describe('different match request', function () {
     it('should put users in waiting room', function (done) {
-      matchReq2 = { username: 'user2', difficulty: 2, socketId: user2.id };
+      matchReq2 = {
+        user: { username: 'user2', user_id: 'user_2' },
+        difficulty: 2,
+        socketId: user2.id,
+      };
       user2.emit('find-match', matchReq2);
       user2.on('update-waiting-room', (waitingRoom) => {
         expect(waitingRoom).to.eql([matchReq1, matchReq2]);
@@ -70,7 +78,11 @@ describe('[Event] Find Match', function () {
 
   describe('same match request', function () {
     it('should match users', function (done) {
-      matchReq3 = { username: 'user3', difficulty: 2, socketId: user3.id };
+      matchReq3 = {
+        user: { username: 'user3', user_id: 'user_3' },
+        difficulty: 2,
+        socketId: user3.id,
+      };
       user3.emit('find-match', matchReq3);
       user3.on('found-match', done);
     });

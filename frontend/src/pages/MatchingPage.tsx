@@ -12,7 +12,8 @@ import { useUser } from '../context/UserContext';
 import { useSockets } from '../context/SocketContext';
 
 function MatchingPage() {
-  const username = useUser().username || '';
+  const user = useUser();
+
   const { roomSocket: socket } = useSockets();
   const [loading, setLoading] = useState(false);
   const [difficulty, setDifficulty] = useState(0);
@@ -44,7 +45,7 @@ function MatchingPage() {
     setDifficulty(difficulty);
     setLoading(true);
     socket.emit('find-match', {
-      username,
+      user,
       socketId: socket.id,
       difficulty,
     });
@@ -112,7 +113,7 @@ function MatchingPage() {
         <LoadingModal
           open={loading}
           closeModal={() => setLoading(false)}
-          username={username}
+          username={user.username || ''}
           difficulty={difficulty}
         />
       )}

@@ -2,10 +2,13 @@ import React from 'react';
 import { Button, Divider, Stack, Typography } from '@mui/material';
 import { DifficultyEnum, QuestionModel } from './QuestionModel.d';
 import { useSockets } from '../../context/SocketContext';
+import { useRoom } from '../../context/RoomContext';
 
-function CodingQuestion(props: { question: QuestionModel; room: string }) {
+function CodingQuestion() {
   const { roomSocket: socket } = useSockets();
-  const { question, room } = props;
+  const {
+    room: { question, roomId, readOnly },
+  } = useRoom();
 
   return (
     <Stack
@@ -26,12 +29,14 @@ function CodingQuestion(props: { question: QuestionModel; room: string }) {
         dangerouslySetInnerHTML={{ __html: question.question_text }}
         style={{ flex: 1, overflow: 'scroll', paddingRight: '1rem' }}
       />
-      <Button
-        variant='contained'
-        onClick={() => socket.emit('get-question', { room })}
-      >
-        Next Question
-      </Button>
+      {!readOnly && (
+        <Button
+          variant='contained'
+          onClick={() => socket.emit('get-question', { room: roomId })}
+        >
+          Next Question
+        </Button>
+      )}
     </Stack>
   );
 }

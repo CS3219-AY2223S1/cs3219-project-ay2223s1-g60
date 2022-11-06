@@ -30,7 +30,9 @@ export async function createUser(req, res) {
           resp.err.name === 'MongoServerError' &&
           resp.err.code === 11000
         ) {
-          return res.status(409).json({ message: 'Duplicate user!' });
+          return res
+            .status(409)
+            .json({ message: `User ${username} already exists!` });
         }
         return res
           .status(400)
@@ -85,7 +87,9 @@ export async function signIn(req, res) {
         .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Could not found user' });
+    return res
+      .status(500)
+      .json({ message: 'Database failure when signing in!' });
   }
 }
 
@@ -115,7 +119,9 @@ export async function changePassword(req, res) {
         .json({ message: 'Username and/or Passwords are missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Could not found user' });
+    return res
+      .status(500)
+      .json({ message: 'Database failure when changing password!' });
   }
 }
 
@@ -126,7 +132,6 @@ export async function changeUsername(req, res) {
     const { username, newUsername, password } = req.body;
     if (username && newUsername && password) {
       const updated = await _changeUsername(username, newUsername, password);
-      console.log('Controller: ' + JSON.stringify(updated));
       if (updated.err) {
         return res
           .status(400)
@@ -142,7 +147,9 @@ export async function changeUsername(req, res) {
         .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Could not found user' });
+    return res
+      .status(500)
+      .json({ message: 'Database failure when changing username!' });
   }
 }
 
@@ -163,7 +170,9 @@ export async function deleteUser(req, res) {
       return res.status(400).json({ message: 'Username is missing!' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Could not found user' });
+    return res
+      .status(500)
+      .json({ message: 'Database failure when changing username!' });
   }
 }
 
@@ -199,6 +208,7 @@ export async function loginWithToken(req, res) {
     return res.status(201).json({
       message: `Successfully log ${req.body.username} in with token!`,
       username: req.body.username,
+      user_id: req.user_id,
     });
   } catch (err) {
     return res.status(500).json({
@@ -230,8 +240,9 @@ export async function logout(req, res) {
         .json({ message: 'Username and/or token are missing!' });
     }
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: 'Error in logging out' });
+    return res
+      .status(500)
+      .json({ message: 'Database failure when logging out!' });
   }
 }
 

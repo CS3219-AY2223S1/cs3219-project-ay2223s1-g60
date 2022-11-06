@@ -7,9 +7,9 @@ import {
   changePassword,
   changeUsername,
   deleteUser,
-} from "./repository.js";
-import "dotenv/config";
-import mongooseErrorHandler from "mongoose-validation-error-message-handler";
+} from './repository.js';
+import 'dotenv/config';
+import mongooseErrorHandler from 'mongoose-validation-error-message-handler';
 
 //need to separate orm functions from repository to decouple business logic from persistence
 

@@ -10,6 +10,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import HistoryTable from '../components/HistoryTable';
 
 function HomePage() {
   const user = useUser();
@@ -30,6 +31,7 @@ function HomePage() {
         sx={{
           borderRadius: '15px',
           padding: '0 40px 20px 40px',
+          margin: '1rem',
           boxShadow: '8px 8px 35px #d7dbe3',
           backgroundColor: '#f3f7fa',
           textAlign: 'center',
@@ -79,6 +81,17 @@ function HomePage() {
             </Typography>
           </Button>
         </Stack>
+      </Paper>
+      <Paper
+        sx={{
+          borderRadius: '15px',
+          boxShadow: '8px 8px 35px #d7dbe3',
+          backgroundColor: '#f3f7fa',
+          textAlign: 'center',
+          color: 'black',
+        }}
+      >
+        <HistoryTable />
       </Paper>
     </Container>
   );

@@ -1,25 +1,32 @@
 import mongoose from 'mongoose';
 
 var Schema = mongoose.Schema;
-let RoomModelSchema = new Schema({
+let HistoryModelSchema = new Schema({
   user1: {
     type: { user_id: { type: String }, username: { type: String } },
     required: true,
-    unique: true,
   },
   user2: {
     type: { user_id: { type: String }, username: { type: String } },
-    default: null,
+    required: true,
+  },
+  roomId: {
+    type: String,
+    required: true,
     unique: true,
   },
-  difficulty: {
-    type: String,
+  chats: {
+    type: [{ type: Object }],
     required: true,
   },
   question: {
     type: Object,
-    default: null,
+    required: true,
+  },
+  code: {
+    type: Object,
+    required: true,
   },
 });
 
-export default mongoose.model('RoomModel', RoomModelSchema);
+export default mongoose.model('HistoryModel', HistoryModelSchema);

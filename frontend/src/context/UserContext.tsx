@@ -11,6 +11,7 @@ import { useSnackbar } from './SnackbarContext';
 
 export const defaultUser: User = {
   username: null,
+  user_id: null,
 };
 
 export const saveTokens = (token: string, username: string) => {
@@ -48,7 +49,7 @@ const UserContext = createContext({
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>({ username: '' });
+  const [user, setUser] = useState<User>({ username: '', user_id: '' });
   const [loading, setLoading] = useState(true);
 
   const snackbar = useSnackbar();
@@ -69,11 +70,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     authClient.AuthClient.loginWithToken(token, username)
       .then((resp) => {
         if (resp.status !== 201) throw new Error(resp.data.message);
-
-        setUser({ username });
+        console.log('User id : ', resp.data.user_id);
+        setUser({ username, user_id: resp.data.user_id });
       })
       .catch(() => {
-        setUser({ username: '' });
+        setUser({ username: '', user_id: '' });
       })
       .finally(() => {
         setLoading(false);
@@ -89,7 +90,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           throw new Error('Username or password is missing!');
         // if (resp.status === ) throw new Error("Username or password is incorrect!");
 
-        setUser({ username: '' });
+        setUser({ username: '', user_id: '' });
         removeTokens();
       })
       .catch((err) => {
@@ -109,7 +110,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           throw new Error('Something went wrong when deleting the account!');
 
         removeTokens();
-        setUser({ username: '' });
+        setUser({ username: '', user_id: '' });
         snackbar.setSuccess('Account deleted');
       })
       .catch((err) => {

@@ -50,10 +50,10 @@ function LoginPage() {
 
     setLoading(true);
     AuthClient.loginWithUname(body)
-      .then(({ data: { username, token, message }, status }) => {
+      .then(({ data: { username, token, user_id, message }, status }) => {
         if (status !== 201) throw new Error(message);
 
-        authClient.setUser({ username: username });
+        authClient.setUser({ username: username, user_id: user_id });
         saveTokens(token, username);
         navigate('/home');
       })
