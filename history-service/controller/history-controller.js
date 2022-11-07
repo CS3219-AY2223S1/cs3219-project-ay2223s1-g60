@@ -7,7 +7,7 @@ import {
 export async function createHistory(req, res) {
   try {
     const { user1, user2, question, chats, code, roomId } = req.body;
-    if ((user1, user2, question, chats, code, roomId)) {
+    if (user1 && user2 && question && chats && code && roomId) {
       const historyBody = {
         user1,
         user2,
@@ -27,7 +27,7 @@ export async function createHistory(req, res) {
           .json({ message: 'Successfully added history entry!' });
       }
     } else {
-      return res.status(400).json({ message: 'Username is missing!' });
+      return res.status(400).json({ message: 'Missing fields!' });
     }
   } catch (err) {
     return res.status(500).json({ message: 'Database error!' });
@@ -47,7 +47,7 @@ export async function getHistory(req, res) {
         });
       }
     } else {
-      return res.status(400).json({ message: 'User ID is missing!' });
+      return res.status(400).json({ message: 'Missing user ID / room ID!' });
     }
   } catch (err) {
     return res.status(500).json({ message: 'Database error!' });
