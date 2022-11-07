@@ -42,6 +42,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     );
 
     chatSocket.on('disconnect', () => chatSocket.emit('delete-room', { room }));
+    collabSocket.on('disconnect', () =>
+      collabSocket.emit('delete-room', { room })
+    );
     roomSocket.on('disconnect', () => roomSocket.emit('delete-room', { room }));
   };
 

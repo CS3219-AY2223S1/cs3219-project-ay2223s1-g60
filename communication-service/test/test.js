@@ -65,8 +65,8 @@ describe('[Event] New Chat', () => {
       room: room,
     };
     user1.emit('typing', typingData);
-    user3.on('typingMessage', () => callCounts.user3++);
-    user2.on('typingMessage', (data) => {
+    user3.on('typing', () => callCounts.user3++);
+    user2.on('typing', (data) => {
       expect(data).to.be.a('object');
       expect(data).to.deep.equal(typingData);
       callCounts.user2++;
@@ -83,8 +83,8 @@ describe('[Event] New Chat', () => {
       room: room,
     };
     user1.emit('message', messageData);
-    user3.on('messageResponse', () => callCounts.user3++);
-    user2.on('messageResponse', (data) => {
+    user3.on('message', () => callCounts.user3++);
+    user2.on('message', (data) => {
       expect(data).to.be.a('object');
       expect(data).to.deep.equal(messageData);
       callCounts.user2++;
