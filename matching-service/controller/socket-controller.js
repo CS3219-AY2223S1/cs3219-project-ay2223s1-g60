@@ -22,13 +22,16 @@ const findMatch = (req) => {
 
 // Adds user to waiting room
 const addWaitingUser = (req, io) => {
-  waitingRoom.push(req);
+  waitingRoom.findIndex(({ user }) => req.user_id == user.user_id) < 0 &&
+    waitingRoom.push(req);
+
+  // waitingRoom.push(req);
   io.to(req.socketId).emit('update-waiting-room', waitingRoom);
 };
 
 // Remove user from waiting room
 const removeWaitingUser = (username) => {
-  let index = waitingRoom.findIndex((room) => room.username === username);
+  let index = waitingRoom.findIndex((room) => room.user.username === username);
   if (index >= 0) waitingRoom.splice(index, 1)[0];
 };
 
