@@ -1,14 +1,29 @@
-# CS3219-AY22-23-Project-Skeleton
+# CS3219-AY22-23-Project
 
-This is a template repository for CS3219 project.
+This is a Group 60's CS3219 project.
 
-## User Service
-1. Rename `.env.sample` file to `.env`.
-2. Create a Cloud DB URL using Mongo Atlas.
-3. Enter the DB URL created as `DB_CLOUD_URI` in `.env` file.
-4. Install npm packages using `npm i`.
-5. Run User Service using `npm run dev`.
+## Tech Stack
 
-## Frontend
-1. Install npm packages using `npm i`.
-2. Run Frontend using `npm start`.
+|                    | Technology                                           |
+| ------------------ | ---------------------------------------------------- |
+| Frontend           | ReactTS                                              |
+| Backend            | Node.js, Express.js, JWT, Redis, Selenium, Socket.io |
+| Database           | MongoDB                                              |
+| Project Management | GitHub Issues                                        |
+
+## Running this Project
+
+To run this project, ensure that `.env` files are available in each `*-service`, and run the following commands from the project root:
+
+```bash
+# Install dependencies
+npm i
+npm run install-dep
+
+# Run the project
+npm run dev
+```
+
+## Documentation
+
+- [Developer Documentation](60-FinalReport.pdf)
