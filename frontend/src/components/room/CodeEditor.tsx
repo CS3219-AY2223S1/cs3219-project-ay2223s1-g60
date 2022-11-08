@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Button,
+  CircularProgress,
   Stack,
   FormControl,
   InputLabel,
@@ -51,10 +52,12 @@ function CodeEditor() {
     ...MONACO_OPTIONS,
   });
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   roomSocket.on('match-left', () => setOpenDialog(true));
 
   const leaveRoom = () => {
+    setLoading(true);
     saveHistory();
   };
 
@@ -143,13 +146,16 @@ function CodeEditor() {
         onChange={handleChange}
       />
       {!readOnly && (
-        <Button
-          variant='outlined'
-          sx={{ width: 'max-content', alignSelf: 'flex-end' }}
-          onClick={leaveRoom}
-        >
-          Leave room
-        </Button>
+        <>
+          <Button
+            variant='outlined'
+            sx={{ width: 'max-content', alignSelf: 'flex-end' }}
+            onClick={leaveRoom}
+          >
+            {loading && <CircularProgress size={18} sx={{ mr: 1 }} />}
+            Leave room
+          </Button>
+        </>
       )}
 
       <MatchLeftDialog open={openDialog} />
