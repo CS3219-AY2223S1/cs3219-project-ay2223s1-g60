@@ -187,11 +187,7 @@ function ChangePasswordDialog(props: ChangePasswordDialogProps) {
             sx={{ display: 'flex', justifyContent: 'flex-end' }}
             xs={12}
           >
-            <Button
-              variant='contained'
-              type='submit'
-              disabled={loading || errorText !== ''}
-            >
+            <Button variant='contained' type='submit' disabled={loading}>
               {loading && <CircularProgress size={18} sx={{ mr: 1 }} />}
               Confirm
             </Button>
