@@ -11,9 +11,9 @@ const handleGetRole = ({ room, username }) => {
     return;
   }
 
-  if (!roles[room].interviewee && roles[room].interviewer != username) {
+  if (!roles[room].interviewee && roles[room].interviewer !== username) {
     roles[room].interviewee = username;
-  } else if (!roles[room].interviewer && roles[room].interviewee != username) {
+  } else if (!roles[room].interviewer && roles[room].interviewee !== username) {
     roles[room].interviewer = username;
   }
 
