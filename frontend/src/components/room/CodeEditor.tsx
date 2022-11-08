@@ -54,8 +54,8 @@ function CodeEditor() {
 
   roomSocket.on('match-left', () => setOpenDialog(true));
 
-  const leaveRoom = async () => {
-    await saveHistory();
+  const leaveRoom = () => {
+    saveHistory();
   };
 
   const handleChange = (

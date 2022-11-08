@@ -40,7 +40,11 @@ export async function getToken(username) {
 export async function changePassword(params) {
   console.log(params);
   const user = await UserModel.findOne({ username: params.username });
-  if (user && user.comparePassword(params.oldPassword)) {
+  if (!user) {
+    throw new Error('Database Error');
+  }
+
+  if (user.comparePassword(params.oldPassword)) {
     const updated = await UserModel.updateOne(
       { username: params.username },
       { $set: { hashedPassword: params.newHashedPassword } }
@@ -52,7 +56,11 @@ export async function changePassword(params) {
 export async function changeUsername(params) {
   console.log(params);
   const user = await UserModel.findOne({ username: params.username });
-  if (user && user.comparePassword(params.password)) {
+  if (!user) {
+    throw new Error('Database Error');
+  }
+
+  if (user.comparePassword(params.password)) {
     const updated = await UserModel.updateOne(
       { username: params.username },
       { $set: { username: params.newUsername } }
