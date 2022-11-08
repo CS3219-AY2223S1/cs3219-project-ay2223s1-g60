@@ -112,7 +112,10 @@ function MatchingPage() {
       {loading && difficulty && (
         <LoadingModal
           open={loading}
-          closeModal={() => setLoading(false)}
+          closeModal={() => {
+            setLoading(false);
+            socket.emit('cancel-req', { user: user.username });
+          }}
           username={user.username || ''}
           difficulty={difficulty}
         />

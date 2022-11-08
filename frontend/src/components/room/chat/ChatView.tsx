@@ -17,17 +17,19 @@ function ChatView(props: { role?: Roles }) {
   const {
     room: { chats },
     appendChat,
+    setChats,
   } = useRoom();
   const user = useUser();
   const [typingMessage, setTypingMessage] = useState('');
 
-  socket.on('messageResponse', (data: ChatModel) => appendChat(data));
-  socket.on('typingMessage', (data: { socketId: string; name: string }) => {
+  socket.on('messages', (chats: ChatModel[]) => setChats(chats));
+  socket.on('message', (data: ChatModel) => appendChat(data));
+  socket.on('typing', (data: { socketId: string; name: string }) => {
     if (socket.id !== data.socketId) {
       setTypingMessage(`${data.name} is typing`);
     }
   });
-  socket.on('stop-typingMessage', () => setTypingMessage(''));
+  socket.on('stop-typing', () => setTypingMessage(''));
 
   return (
     <Container sx={{ flexGrow: '1' }}>

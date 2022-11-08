@@ -52,7 +52,7 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
   const snackbar = useSnackbar();
   const user = useUser();
   const navigate = useNavigate();
-  const { roomSocket } = useSockets();
+  const { roomSocket, chatSocket, collabSocket } = useSockets();
 
   const saveHistory = () => {
     return APIRoom.getRoom(roomId)
@@ -76,6 +76,8 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
           if (resp.status !== 201) throw new Error(resp.statusText);
           snackbar.setSuccess('History saved!');
           roomSocket.emit('delete-room', { room: roomId });
+          chatSocket.emit('delete-room', { room: roomId });
+          collabSocket.emit('delete-room', { room: roomId });
           navigate('/match');
         });
       })
