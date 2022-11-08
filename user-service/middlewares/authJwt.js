@@ -1,5 +1,6 @@
 import { ormGetToken as _getToken } from '../model/user-orm.js';
 import { decodeToken, isValidRequest } from '../../utils/token.js';
+import 'dotenv/config';
 
 const isMatchingCredential = (fromDb, fromUser) => {
   return (
@@ -10,6 +11,11 @@ const isMatchingCredential = (fromDb, fromUser) => {
 };
 
 export async function verifyToken(req, res, next) {
+  if (process.env.ENV == 'TEST') {
+    next();
+    return;
+  }
+
   if (!isValidRequest(req)) {
     return res.status(401).json({ message: 'Missing JWT token!' });
   }
