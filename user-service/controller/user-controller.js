@@ -122,7 +122,7 @@ export async function changeUsername(req, res) {
     if (username && newUsername && password) {
       const updated = await _changeUsername(username, newUsername, password);
       if (!updated) {
-        return res.status(400).json({ message: 'Wrong password!' });
+        return res.status(401).json({ message: 'Wrong password!' });
       } else if (updated.err) {
         return res
           .status(409)
@@ -151,7 +151,7 @@ export async function deleteUser(req, res) {
       const isDeleted = await _deleteUser(username);
       console.log('Controller: ' + JSON.stringify(isDeleted));
       if (!isDeleted) {
-        return res.status(400).json({ message: 'User does not exist!' });
+        return res.status(404).json({ message: 'User does not exist!' });
       }
       return res.status(200).json({ message: 'Successfully deleted user.' });
     } else {

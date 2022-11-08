@@ -28,3 +28,6 @@ jobs:
       - run: pwd
       - run: npm ci
       - run: npm run build --if-present
+        env:
+          ENV: TEST
+          DB_CLOUD_URI: ${{secrets.DB_CLOUD_URI_TEST}}
