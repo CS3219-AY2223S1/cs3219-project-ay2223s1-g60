@@ -17,6 +17,7 @@ To run this project, ensure that `.env` files are available in each `*-service`,
 
 ```bash
 # Install dependencies
+npm i
 npm run install-dep
 
 # Run the project
