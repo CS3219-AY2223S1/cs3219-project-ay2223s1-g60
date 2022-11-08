@@ -31,3 +31,5 @@ app.use('/api/history', router).all((_, res) => {
 app.listen(8005, () =>
   console.log(`history-service listening on port ${PORT}`)
 );
+
+export default app;

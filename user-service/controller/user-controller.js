@@ -49,7 +49,6 @@ export async function createUser(req, res) {
         .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
-    console.log('Here error ', err);
     return res
       .status(500)
       .json({ message: 'Database failure when creating new user!' });
@@ -63,33 +62,29 @@ export async function signIn(req, res) {
       const user = await _getUser(username);
       if (user.err) {
         return res.status(400).json({ message: 'Could not sign in!' });
-      } else {
-        const isPasswordCorrect = user.comparePassword(password);
-
-        if (!isPasswordCorrect) {
-          return res
-            .status(400)
-            .json({ message: 'Wrong username and/or password' });
-        }
-
-        let token = await generateToken(user);
-
-        const updated = await _addToken(username, token);
-
-        return res.status(201).json({
-          username: username,
-          token: token,
-        });
       }
+      const isPasswordCorrect = user.comparePassword(password);
+
+      if (!isPasswordCorrect) {
+        return res.status(401).json({ message: 'Wrong password' });
+      }
+
+      let token = await generateToken(user);
+
+      const updated = await _addToken(username, token);
+
+      return res.status(201).json({
+        username: username,
+        token: token,
+        user_id: user._id,
+      });
     } else {
       return res
         .status(400)
         .json({ message: 'Username and/or Password are missing!' });
     }
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: 'Database failure when signing in!' });
+    return res.status(404).json({ message: `User does not exist` });
   }
 }
 
@@ -104,20 +99,14 @@ export async function changePassword(req, res) {
         oldPassword,
         hashedNewPassword
       );
-      if (updated) {
-        return res
-          .status(200)
-          .json({ message: 'Successfully changed password.' });
-      } else {
-        return res
-          .status(400)
-          .json({ message: 'Wrong username and/or password!' });
+      if (!updated) {
+        return res.status(400).json({ message: 'Wrong password!' });
       }
-    } else {
       return res
-        .status(400)
-        .json({ message: 'Username and/or Passwords are missing!' });
+        .status(200)
+        .json({ message: 'Successfully changed password.' });
     }
+    return res.status(400).json({ message: 'Missing fields!' });
   } catch (err) {
     return res
       .status(500)
@@ -132,20 +121,20 @@ export async function changeUsername(req, res) {
     const { username, newUsername, password } = req.body;
     if (username && newUsername && password) {
       const updated = await _changeUsername(username, newUsername, password);
-      if (updated.err) {
+      if (!updated) {
+        return res.status(400).json({ message: 'Wrong password!' });
+      } else if (updated.err) {
         return res
-          .status(400)
-          .json({ message: 'Wrong username and/or password!' });
-      } else if (updated) {
-        return res
-          .status(200)
-          .json({ message: 'Successfully changed username.' });
+          .status(409)
+          .json({ message: `User ${username} already exists` });
       }
-    } else {
       return res
-        .status(400)
-        .json({ message: 'Username and/or Password are missing!' });
+        .status(200)
+        .json({ message: 'Successfully changed username.' });
     }
+    return res
+      .status(400)
+      .json({ message: 'Username and/or Password are missing!' });
   } catch (err) {
     return res
       .status(500)
@@ -163,9 +152,8 @@ export async function deleteUser(req, res) {
       console.log('Controller: ' + JSON.stringify(isDeleted));
       if (!isDeleted) {
         return res.status(400).json({ message: 'User does not exist!' });
-      } else if (isDeleted) {
-        return res.status(200).json({ message: 'Successfully deleted user.' });
       }
+      return res.status(200).json({ message: 'Successfully deleted user.' });
     } else {
       return res.status(400).json({ message: 'Username is missing!' });
     }
