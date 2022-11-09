@@ -1,6 +1,7 @@
 import json
 import pickle
 import time
+import sys
 
 import bs4
 import colorama
@@ -19,6 +20,8 @@ from decouple import config
 
 
 conn_str = config('DB_CLOUD_URI')
+
+print(conn_str)
 
 client = MongoClient(conn_str, serverSelectionTimeoutMS=5000)
 
@@ -56,15 +59,9 @@ options.add_argument("--log-level=3")
 driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=options)
 
 # Get upto which problem it is already scraped from track.conf file
-completed_upto = read_tracker("track.conf")
+completed_upto = read_tracker()
 
-# Load chapters list that stores chapter info
-# Store chapter info
-with open("chapters.pickle", "rb") as f:
-    chapters = pickle.load(f)
-
-
-def download(problem_num, url, title, solution_slug):
+def download(frontend_question_id, problem_num, url, title, solution_slug, difficulty, title_slug):
     print(
         Fore.BLACK
         + Back.CYAN
@@ -149,6 +146,16 @@ def download(problem_num, url, title, solution_slug):
 
 def main():
 
+    numEasy = int(sys.argv[1]) if len(sys.argv) > 1 else 200
+    numMedium = int(sys.argv[2]) if len(sys.argv) > 2 else 200
+    numHard = int(sys.argv[3]) if len(sys.argv) > 3 else 200
+    
+    easyCount = 0
+    mediumCount = 0
+    hardCount = 0
+    
+    print(str(numEasy) + " " + str(numMedium) + " " + str(numHard))
+    
     # Leetcode API URL to get json of problems on algorithms categories
     ALGORITHMS_ENDPOINT_URL = "https://leetcode.com/api/problems/algorithms/"
 
@@ -181,13 +188,13 @@ def main():
             )
 
     # Sort by difficulty follwed by problem id in ascending order
-    links = sorted(links, key=lambda x: (x[1]), reverse=True)
+    # links = sorted(links, key=lambda x: (x[1]), reverse=True)
     try:
         for i in range(completed_upto + 1, len(links)):
+            print(links[i])
             (
                 question__title_slug,
                 difficulty,
-                _,
                 frontend_question_id,
                 question__title,
                 question__article__slug,
@@ -197,8 +204,16 @@ def main():
             print("Difficulty " + str(difficulty) + " type " + str(type(difficulty)))
             
             # TODO : Implement get question answer
-            if difficulty == 3:
-                download(i, frontend_question_id, url, question__title, difficulty, question__title_slug)
+            if difficulty == 3 and hardCount < numHard:
+                hardCount += 1
+            elif difficulty == 2 and mediumCount < numMedium:
+                mediumCount += 1
+            elif difficulty == 1 and easyCount < numEasy:
+                easyCount += 1
+            else:
+                continue
+            
+            download(frontend_question_id, i,url, question__title, question__title_slug, difficulty, question__title_slug)
 
             # Sleep for 20 secs for each problem and 2 minns after every 30 problems
             if i % 30 == 0:
