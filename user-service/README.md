@@ -10,7 +10,7 @@ SALT_ROUNDS=<Integer>
 JWT_PRIVATE_KEY=<String>
 ```
 
-Note: `DB_CLOUD_URI` is used for `ENV=PROD` and `DB_CLOUD_TEST` is used for `ENV=TEST`
+Note: `DB_CLOUD_URI` is used for `ENV=PROD` and `DB_CLOUD_URI_TEST` is used for `ENV=TEST`
 
 # Run Independently
 
