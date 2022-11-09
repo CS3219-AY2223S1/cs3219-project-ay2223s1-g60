@@ -18,7 +18,9 @@ from decouple import config
 # Get upto which problem it is already scraped from track.conf file
 
 
-conn_str = config('DB_CLOUD_URI')
+conn_str = config('DB_CLOUD_URI1')
+
+print(conn_str)
 
 client = MongoClient(conn_str, serverSelectionTimeoutMS=5000)
 
@@ -56,13 +58,7 @@ options.add_argument("--log-level=3")
 driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=options)
 
 # Get upto which problem it is already scraped from track.conf file
-completed_upto = read_tracker("track.conf")
-
-# Load chapters list that stores chapter info
-# Store chapter info
-with open("chapters.pickle", "rb") as f:
-    chapters = pickle.load(f)
-
+completed_upto = read_tracker()
 
 def download(problem_num, url, title, solution_slug):
     print(
@@ -184,10 +180,10 @@ def main():
     links = sorted(links, key=lambda x: (x[1]), reverse=True)
     try:
         for i in range(completed_upto + 1, len(links)):
+            print(links[i])
             (
                 question__title_slug,
                 difficulty,
-                _,
                 frontend_question_id,
                 question__title,
                 question__article__slug,
@@ -198,7 +194,7 @@ def main():
             
             # TODO : Implement get question answer
             if difficulty == 3:
-                download(i, frontend_question_id, url, question__title, difficulty, question__title_slug)
+                download(i, url, question__title,  , question__title_slug)
 
             # Sleep for 20 secs for each problem and 2 minns after every 30 problems
             if i % 30 == 0:
