@@ -88,4 +88,39 @@ describe('Question', () => {
         });
     });
   });
+
+  describe('Negative test cases GET /api/question/', () => {
+    it('should NOT get a random question (missing fields)', (done) => {
+      const expectedBody = {
+        message: `Difficulty is missing!`,
+      };
+
+      chai
+        .request(app)
+        .get('/api/question')
+        .end((err, res) => {
+          err && console.log(err);
+          chai.expect(res).to.have.status(400);
+          chai.expect(res.body).to.deep.equal(expectedBody);
+          done();
+        });
+    });
+
+    it('should NOT get a random question (wrong difficulty)', (done) => {
+      const expectedBody = {
+        message: `Could not get question!`,
+      };
+
+      chai
+        .request(app)
+        .get('/api/question?difficulty=4')
+        .end((err, res) => {
+          err && console.log(err);
+          console.log(res);
+          chai.expect(res).to.have.status(400);
+          chai.expect(res.body).to.deep.equal(expectedBody);
+          done();
+        });
+    });
+  });
 });
