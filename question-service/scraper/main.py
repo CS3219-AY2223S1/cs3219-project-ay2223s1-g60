@@ -19,7 +19,7 @@ from decouple import config
 # Get upto which problem it is already scraped from track.conf file
 
 
-conn_str = config('DB_CLOUD_URI1')
+conn_str = config('DB_CLOUD_URI')
 
 print(conn_str)
 
