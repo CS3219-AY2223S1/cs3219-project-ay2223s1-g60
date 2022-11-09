@@ -6,8 +6,6 @@ Duplicate the `.env.sample` file and rename it to `.env`, fill in the missing va
 ENV=<PROD | TEST>
 DB_CLOUD_URI=<MongoDB Atlas URL>
 DB_CLOUD_URI_TEST=<MongoDB Atlas URL>
-SALT_ROUNDS=<Integer>
-JWT_PRIVATE_KEY=<String>
 JWT_ROOM_PRIVATE_KEY=<String>
 ```
 
