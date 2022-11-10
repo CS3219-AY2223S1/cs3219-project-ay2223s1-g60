@@ -30,17 +30,16 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
     setTimeout(() => {
       closeModal();
     }, 35000);
-  const timer = useCountDown(30);
+
+  const timer = useCountDown(30, closeModal);
 
   const cleanUp = () => {
-    clearTimeout(startCountDown());
-    socket.emit('cancel-req', { user: username });
     closeModal();
   };
 
-  useEffect(() => {
-    startCountDown();
-  }, []);
+  // useEffect(() => {
+  //   startCountDown();
+  // }, []);
 
   // Server notifies client that a match is found
   socket.on('found-match', () => {

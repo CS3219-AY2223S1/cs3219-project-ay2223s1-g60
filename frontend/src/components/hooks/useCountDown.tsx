@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-const useCountDown = (seconds: number) => {
+const useCountDown = (seconds: number, callback: () => void) => {
   const [countDown, setCountDown] = useState(seconds);
 
   useEffect(() => {
     const interval = setInterval(() => setCountDown(countDown - 1), 1000);
-    return () => clearInterval(interval);
+
+    const startCountDown = setTimeout(callback, 35000);
+
+    return () => {
+      clearTimeout(startCountDown);
+      clearInterval(interval);
+    };
   }, [countDown]);
 
   const extendTime = (extendSec: number) => setCountDown(countDown + extendSec);
